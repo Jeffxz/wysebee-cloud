@@ -300,7 +300,8 @@ next_steps() {
     say "     in the web app (Agents):"
     say "       Mac / Windows / Linux:  WYSEBEE_CLOUD_URL=$url"
     say "       Android:                a build made with WYSEBEE_AGENT_ANDROID_LOCAL_CLOUD_URL=$url"
-    say "       Browser extension:      not yet — its server is fixed when it is built"
+    say "       Browser extension:      a build made with WYSEBEE_CLOUD_URL=$url npm run build:local"
+    say "                               in wysebee-agent-browser-extension, loaded unpacked from dist/local"
     if [ "$(get_var WEB_BIND)" != "0.0.0.0" ]; then
         note "     (Only devices on this computer can reach it now: '$0 setup', option 2, for others.)"
     fi
