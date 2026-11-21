@@ -1,0 +1,34 @@
+{
+  "devices": {
+    "nav": {
+      "label": "デバイス",
+      "title": "デバイス",
+      "all": "すべてのデバイス",
+      "browsers": "ブラウザ",
+      "online": "オンライン",
+      "offline": "オフライン"
+    },
+    "detail": {
+      "about": "概要",
+      "agent": "エージェント",
+      "type": "種類",
+      "device": "デバイス",
+      "browser": "ブラウザ",
+      "version": "バージョン",
+      "status": "状態",
+      "paused": "Wysebee Agent で一時停止中",
+      "lastSeen": "最終接続",
+      "paired": "ペアリング日時",
+      "programs": "許可されたプログラム",
+      "skills": "許可されたスキル",
+      "folders": "許可されたフォルダ",
+      "noneAllowed": "まだ許可されたものはありません。",
+      "readOnly": "読み取り専用",
+      "readWrite": "読み書き",
+      "openAgent": "エージェントを開く",
+      "notFound": "このデバイスはペアリングされていません。",
+      "back": "すべてのデバイス",
+      "cloudAbout": "あなたのエージェントはすべて Wysebee Cloud にあり、そこで実行され、タスクとワークスペースが保管され、ペアリングされたデバイスやブラウザに接続します。"
+    }
+  }
+}

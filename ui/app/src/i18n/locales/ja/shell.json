@@ -1,0 +1,16 @@
+{
+  "shell": {
+    "headers": {
+      "tasks": "タスク",
+      "home": "ホーム",
+      "agents": "エージェント",
+      "settings": "設定",
+      "devices": "デバイス",
+      "workspaces": "ワークスペース",
+      "activity": "アクティビティ",
+      "skills": "スキル",
+      "tools": "ツール"
+    },
+    "loading": "読み込み中…"
+  }
+}

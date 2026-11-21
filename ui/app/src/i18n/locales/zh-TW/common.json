@@ -1,0 +1,46 @@
+{
+  "common": {
+    "people": {
+      "made": "建立者：{{made}}",
+      "madeAndChanged": "建立者：{{made}} · 最後修改者：{{changed}}",
+      "you": "你",
+      "someone": "某人"
+    },
+    "autoSave": {
+      "saved": "已儲存"
+    },
+    "inlineField": {
+      "save": "儲存{{what}}",
+      "discardTitle": "捨棄變更",
+      "discard": "捨棄{{what}}的變更"
+    },
+    "saveBar": {
+      "unsaved": "有未儲存的變更",
+      "discard": "捨棄",
+      "save": "儲存",
+      "saving": "正在儲存…"
+    },
+    "avatar": {
+      "named": "{{label}} 的大頭貼",
+      "unnamed": "代理程式大頭貼"
+    },
+    "copy": {
+      "ariaLabel": "複製 {{label}} 位址",
+      "copied": "已複製",
+      "failed": "複製失敗"
+    },
+    "presence": {
+      "online": "線上",
+      "offline": "離線"
+    },
+    "confirm": {
+      "ok": "確定",
+      "cancel": "取消",
+      "delete": "刪除",
+      "discard": "捨棄",
+      "leave": "離開",
+      "disconnect": "中斷連線",
+      "unpair": "取消配對"
+    }
+  }
+}

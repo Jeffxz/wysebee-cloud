@@ -1,0 +1,38 @@
+{
+  "sideNav": {
+    "primaryNav": "主要",
+    "items": {
+      "tasks": "任務",
+      "home": "首頁",
+      "agents": "代理",
+      "activity": "動態",
+      "settings": "設定",
+      "devices": "裝置",
+      "workspaces": "工作區",
+      "skills": "技能",
+      "tools": "工具",
+      "more": "更多"
+    },
+    "secondaryNav": "次要",
+    "createOptions": {
+      "newTask": "新增任務"
+    },
+    "secondary": {
+      "settingsHeading": "設定",
+      "settingsSystem": "系統",
+      "settingsMachines": "連線",
+      "loading": "正在載入…",
+      "add": "新增",
+      "renameCategory": "重新命名 {{name}}",
+      "deleteCategory": "刪除 {{name}}",
+      "dragHandle": "重新排序 {{name}}",
+      "tasksHeading": "任務",
+      "noTasksYet": "還沒有任務。"
+    },
+    "darkMode": "深色模式",
+    "toLight": "切換到淺色",
+    "toDark": "切換到深色",
+    "themeNotSaved": "外觀已在此處變更，但無法儲存到 Wysebee Cloud：{{error}}",
+    "unread_other": "{{count}} 則未讀"
+  }
+}

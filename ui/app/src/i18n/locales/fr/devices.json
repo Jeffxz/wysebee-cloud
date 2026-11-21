@@ -1,0 +1,34 @@
+{
+  "devices": {
+    "nav": {
+      "label": "Appareils",
+      "title": "Appareils",
+      "all": "Tous les appareils",
+      "browsers": "Navigateurs",
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "detail": {
+      "about": "À propos",
+      "agent": "Agent",
+      "type": "Type",
+      "device": "Appareil",
+      "browser": "Navigateur",
+      "version": "Version",
+      "status": "État",
+      "paused": "En pause dans Wysebee Agent",
+      "lastSeen": "Vu pour la dernière fois",
+      "paired": "Associé le",
+      "programs": "Programmes autorisés",
+      "skills": "Compétences autorisées",
+      "folders": "Dossiers autorisés",
+      "noneAllowed": "Aucun autorisé pour l’instant.",
+      "readOnly": "Lecture seule",
+      "readWrite": "Lecture et écriture",
+      "openAgent": "Ouvrir l’agent",
+      "notFound": "Cet appareil n’est plus associé.",
+      "back": "Tous les appareils",
+      "cloudAbout": "Tous vos agents vivent dans Wysebee Cloud, qui les exécute, conserve leurs tâches et espaces de travail, et joint les appareils et navigateurs qui leur sont associés."
+    }
+  }
+}

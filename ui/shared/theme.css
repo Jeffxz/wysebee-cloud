@@ -1,0 +1,50 @@
+/*
+ * The look shared by the desktop SPA and the browser extension's popup
+ * (ui/extension): the brand scale and the base surface. Both import it after
+ * Tailwind, so a colour changed here changes in both places.
+ */
+
+/*
+ * The app's brand/primary color, a custom scale anchored exactly on the
+ * requested #855cd6 (hsl(260, 60%, 60%) — it slots naturally at the "500"
+ * step of a standard Tailwind-shaped scale). Every other step holds that
+ * same hue/saturation, varying only lightness, so `primary-*` behaves like
+ * any built-in Tailwind color. Used via plain `primary-*` utility classes
+ * throughout ui/src (see cn.ts for the shared button/input/link treatments,
+ * and SideNav/Sidebar.tsx + SecondaryNav.tsx for the rail itself, which pins
+ * exactly primary-500/#855cd6 as its fixed background).
+ */
+@theme {
+  --color-primary-50: #f6f3fc;
+  --color-primary-100: #ede7f9;
+  --color-primary-200: #d7caf2;
+  --color-primary-300: #bca5e9;
+  --color-primary-400: #9d7cde;
+  --color-primary-500: #855cd6;
+  --color-primary-600: #6c3bce;
+  --color-primary-700: #5a2db4;
+  --color-primary-800: #492593;
+  --color-primary-900: #3d1f7a;
+  --color-primary-950: #291452;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  /* An app, not a web page: no rubber-band bounce when a trackpad drags past the top or
+     bottom (QtWebEngine is Chromium, which bounces the page on macOS), and the page's own
+     background behind it — so nothing white can ever show through — in light and dark. */
+  html {
+    @apply bg-stone-50 dark:bg-stone-900;
+    overscroll-behavior: none;
+  }
+
+  body {
+    overscroll-behavior: none;
+    @apply bg-stone-50 text-stone-800 antialiased dark:bg-stone-900 dark:text-stone-100;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+      Arial, sans-serif;
+  }
+}

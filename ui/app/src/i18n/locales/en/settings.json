@@ -1,0 +1,140 @@
+{
+  "settings": {
+    "connections": {
+      "title": "Connections",
+      "intro": "Wysebee Cloud, the devices where your agents run, and the browsers paired with the Wysebee Agent extension."
+    },
+    "desktops": {
+      "heading": "Your devices",
+      "hint": "Wysebee Cloud, and every device where one of your agents runs or has run: each Mac, Windows PC, Linux machine or Android phone paired with Wysebee Agent, with the agent made when it was paired. Only that agent uses the device — only what you allowed in Wysebee Agent there. Pair a device here: its agent lives in Wysebee Cloud.",
+      "loading": "Reading your devices…",
+      "none": "No device runs one of your agents yet.",
+      "cloudHint": "Keeps your agents, tasks and workspaces.",
+      "cloudConnected": "Connected",
+      "pair": "Pair a device"
+    },
+    "browsers": {
+      "heading": "Browsers",
+      "hint": "Each browser paired with the Wysebee Agent extension has an agent of its own, and only that agent uses it. The extension asks you in the browser before the agent acts on a site you have not trusted.",
+      "loading": "Reading your browsers…",
+      "none": "No browser is paired yet.",
+      "signedOut": "Sign in to see your browsers.",
+      "connected": "Connected",
+      "offline": "Offline — last seen {{when}}",
+      "offlineNever": "Offline",
+      "pausedBadge": "Paused",
+      "version": "Wysebee Agent {{version}}",
+      "unpair": "Unpair",
+      "unpairConfirm": "Unpair {{device}} from {{label}}? The agent stays, without a browser. To use it again, pair a browser and reconnect it to this agent when Wysebee asks.",
+      "pair": "Pair a browser",
+      "pairDialog": {
+        "title": "Pair a browser",
+        "step1": "Install the Wysebee Agent extension in the browser.",
+        "step2": "Open the extension and type a name for the agent that will use this browser.",
+        "step3": "Type the code the extension shows here.",
+        "note": "Pairing makes a new agent under that name. Only that agent uses the browser, and it lives in Wysebee Cloud.",
+        "code": "Pairing code",
+        "needCode": "Type the 8 characters of the code the extension shows.",
+        "pair": "Pair",
+        "cancel": "Cancel",
+        "paired": "{{label}} (@{{name}}) now uses that browser.",
+        "pairedNote": "The extension asks you in the browser before the agent acts on a site you have not trusted.",
+        "open": "Open its settings",
+        "done": "Done",
+        "reconnect": "Reconnect to {{label}}",
+        "otherName": "Another name",
+        "otherNameHint": "The new agent is made under this name instead of the one typed on the device.",
+        "takenReconnect": "{{label}} (@{{name}}) already has that name. It is a {{type}} with no browser now: reconnect this browser to it, keeping its settings — or type another name below for a new agent.",
+        "typeFallback": "browser agent"
+      },
+      "refused": {
+        "codeUnknown": "That code is wrong, was already used, or ran out. Check the code the extension shows now and type it again.",
+        "nameTaken": "You already have an agent named {{label}} (@{{name}}), and this device cannot be reconnected to it. Type another name below, then Pair: the same code still works.",
+        "nameTakenPlain": "You already have an agent with that name. Type another name below, then Pair: the same code still works.",
+        "tooMany": "You have 20 agents already. Delete one, then Pair again: the same code still works.",
+        "invalidName": "That name cannot be made into an agent's @ name. Type a name that starts with a letter below, then Pair: the same code still works.",
+        "reserved": "That name is reserved. Type another name below, then Pair: the same code still works.",
+        "tooManyTries": "Too many wrong codes. Wait ten minutes, then try again."
+      }
+    },
+    "macAgents": {
+      "pair": "Pair a Mac",
+      "unpairConfirm": "Unpair {{device}} from {{label}}? The agent stays, and can no longer run programs on that Mac. To use it again, pair a Mac and reconnect it to this agent when Wysebee asks.",
+      "pairDialog": {
+        "title": "Pair a Mac",
+        "step1": "Install and open Wysebee Agent on the Mac.",
+        "step2": "Type a name there for the agent that will use this Mac.",
+        "step3": "Type the code Wysebee Agent shows here.",
+        "note": "Pairing makes a new agent under that name. It lives in Wysebee Cloud, and only it runs programs, skill scripts and folder tools on that Mac — only those you allow in Wysebee Agent there.",
+        "needCode": "Type the 8 characters of the code Wysebee Agent shows.",
+        "paired": "{{label}} (@{{name}}) was created and uses {{browser}}.",
+        "pairedNote": "Each of its programs must be allowed in Wysebee Agent on the Mac before it runs, and its folders are picked there.",
+        "takenReconnect": "{{label}} (@{{name}}) already has that name. It is a {{type}} with no Mac now: reconnect this Mac to it, keeping its settings — or type another name below for a new agent. Its programs and skills wait to be allowed on the Mac again.",
+        "typeFallback": "Mac agent"
+      }
+    },
+    "pcAgents": {
+      "pair": "Pair a Windows PC",
+      "unpairConfirm": "Unpair {{device}} from {{label}}? The agent stays, and can no longer run programs on that PC. To use it again, pair a PC and reconnect it to this agent when Wysebee asks.",
+      "pairDialog": {
+        "title": "Pair a Windows PC",
+        "step1": "Install and open Wysebee Agent on the PC.",
+        "step2": "Type a name there for the agent that will use this PC.",
+        "step3": "Type the code Wysebee Agent shows here.",
+        "note": "Pairing makes a new agent under that name. It lives in Wysebee Cloud, and only it runs programs, skill scripts and folder tools on that PC — only those you allow in Wysebee Agent there.",
+        "needCode": "Type the 8 characters of the code Wysebee Agent shows.",
+        "paired": "{{label}} (@{{name}}) was created and uses {{browser}}.",
+        "pairedNote": "Each of its programs must be allowed in Wysebee Agent on the PC before it runs, and its folders are picked there.",
+        "takenReconnect": "{{label}} (@{{name}}) already has that name. It is a {{type}} with no PC now: reconnect this PC to it, keeping its settings — or type another name below for a new agent. Its programs and skills wait to be allowed on the PC again.",
+        "typeFallback": "Windows agent"
+      }
+    },
+    "linuxAgents": {
+      "pair": "Pair a Linux machine",
+      "unpairConfirm": "Unpair {{device}} from {{label}}? The agent stays, and can no longer run programs on that machine. To use it again, pair a machine and reconnect it to this agent when Wysebee asks.",
+      "pairDialog": {
+        "title": "Pair a Linux machine",
+        "step1": "Install Wysebee Agent for Linux on the machine (a desktop, a server or a cloud VM).",
+        "step2": "Run wysebee-agent pair there with a name for the agent that will use this machine.",
+        "step3": "Type the code it prints here.",
+        "note": "Pairing makes a new agent under that name. It lives in Wysebee Cloud, and only it runs programs, skill scripts, folder and developer tools on that machine — only those you allow there with wysebee-agent allow and enable.",
+        "needCode": "Type the 8 characters of the code wysebee-agent pair prints.",
+        "paired": "{{label}} (@{{name}}) was created and uses {{browser}}.",
+        "pairedNote": "Each of its programs must be allowed on the machine (wysebee-agent allow) before it runs, and its folders are added there (wysebee-agent folder add).",
+        "takenReconnect": "{{label}} (@{{name}}) already has that name. It is a {{type}} with no machine now: reconnect this machine to it, keeping its settings — or type another name below for a new agent. Its programs and skills wait to be allowed on the machine again.",
+        "typeFallback": "Linux agent"
+      }
+    },
+    "phoneAgents": {
+      "pair": "Pair an Android phone",
+      "unpairConfirm": "Unpair {{device}} from {{label}}? The agent stays, and can no longer use that phone. To use it again, pair a phone and reconnect it to this agent when Wysebee asks.",
+      "pairDialog": {
+        "title": "Pair an Android phone",
+        "step1": "Install and open Wysebee Agent on the phone, and turn on its accessibility service.",
+        "step2": "Type a name there for the agent that will use this phone.",
+        "step3": "Type the code Wysebee Agent shows here.",
+        "note": "Pairing makes a new agent under that name. It lives in Wysebee Cloud, and only it uses that phone — only the apps you allow in Wysebee Agent there.",
+        "needCode": "Type the 8 characters of the code Wysebee Agent shows.",
+        "paired": "{{label}} (@{{name}}) was created and uses {{browser}}.",
+        "pairedNote": "It opens and operates only the apps you allow in Wysebee Agent on the phone, and never types into password fields.",
+        "takenReconnect": "{{label}} (@{{name}}) already has that name. It is a {{type}} with no phone now: reconnect this phone to it, keeping its settings — or type another name below for a new agent.",
+        "typeFallback": "phone agent",
+        "qrTitle": "Scan with the phone",
+        "qrHint": "In Wysebee Agent on the phone, type a name for the agent, tap Scan QR code and point the camera here. Or type the code it shows below.",
+        "qrAlt": "QR code for pairing an Android phone",
+        "qrLoading": "Making a QR code…",
+        "qrFailed": "The QR code could not be made.",
+        "qrExpired": "This QR code ran out.",
+        "qrNew": "Show a new QR code",
+        "pairedByQr": "{{label}} (@{{name}}) was created and uses the phone that scanned the code."
+      }
+    },
+    "system": {
+      "analytics": {
+        "title": "Usage analytics",
+        "send": "Send usage analytics",
+        "help": "Which pages you open and what you click — never what you type, nor the names of your agents, topics and tasks — so Wysebee can be improved. It follows your account."
+      }
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "skills": {
+    "loading": "読み込み中…",
+    "notFound": "このスキルはもうありません。",
+    "nav": {
+      "label": "スキル",
+      "title": "スキル",
+      "add": "スキルを作成",
+      "name": "スキル名",
+      "placeholder": "例: weekly-report",
+      "loading": "読み込み中…",
+      "none": "スキルはまだありません。",
+      "rename": "{{name}} の名前を変更",
+      "addIn": "{{name}} に追加",
+      "newFile": "新規ファイル",
+      "newFolder": "新規フォルダー",
+      "upload": "ファイルをアップロード…",
+      "uploaded": "{{n}} 件のファイルをアップロードしました。",
+      "fileName": "ファイル名",
+      "folderName": "フォルダー名",
+      "deleteFolder": "フォルダー {{name}} を削除",
+      "deleteFolderConfirm": "フォルダー「{{name}}」とその中身をすべて削除しますか？元に戻せません。",
+      "deleteFile": "{{name}} を削除",
+      "deleteFileConfirm": "「{{name}}」を削除しますか？元に戻せません。",
+      "all": "すべてのスキル"
+    },
+    "start": {
+      "titleFirst": "最初のスキルを作成",
+      "title": "スキルを作成",
+      "hint": "スキルは Wysebee Cloud に保存されるフォルダーです。SKILL.md に用途と手順を書き、必要なスクリプトやファイルを置きます。エージェントの設定でスキルを割り当てます。",
+      "name": "スキル名",
+      "placeholder": "例: weekly-report",
+      "create": "スキルを作成"
+    },
+    "overview": {
+      "delete": "スキルを削除",
+      "deleteConfirm": "スキル「{{name}}」とそのファイルをすべて削除しますか？このスキルを持つすべてのエージェントから外れます。元に戻せません。",
+      "counts": "{{files}} 個のファイル。",
+      "edit": "SKILL.md を編集",
+      "hint": "横のメニューからスクリプトやファイルを追加できます。フォルダーの + でファイル、フォルダー、またはパソコンのファイルを追加します。エージェントのスキルタブでスキルを割り当てます。",
+      "agents": "このスキルを持つエージェント：",
+      "noAgents": "まだどのエージェントも持っていません。エージェントの「スキル」タブで追加してください。"
+    },
+    "editor": {
+      "saved": "保存しました。",
+      "notText": "このファイルはテキストではありません（{{size}} バイト）。スキルにそのまま保存されています。",
+      "download": "ダウンロード",
+      "cardHint": "スキルのカードです。保存時に front matter から説明とスクリプトが読み取られ、名前はスキル名になります。"
+    },
+    "changes": {
+      "title": "AI アプリが提案した変更",
+      "note": "保存されていません。変更を適用するまでスキルはそのままです。適用する前にそれぞれ確認してください。スクリプトはあなたのコンピューターで実行されます。",
+      "kind": {
+        "newFile": "新しいファイル",
+        "changedFile": "ファイルの変更",
+        "folder": "新しいフォルダー"
+      },
+      "view": "表示",
+      "hide": "隠す",
+      "apply": "適用",
+      "discard": "破棄",
+      "applyOne": "{{path}} を適用",
+      "discardOne": "{{path}} を破棄",
+      "applyAll_other": "すべて適用（{{count}}）",
+      "now": "現在",
+      "proposed": "提案"
+    },
+    "list": {
+      "intro": "あなたのスキル：それぞれの用途。Wysebee Cloud に保管され、エージェントの設定で割り当てます。"
+    }
+  }
+}

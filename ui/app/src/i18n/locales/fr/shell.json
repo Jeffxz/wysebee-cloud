@@ -1,0 +1,16 @@
+{
+  "shell": {
+    "headers": {
+      "tasks": "Tâches",
+      "home": "Accueil",
+      "agents": "Agents",
+      "settings": "Paramètres",
+      "devices": "Appareils",
+      "workspaces": "Espaces de travail",
+      "activity": "Activité",
+      "skills": "Compétences",
+      "tools": "Outils"
+    },
+    "loading": "Chargement…"
+  }
+}

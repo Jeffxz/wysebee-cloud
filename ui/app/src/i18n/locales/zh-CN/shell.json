@@ -1,0 +1,16 @@
+{
+  "shell": {
+    "headers": {
+      "tasks": "任务",
+      "home": "首页",
+      "agents": "智能体",
+      "settings": "设置",
+      "devices": "设备",
+      "workspaces": "工作区",
+      "activity": "动态",
+      "skills": "技能",
+      "tools": "工具"
+    },
+    "loading": "正在加载…"
+  }
+}

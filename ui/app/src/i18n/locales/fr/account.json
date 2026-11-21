@@ -1,0 +1,17 @@
+{
+  "account": {
+    "title": "Compte",
+    "signOut": "Se déconnecter",
+    "signedInAs": "Connecté en tant que",
+    "delete": {
+      "title": "Supprimer le compte",
+      "help": "Supprime définitivement votre compte Wysebee et ses données, sur tous vos appareils.",
+      "confirmTitle": "Supprimer votre compte ?",
+      "body": "Cela supprime de Wysebee Cloud vos agents, espaces de travail, tâches, rappels, images et votre connexion. Un abonnement est annulé immédiatement, sans remboursement du reste du mois, et votre carte est retirée de Stripe. Les justificatifs de paiement sont conservés pour la comptabilité, sans lien avec vous. Ce que vos appareils gardent de leur côté n'est pas touché.",
+      "understood": "Je comprends que c'est irréversible.",
+      "confirm": "Supprimer définitivement",
+      "deleting": "Suppression…",
+      "cancel": "Annuler"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "devices": {
+    "nav": {
+      "label": "裝置",
+      "title": "裝置",
+      "all": "所有裝置",
+      "browsers": "瀏覽器",
+      "online": "在線",
+      "offline": "離線"
+    },
+    "detail": {
+      "about": "概況",
+      "agent": "代理",
+      "type": "類型",
+      "device": "裝置",
+      "browser": "瀏覽器",
+      "version": "版本",
+      "status": "狀態",
+      "paused": "已在 Wysebee Agent 中暫停",
+      "lastSeen": "最後上線",
+      "paired": "配對時間",
+      "programs": "允許的程式",
+      "skills": "允許的技能",
+      "folders": "允許的資料夾",
+      "noneAllowed": "尚未允許任何項目。",
+      "readOnly": "唯讀",
+      "readWrite": "讀寫",
+      "openAgent": "開啟代理",
+      "notFound": "此裝置已不再配對。",
+      "back": "所有裝置",
+      "cloudAbout": "你的所有代理都在 Wysebee Cloud 中執行，它保存它們的任務和工作區，並連線與它們配對的裝置和瀏覽器。"
+    }
+  }
+}

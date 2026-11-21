@@ -1,0 +1,115 @@
+{
+  "tasks": {
+    "list": {
+      "intro": "任務是提醒或排程工作：到期時，Wysebee Cloud 會執行它的步驟，並把結果發佈到動態。請讓你的 AI 應用程式透過 Wysebee Assistant 來設定。",
+      "add": "新增任務",
+      "loading": "載入中…",
+      "empty": "還沒有任務。",
+      "emptyHint": "新增一個：取個名字，寫好計畫，再選擇它的瀏覽器。",
+      "noPlan": "尚無計畫"
+    },
+    "status": {
+      "never": "尚未執行",
+      "running": "執行中",
+      "succeeded": "完成",
+      "failed": "失敗",
+      "stopped": "已停止",
+      "interrupted": "已中斷"
+    },
+    "form": {
+      "newTitle": "新增任務",
+      "name": "名稱",
+      "namePlaceholder": "例如：每日銷售摘要",
+      "create": "建立任務",
+      "saving": "儲存中…",
+      "cancel": "取消",
+      "errors": {
+        "name": "請為任務命名。"
+      },
+      "nameHelp": "接下來你會寫計畫，並選擇它的瀏覽器和模型。",
+      "save": "儲存"
+    },
+    "kind": {
+      "manual": "手動",
+      "once": "定時",
+      "recurring": "週期"
+    },
+    "tabs": {
+      "general": "一般",
+      "plan": "計畫",
+      "run": "執行"
+    },
+    "plan": {
+      "title": "計畫",
+      "help": "這個任務要做什麼，用 Markdown 寫成要執行的指令。每次執行都會把它作為唯一的訊息傳送；任務會在瀏覽器中完成它，並在最後提出報告。",
+      "placeholder": "1. 查看昨天的銷售儀表板。\n2. 總結三個最大的變化。\n3. 用通知把總結傳給我。",
+      "empty": "尚無計畫。沒有計畫的任務無法執行。"
+    },
+    "general": {
+      "confirmDelete": "刪除任務「{{name}}」及其執行記錄？",
+      "deleteHelp": "刪除會移除此任務及其執行記錄。",
+      "deleteTitle": "刪除此任務",
+      "delete": "刪除任務",
+      "labelPlaceholder": "此任務的簡短顯示標籤",
+      "deleteFailed": "無法刪除任務。",
+      "readOnlyEditor": "唯讀——你只能編輯自己建立的任務。",
+      "readOnlyViewer": "唯讀——你的角色只能檢視任務，無法編輯。"
+    },
+    "detail": {
+      "start": "開始",
+      "running": "執行中…"
+    },
+    "result": {
+      "none": "尚未執行。按「開始」立即執行。",
+      "history": "先前的執行",
+      "startedAt": "開始於 {{when}}",
+      "stop": "停止",
+      "working": "代理程式正在處理…",
+      "noOutput": "代理程式已完成，但沒有書面回答。",
+      "steps_other": "{{count}} 個步驟",
+      "byScheduleShort": "依排程",
+      "startedBySchedule": "依排程於 {{when}} 開始",
+      "openRecording": "開啟錄製",
+      "recordingGone": "找不到錄製資料夾，它可能已被移動或刪除。"
+    },
+    "schedule": {
+      "title": "排程",
+      "manual": "僅在啟動時執行",
+      "once": "一次，{{when}}",
+      "minutes_other": "每 {{count}} 分鐘",
+      "hours_other": "每 {{count}} 小時",
+      "daily": "每天 {{time}}（{{tz}}）",
+      "weekly": "每週 {{days}} {{time}}（{{tz}}）",
+      "next": "下次：{{when}}",
+      "notScheduled": "未排程",
+      "steps": "步驟",
+      "noSteps": "沒有步驟：到期時，它的計畫會作為提醒發佈到動態。",
+      "via": "透過 Wysebee Assistant 在你的 AI 應用程式中設定和修改。",
+      "deletedAgent": "已刪除的代理"
+    },
+    "run": {
+      "changeSchedule": "變更",
+      "needsPlan": "執行前請先在「計畫」分頁寫好計畫。",
+      "needsModel": "請先選擇模型。",
+      "modelGone": "此模型已無法使用——請選擇其他模型。",
+      "noModel": "暫無 AI 模型"
+    },
+    "reminders": {
+      "title": "提醒",
+      "intro": "用 Wysebee 設定、尚未到期的提醒。可在此取消。",
+      "cancel": "取消提醒",
+      "cancelOne": "取消提醒「{{text}}」"
+    },
+    "web": {
+      "runsNote": "執行在 Wysebee Cloud 中進行;這裡是它記錄的執行。",
+      "noRuns": "還沒有執行。",
+      "bySchedule": "依排程",
+      "byHand": "手動啟動"
+    },
+    "nav": {
+      "label": "任務",
+      "title": "任務",
+      "all": "所有任務"
+    }
+  }
+}

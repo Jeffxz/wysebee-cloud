@@ -1,0 +1,65 @@
+{
+  "profile": {
+    "title": "Profil",
+    "open": "Profil : {{name}}",
+    "picture": "Votre photo",
+    "changePicture": "Changer votre photo",
+    "pictureHint": "Cliquez sur votre image pour la changer.",
+    "displayName": "Nom affiché",
+    "displayNameHint": "Le nom que Wysebee vous donne. Laissez vide pour utiliser le nom de votre compte.",
+    "save": "Enregistrer",
+    "saved": "Profil enregistré.",
+    "page": "Compte",
+    "tabs": {
+      "profile": "Profil",
+      "billing": "Facturation"
+    },
+    "billing": {
+      "subscribe": "S'abonner",
+      "manage": "Gérer l'abonnement",
+      "unavailable": "Les forfaits ne sont pas encore disponibles.",
+      "active": "Votre forfait {{plan}} sera renouvelé le {{date}}.",
+      "activeNoDate": "Vous avez le forfait {{plan}}.",
+      "ending": "Votre forfait {{plan}} prend fin le {{date}}.",
+      "pastDue": "Votre dernier paiement n'a pas abouti. Stripe va réessayer ; mettez à jour votre carte dans Gérer l'abonnement pour conserver votre forfait.",
+      "history": "Historique des paiements",
+      "none": "Aucun paiement pour l'instant.",
+      "date": "Date",
+      "amount": "Montant",
+      "status": "Statut",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "plans": "Forfaits",
+      "perMonth": "{{price}} / mois",
+      "planDevices": "{{devices}} appareils enregistrés, {{online}} en ligne à la fois",
+      "planRelay": "{{size}} de trafic relayé par mois",
+      "planStorage": "{{size}} de stockage",
+      "current": "Forfait actuel",
+      "switchHint": "Pour changer de forfait ou résilier, utilisez Gérer l'abonnement.",
+      "paidPlan": "payant"
+    },
+    "storage": {
+      "title": "Stockage",
+      "used": "{{used}} utilisés sur {{limit}}",
+      "what": "Les fichiers que Wysebee Cloud conserve pour vous — vos images et les fichiers de vos compétences — sur tous vos appareils réunis.",
+      "kinds": {
+        "assets": "Images",
+        "skill_files": "Fichiers de compétences"
+      }
+    },
+    "usage": {
+      "title": "Utilisation",
+      "devices": "{{used}} sur {{limit}} appareils enregistrés",
+      "devicesLabel": "Appareils enregistrés",
+      "online": "{{used}} sur {{limit}} appareils en ligne",
+      "onlineLabel": "Appareils en ligne",
+      "relay": "{{used}} sur {{limit}} de trafic relayé ce mois-ci",
+      "relayLabel": "Trafic relayé",
+      "relayWhat": "Le trafic relayé est ce qui passe entre votre application d'IA et vos appareils via Wysebee Cloud. Il repart de zéro le {{date}}."
+    },
+    "paywall": {
+      "title": "Choisissez un forfait pour commencer à utiliser Wysebee Cloud",
+      "body": "Wysebee Cloud est un abonnement mensuel. Choisissez un forfait ci-dessous ; vous pouvez changer de forfait ou résilier à tout moment depuis Facturation."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "account": {
+    "title": "Account",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as",
+    "delete": {
+      "title": "Delete account",
+      "help": "Deletes your Wysebee account and its data for good, on all your devices.",
+      "confirmTitle": "Delete your account?",
+      "body": "This deletes your agents, workspaces, tasks, reminders, pictures and sign-in from Wysebee Cloud. A subscription is cancelled at once, with no refund for the rest of its month, and your card is removed from Stripe. Payment records are kept for accounting, no longer tied to you. What your devices keep on their own is not reached.",
+      "understood": "I understand this cannot be undone.",
+      "confirm": "Delete for good",
+      "deleting": "Deleting…",
+      "cancel": "Cancel"
+    }
+  }
+}

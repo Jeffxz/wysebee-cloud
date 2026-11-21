@@ -1,0 +1,78 @@
+# Tests on every pull request and on main: the API against PostgreSQL (and Azurite for blob
+# storage), the web app, and the Docker image. Both test suites must keep 100% coverage
+# (pyproject.toml's fail_under, ui/vitest.config.ts's thresholds).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (pytest)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: wysebee
+          POSTGRES_PASSWORD: wysebee
+          POSTGRES_DB: wysebee_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wysebee -d wysebee_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      WYSEBEE_TEST_DATABASE_URL: postgresql://wysebee:wysebee@localhost:5432/wysebee_test
+      # Azurite's well-known development account (public, not a secret).
+      WYSEBEE_TEST_AZURITE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
+    steps:
+      - uses: actions/checkout@v4
+      # Azurite as a step, not a service: it needs arguments, and the Azure SDK asks for API
+      # versions newer than Azurite knows (--skipApiVersionCheck).
+      - name: Start Azurite
+        run: docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run pytest -q --cov
+
+  web:
+    name: Web app (vitest, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - run: yarn test --coverage
+      - run: yarn check:locales
+      - run: yarn build
+
+  image:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

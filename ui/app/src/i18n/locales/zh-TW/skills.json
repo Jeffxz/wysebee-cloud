@@ -1,0 +1,72 @@
+{
+  "skills": {
+    "loading": "載入中…",
+    "notFound": "此技能已不存在。",
+    "nav": {
+      "label": "技能",
+      "title": "技能",
+      "add": "建立技能",
+      "name": "技能名稱",
+      "placeholder": "例如 weekly-report",
+      "loading": "載入中…",
+      "none": "尚無技能。",
+      "rename": "重新命名 {{name}}",
+      "addIn": "新增至 {{name}}",
+      "newFile": "新增檔案",
+      "newFolder": "新增資料夾",
+      "upload": "上傳檔案…",
+      "uploaded": "已上傳 {{n}} 個檔案。",
+      "fileName": "檔案名稱",
+      "folderName": "資料夾名稱",
+      "deleteFolder": "刪除資料夾 {{name}}",
+      "deleteFolderConfirm": "刪除資料夾「{{name}}」及其中所有內容？此動作無法復原。",
+      "deleteFile": "刪除 {{name}}",
+      "deleteFileConfirm": "刪除「{{name}}」？此動作無法復原。",
+      "all": "所有技能"
+    },
+    "start": {
+      "titleFirst": "建立你的第一個技能",
+      "title": "建立技能",
+      "hint": "技能是保存在 Wysebee Cloud 的資料夾：SKILL.md 說明它的用途與做法，旁邊放它需要的指令碼與檔案。在代理的設定中將技能指派給代理。",
+      "name": "技能名稱",
+      "placeholder": "例如 weekly-report",
+      "create": "建立技能"
+    },
+    "overview": {
+      "delete": "刪除技能",
+      "deleteConfirm": "刪除技能「{{name}}」及其所有檔案？擁有它的每個代理都會失去它。此動作無法復原。",
+      "counts": "{{files}} 個檔案。",
+      "edit": "編輯 SKILL.md",
+      "hint": "從旁邊的選單新增指令碼與其他檔案：資料夾的 + 可新增檔案、資料夾或電腦上的檔案。在代理的「技能」分頁中指派技能。",
+      "agents": "擁有此技能的代理：",
+      "noAgents": "尚無代理擁有它：在代理的「技能」分頁中加入。"
+    },
+    "editor": {
+      "saved": "已儲存。",
+      "notText": "此檔案不是文字（{{size}} 位元組）：它按原樣隨技能保存。",
+      "download": "下載",
+      "cardHint": "技能的卡片：儲存時會從 front matter 讀取說明與指令碼，名稱即技能名稱。"
+    },
+    "changes": {
+      "title": "你的 AI 應用程式提議的變更",
+      "note": "尚未儲存：在你套用變更之前，技能維持不變。套用前請逐一查看——指令碼會在你的電腦上執行。",
+      "kind": {
+        "newFile": "新檔案",
+        "changedFile": "修改檔案",
+        "folder": "新資料夾"
+      },
+      "view": "檢視",
+      "hide": "隱藏",
+      "apply": "套用",
+      "discard": "捨棄",
+      "applyOne": "套用 {{path}}",
+      "discardOne": "捨棄 {{path}}",
+      "applyAll_other": "全部套用（{{count}}）",
+      "now": "目前",
+      "proposed": "提議"
+    },
+    "list": {
+      "intro": "你的技能：每個技能的用途，保存在 Wysebee Cloud 中，並在代理設定中指派給它們。"
+    }
+  }
+}

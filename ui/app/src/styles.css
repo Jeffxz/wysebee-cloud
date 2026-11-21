@@ -1,0 +1,61 @@
+/*
+ * Scans this app's own source and the shared folder — not the extension's, which
+ * builds its own stylesheet (extension/src/popup.css).
+ */
+@import "tailwindcss" source("..");
+@import "tw-animate-css";
+@import "../../shared/theme.css";
+
+@source "../../shared";
+
+/*
+ * Dark by the page's own setting (theme.ts puts `dark` on <html>, and sets the page's
+ * color-scheme), not the computer's: the rail's switch chooses dark or light, as on the
+ * desktop.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * react-markdown emits raw HTML elements we can't attach utility classes to,
+ * so the rendered markdown content is styled here. Everything else in the app
+ * uses inline Tailwind utilities (see src/cn.ts for shared class strings).
+ */
+@layer components {
+  .markdown {
+    @apply text-sm leading-relaxed;
+  }
+  .markdown p {
+    @apply my-1.5;
+  }
+  .markdown h1 {
+    @apply mt-3 mb-1.5 text-lg font-semibold;
+  }
+  .markdown h2 {
+    @apply mt-3 mb-1.5 text-base font-semibold;
+  }
+  .markdown h3,
+  .markdown h4 {
+    @apply mt-2 mb-1 text-sm font-semibold;
+  }
+  .markdown blockquote {
+    @apply my-1.5 border-l-2 border-stone-300 pl-3 opacity-80 dark:border-stone-600;
+  }
+  .markdown ul {
+    @apply my-1.5 list-disc pl-5;
+  }
+  .markdown ol {
+    @apply my-1.5 list-decimal pl-5;
+  }
+  .markdown a {
+    @apply text-amber-700 underline dark:text-amber-500;
+  }
+  .markdown pre {
+    @apply my-2 overflow-x-auto rounded-md bg-black/5 p-2 text-xs dark:bg-white/10;
+  }
+  .markdown code {
+    @apply rounded bg-black/5 px-1 py-0.5 font-mono text-xs dark:bg-white/10;
+  }
+  .markdown pre code {
+    @apply bg-transparent p-0;
+  }
+}

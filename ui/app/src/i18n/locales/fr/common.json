@@ -1,0 +1,46 @@
+{
+  "common": {
+    "people": {
+      "made": "Créé par {{made}}",
+      "madeAndChanged": "Créé par {{made}} · Dernière modification par {{changed}}",
+      "you": "vous",
+      "someone": "quelqu’un"
+    },
+    "autoSave": {
+      "saved": "Enregistré"
+    },
+    "inlineField": {
+      "save": "Enregistrer : {{what}}",
+      "discardTitle": "Annuler la modification",
+      "discard": "Annuler la modification : {{what}}"
+    },
+    "saveBar": {
+      "unsaved": "Modifications non enregistrées",
+      "discard": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…"
+    },
+    "avatar": {
+      "named": "Avatar de {{label}}",
+      "unnamed": "avatar de l'agent"
+    },
+    "copy": {
+      "ariaLabel": "Copier l'adresse {{label}}",
+      "copied": "Copié",
+      "failed": "Échec de la copie"
+    },
+    "presence": {
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "confirm": {
+      "ok": "OK",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "discard": "Abandonner",
+      "leave": "Quitter",
+      "disconnect": "Déconnecter",
+      "unpair": "Dissocier"
+    }
+  }
+}

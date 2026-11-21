@@ -1,0 +1,65 @@
+{
+  "profile": {
+    "title": "プロフィール",
+    "open": "プロフィール：{{name}}",
+    "picture": "あなたの画像",
+    "changePicture": "画像を変更",
+    "pictureHint": "画像をクリックして変更します。",
+    "displayName": "表示名",
+    "displayNameHint": "Wysebee があなたを呼ぶ名前です。空欄にするとアカウント名を使います。",
+    "save": "保存",
+    "saved": "プロフィールを保存しました。",
+    "page": "アカウント",
+    "tabs": {
+      "profile": "プロフィール",
+      "billing": "お支払い"
+    },
+    "billing": {
+      "subscribe": "購読する",
+      "manage": "サブスクリプションを管理",
+      "unavailable": "プランはまだご利用いただけません。",
+      "active": "{{plan}} プランは {{date}} に更新されます。",
+      "activeNoDate": "{{plan}} プランをご利用中です。",
+      "ending": "{{plan}} プランは {{date}} に終了します。",
+      "pastDue": "前回のお支払いが完了しませんでした。Stripe が再試行します。プランを維持するには「サブスクリプションを管理」でカードを更新してください。",
+      "history": "支払い履歴",
+      "none": "まだ支払いはありません。",
+      "date": "日付",
+      "amount": "金額",
+      "status": "状態",
+      "paid": "支払い済み",
+      "failed": "失敗",
+      "plans": "プラン",
+      "perMonth": "{{price}} / 月",
+      "planDevices": "登録デバイス {{devices}} 台、同時オンライン {{online}} 台",
+      "planRelay": "月 {{size}} のリレー通信",
+      "planStorage": "{{size}} のストレージ",
+      "current": "現在のプラン",
+      "switchHint": "プランの変更や解約は「サブスクリプションを管理」から行えます。",
+      "paidPlan": "有料"
+    },
+    "storage": {
+      "title": "ストレージ",
+      "used": "{{limit}} 中 {{used}} を使用",
+      "what": "Wysebee Cloud があなたのために保管しているファイル（画像とスキルのファイル）の、すべてのデバイスの合計です。",
+      "kinds": {
+        "assets": "画像",
+        "skill_files": "スキルのファイル"
+      }
+    },
+    "usage": {
+      "title": "使用状況",
+      "devices": "登録デバイス {{used}} / {{limit}} 台",
+      "devicesLabel": "登録デバイス",
+      "online": "オンライン中のデバイス {{used}} / {{limit}} 台",
+      "onlineLabel": "オンラインのデバイス",
+      "relay": "今月のリレー通信 {{used}} / {{limit}}",
+      "relayLabel": "リレー通信",
+      "relayWhat": "リレー通信とは、Wysebee Cloud を経由して AI アプリとデバイスの間でやり取りされるデータです。{{date}} にリセットされます。"
+    },
+    "paywall": {
+      "title": "Wysebee Cloud を使い始めるにはプランを選んでください",
+      "body": "Wysebee Cloud は月額サブスクリプションです。下からプランを選んでください。プランの変更や解約は「お支払い」からいつでも行えます。"
+    }
+  }
+}

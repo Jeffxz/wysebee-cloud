@@ -1,0 +1,87 @@
+# Local development: the web app and PostgreSQL, each in its own container.
+#   docker compose up --build        → http://localhost:8000  (web)
+# Sign-in is Auth0 (a hosted service, nothing to run here): set WYSEBEE_AUTH_* in .env.
+# In Azure the web container runs alone and WYSEBEE_DATABASE_URL points at
+# Azure Database for PostgreSQL instead of the `db` service.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-wysebee}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wysebee}
+      POSTGRES_DB: ${POSTGRES_DB:-wysebee}
+    ports:
+      # Published so local tools (psql, TablePlus, `uv run uvicorn` outside Docker) can
+      # connect — on loopback only: the password is a public default, so other machines
+      # on the network must not reach it.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WYSEBEE_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-wysebee}:${POSTGRES_PASSWORD:-wysebee}@db:5432/${POSTGRES_DB:-wysebee}
+      WYSEBEE_LOG_LEVEL: ${WYSEBEE_LOG_LEVEL:-info}
+      # Sign-in: an Auth0 tenant (see .env.example). Unset: sign-in is off — the
+      # landing page says so.
+      WYSEBEE_AUTH_ISSUER: ${WYSEBEE_AUTH_ISSUER:-}
+      WYSEBEE_AUTH_AUDIENCE: ${WYSEBEE_AUTH_AUDIENCE:-https://wysebee.ai/api}
+      WYSEBEE_AUTH_WEB_CLIENT_ID: ${WYSEBEE_AUTH_WEB_CLIENT_ID:-}
+      # Or no Auth0 at all (leave WYSEBEE_AUTH_ISSUER empty): this app signs anyone in as
+      # whoever they type, at http://localhost:8000/mock-auth/ (apps/cloud/mock_auth.py).
+      # Local only. Its key is kept on the `mockauth` volume.
+      WYSEBEE_AUTH_MOCK: ${WYSEBEE_AUTH_MOCK:-false}
+      WYSEBEE_AUTH_MOCK_KEY_FILE: /data/mock-auth/key.pem
+      # Try Write with AI from Claude or ChatGPT against this container (needs
+      # WYSEBEE_AUTH_MOCK=true): /assistant/mcp answers without sign-in as this person, e.g.
+      # mock|dev@wysebee.local. Expose port 8000 with a tunnel (`ngrok http 8000`) and set
+      # WYSEBEE_PUBLIC_URL to its https address, so the editor shows that address.
+      WYSEBEE_ASSISTANT_MCP_LOCAL_USER: ${WYSEBEE_ASSISTANT_MCP_LOCAL_USER:-}
+      WYSEBEE_PUBLIC_URL: ${WYSEBEE_PUBLIC_URL:-}
+      # The key-encryption key cloud agents' PostgreSQL passwords are sealed under (README,
+      # "Agents living in Wysebee Cloud"). Development only: production uses Azure Key Vault.
+      WYSEBEE_AI_KEK: ${WYSEBEE_AI_KEK:-a2V5LWVuY3J5cHRpb24ta2V5LWZvci1kZXYtb25seSE=}
+      # Extensions to load (README, "Extensions"), e.g. the hosted service's plans when its
+      # package is installed in the image. Their settings come from your shell or .env too.
+      WYSEBEE_EXTENSIONS: ${WYSEBEE_EXTENSIONS:-}
+      # Auth0's Management API, to delete a person's account. Unset: accounts cannot be deleted.
+      WYSEBEE_AUTH0_MGMT_DOMAIN: ${WYSEBEE_AUTH0_MGMT_DOMAIN:-}
+      WYSEBEE_AUTH0_MGMT_CLIENT_ID: ${WYSEBEE_AUTH0_MGMT_CLIENT_ID:-}
+      WYSEBEE_AUTH0_MGMT_CLIENT_SECRET: ${WYSEBEE_AUTH0_MGMT_CLIENT_SECRET:-}
+      # Usage events are kept in the database; set a Mixpanel token to forward them there too.
+      WYSEBEE_MIXPANEL_TOKEN: ${WYSEBEE_MIXPANEL_TOKEN:-}
+      WYSEBEE_MIXPANEL_API_HOST: ${WYSEBEE_MIXPANEL_API_HOST:-}
+      # Assets (agents' pictures) on the `assets` volume (the file store), so they survive
+      # rebuilding the container. Production uses Azure Blob Storage instead
+      # (WYSEBEE_ASSET_STORE=azure; see the README).
+      WYSEBEE_ASSET_STORE: file
+      WYSEBEE_ASSET_DIR: /data/assets
+      # Skills' files on the `user-skills` volume.
+      WYSEBEE_SKILL_FILE_DIR: /data/user-skills
+      # Workspaces' documentation folders on the `user-workspaces` volume.
+      WYSEBEE_WORKSPACE_DIR: /data/user-workspaces
+    volumes:
+      - assets:/data/assets
+      - user-skills:/data/user-skills
+      - user-workspaces:/data/user-workspaces
+      - mockauth:/data/mock-auth
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+
+volumes:
+  pgdata:
+  assets:
+  user-skills:
+  user-workspaces:
+  mockauth:

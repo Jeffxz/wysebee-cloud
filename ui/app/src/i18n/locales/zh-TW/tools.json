@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "intro": "你可以建立的工具類型，以及你已建立的工具。點 + 將它加入給一個代理。",
+    "templates": "新工具",
+    "yours": "你的工具",
+    "yoursHelp": "你的工具之一：用 + 加入給代理。",
+    "noneYours": "這裡還沒有你的工具。用上方的 + 建立一個。",
+    "loading": "載入中…",
+    "addTo": "將 {{name}} 加入給代理",
+    "addToHeading": "加入到…",
+    "noAgents": "還沒有代理。",
+    "has": "已有",
+    "typesLoading": "正在讀取哪些代理可以使用它…",
+    "for": {
+      "browser": "瀏覽器代理",
+      "osx": "Mac 和 PC 代理"
+    },
+    "only": {
+      "browser": "僅限瀏覽器代理",
+      "osx": "僅限 Mac 和 PC 代理"
+    },
+    "added": "已將 {{tool}} 加入給 {{agent}}。",
+    "nav": {
+      "label": "工具",
+      "title": "工具",
+      "all": "所有工具"
+    }
+  }
+}

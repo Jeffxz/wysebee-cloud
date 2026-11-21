@@ -1,0 +1,45 @@
+[project]
+name = "wysebee-cloud"
+version = "1.37.0"
+description = "Wysebee Cloud: a FastAPI service hosting the Wysebee web SPA"
+requires-python = ">=3.13"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE"]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.14",
+    "pyjwt[crypto]>=2.10",
+    "azure-storage-blob>=12.31.0",
+    "azure-identity>=1.26.0",
+    "aiohttp>=3.14.5",
+    "cryptography>=44",
+    "httpx>=0.27.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=7.1.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.uv]
+package = false
+
+# `uv run pytest --cov` measures apps/ and fails below 100% of lines. SQLAlchemy's async engine
+# runs the database code in greenlets, which coverage follows only when told to.
+[tool.coverage.run]
+source = ["apps"]
+concurrency = ["greenlet", "thread"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true

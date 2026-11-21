@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "intro": "你可以创建的工具类型，以及你已创建的工具。点 + 把它添加给一个智能体。",
+    "templates": "新工具",
+    "yours": "你的工具",
+    "yoursHelp": "你的工具之一：用 + 添加给智能体。",
+    "noneYours": "这里还没有你的工具。用上面的 + 创建一个。",
+    "loading": "加载中…",
+    "addTo": "把 {{name}} 添加给智能体",
+    "addToHeading": "添加到…",
+    "noAgents": "还没有智能体。",
+    "has": "已有",
+    "typesLoading": "正在读取哪些代理可以使用它…",
+    "for": {
+      "browser": "浏览器智能体",
+      "osx": "Mac 和 PC 智能体"
+    },
+    "only": {
+      "browser": "仅限浏览器智能体",
+      "osx": "仅限 Mac 和 PC 智能体"
+    },
+    "added": "已把 {{tool}} 添加给 {{agent}}。",
+    "nav": {
+      "label": "工具",
+      "title": "工具",
+      "all": "所有工具"
+    }
+  }
+}

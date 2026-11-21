@@ -1,0 +1,115 @@
+{
+  "tasks": {
+    "list": {
+      "intro": "任务是提醒或定时工作：到期时，Wysebee Cloud 会运行它的步骤，并把结果发布到动态。请让你的 AI 应用通过 Wysebee Assistant 来设置。",
+      "add": "添加任务",
+      "loading": "加载中…",
+      "empty": "还没有任务。",
+      "emptyHint": "新建一个：起个名字，写好计划，再选择它的浏览器。",
+      "noPlan": "尚无计划"
+    },
+    "status": {
+      "never": "尚未运行",
+      "running": "运行中",
+      "succeeded": "完成",
+      "failed": "失败",
+      "stopped": "已停止",
+      "interrupted": "已中断"
+    },
+    "form": {
+      "newTitle": "新建任务",
+      "name": "名称",
+      "namePlaceholder": "例如：每日销售汇总",
+      "create": "创建任务",
+      "saving": "正在保存…",
+      "cancel": "取消",
+      "errors": {
+        "name": "请为任务命名。"
+      },
+      "nameHelp": "接下来你会写计划，并选择它的浏览器和模型。",
+      "save": "保存"
+    },
+    "kind": {
+      "manual": "手动",
+      "once": "定时",
+      "recurring": "周期"
+    },
+    "tabs": {
+      "general": "常规",
+      "plan": "计划",
+      "run": "运行"
+    },
+    "plan": {
+      "title": "计划",
+      "help": "这个任务要做什么，用 Markdown 写成要执行的指令。每次运行都会把它作为唯一的消息发送；任务会在浏览器中完成它，并在最后给出报告。",
+      "placeholder": "1. 查看昨天的销售看板。\n2. 总结三个最大的变化。\n3. 用通知把总结发给我。",
+      "empty": "尚无计划。没有计划的任务无法运行。"
+    },
+    "general": {
+      "confirmDelete": "删除任务“{{name}}”及其运行记录？",
+      "deleteHelp": "删除会移除此任务及其运行记录。",
+      "deleteTitle": "删除此任务",
+      "delete": "删除任务",
+      "labelPlaceholder": "此任务的简短显示标签",
+      "deleteFailed": "删除任务失败。",
+      "readOnlyEditor": "只读——你只能编辑自己创建的任务。",
+      "readOnlyViewer": "只读——你的角色可以查看但不能编辑任务。"
+    },
+    "detail": {
+      "start": "开始",
+      "running": "运行中…"
+    },
+    "result": {
+      "none": "尚未运行。按“开始”立即运行。",
+      "history": "之前的运行",
+      "startedAt": "开始于 {{when}}",
+      "stop": "停止",
+      "working": "智能体正在处理…",
+      "noOutput": "智能体已完成，但没有书面回答。",
+      "steps_other": "{{count}} 个步骤",
+      "byScheduleShort": "按计划",
+      "startedBySchedule": "按计划于 {{when}} 开始",
+      "openRecording": "打开录制",
+      "recordingGone": "找不到录制文件夹，它可能已被移动或删除。"
+    },
+    "schedule": {
+      "title": "计划",
+      "manual": "仅在启动时运行",
+      "once": "一次，{{when}}",
+      "minutes_other": "每 {{count}} 分钟",
+      "hours_other": "每 {{count}} 小时",
+      "daily": "每天 {{time}}（{{tz}}）",
+      "weekly": "每周 {{days}} {{time}}（{{tz}}）",
+      "next": "下次：{{when}}",
+      "notScheduled": "未计划",
+      "steps": "步骤",
+      "noSteps": "没有步骤：到期时，它的计划会作为提醒发布到动态。",
+      "via": "通过 Wysebee Assistant 在你的 AI 应用中设置和修改。",
+      "deletedAgent": "已删除的智能体"
+    },
+    "run": {
+      "changeSchedule": "更改",
+      "needsPlan": "运行前请先在“计划”标签页写好计划。",
+      "needsModel": "请先选择模型。",
+      "modelGone": "此模型已不可用——请选择其他模型。",
+      "noModel": "暂无 AI 模型"
+    },
+    "reminders": {
+      "title": "提醒",
+      "intro": "用 Wysebee 设置、尚未到期的提醒。可在此取消。",
+      "cancel": "取消提醒",
+      "cancelOne": "取消提醒“{{text}}”"
+    },
+    "web": {
+      "runsNote": "运行在 Wysebee Cloud 中进行;这里是它记录的运行。",
+      "noRuns": "还没有运行。",
+      "bySchedule": "按计划",
+      "byHand": "手动启动"
+    },
+    "nav": {
+      "label": "任务",
+      "title": "任务",
+      "all": "所有任务"
+    }
+  }
+}

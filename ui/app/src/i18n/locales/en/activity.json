@@ -1,0 +1,20 @@
+{
+  "activity": {
+    "list": "Notifications",
+    "new": "New",
+    "empty": "No activity yet",
+    "emptyHelp": "When one of your agents sends you a notification — asked by your AI app, or as a scheduled task's step — it shows here, newest first.",
+    "browser": {
+      "title": "Browser notifications",
+      "help": "Show each new one as a notification from your browser while Wysebee isn't in front.",
+      "blocked": "Blocked for this site: allow notifications in your browser's site settings, then reload."
+    },
+    "delete": "Delete “{{title}}”",
+    "nav": {
+      "label": "Activity",
+      "title": "Activity",
+      "all": "All activity"
+    },
+    "noneFrom": "No notifications from {{agent}}."
+  }
+}

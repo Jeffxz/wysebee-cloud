@@ -1,0 +1,46 @@
+{
+  "common": {
+    "people": {
+      "made": "Made by {{made}}",
+      "madeAndChanged": "Made by {{made}} · Last changed by {{changed}}",
+      "you": "you",
+      "someone": "someone"
+    },
+    "autoSave": {
+      "saved": "Saved"
+    },
+    "inlineField": {
+      "save": "Save {{what}}",
+      "discardTitle": "Discard change",
+      "discard": "Discard {{what}} change"
+    },
+    "saveBar": {
+      "unsaved": "Unsaved changes",
+      "discard": "Discard",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "avatar": {
+      "named": "{{label}} avatar",
+      "unnamed": "agent avatar"
+    },
+    "copy": {
+      "ariaLabel": "Copy {{label}} address",
+      "copied": "Copied",
+      "failed": "Copy failed"
+    },
+    "presence": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "confirm": {
+      "ok": "OK",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "discard": "Discard",
+      "leave": "Leave",
+      "disconnect": "Disconnect",
+      "unpair": "Unpair"
+    }
+  }
+}

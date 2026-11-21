@@ -1,0 +1,39 @@
+{
+  "sideNav": {
+    "primaryNav": "Primary",
+    "items": {
+      "tasks": "Tasks",
+      "home": "Home",
+      "agents": "Agents",
+      "activity": "Activity",
+      "settings": "Settings",
+      "devices": "Devices",
+      "workspaces": "Workspaces",
+      "skills": "Skills",
+      "tools": "Tools",
+      "more": "More"
+    },
+    "secondaryNav": "Secondary",
+    "createOptions": {
+      "newTask": "New task"
+    },
+    "secondary": {
+      "settingsHeading": "Settings",
+      "settingsSystem": "System",
+      "settingsMachines": "Connections",
+      "loading": "Loading…",
+      "add": "Add",
+      "renameCategory": "Rename {{name}}",
+      "deleteCategory": "Delete {{name}}",
+      "dragHandle": "Reorder {{name}}",
+      "tasksHeading": "Tasks",
+      "noTasksYet": "No tasks yet."
+    },
+    "darkMode": "Dark mode",
+    "toLight": "Switch to light",
+    "toDark": "Switch to dark",
+    "themeNotSaved": "The look changed here, but could not be saved to Wysebee Cloud: {{error}}",
+    "unread_one": "{{count}} unread",
+    "unread_other": "{{count}} unread"
+  }
+}

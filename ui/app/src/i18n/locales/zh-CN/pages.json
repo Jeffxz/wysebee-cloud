@@ -1,0 +1,11 @@
+{
+  "pages": {
+    "tab": "页面",
+    "loading": "正在加载页面…",
+    "none": "此文档还没有页面。",
+    "howTo": "请让连接了 Wysebee Assistant 的 AI 应用根据此文档生成一个（它使用 write_page）。页面会显示在这里，也有自己的地址。",
+    "refresh": "刷新",
+    "open": "单独打开",
+    "sandboxed": "由你的 AI 应用生成。在沙盒中显示：脚本可以运行，但无法访问 Wysebee 或互联网。"
+  }
+}

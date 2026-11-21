@@ -1,0 +1,54 @@
+{
+  "home": {
+    "nav": {
+      "label": "Agents",
+      "title": "Agents",
+      "addAgent": "Ajouter un agent",
+      "addAgentRow": "Ajouter un agent",
+      "all": "Tous les agents"
+    },
+    "settings": {
+      "title": "Réglages de Wysebee",
+      "discard": "Quitter sans enregistrer vos modifications ?",
+      "agentTitle": "Paramètres de {{name}}",
+      "agentSubtitle": "@{{name}} · ses outils et instructions"
+    },
+    "web": {
+      "done": "Terminé"
+    },
+    "agentGone": "Cet agent n'existe plus.",
+    "backToWysebee": "Retour à Wysebee",
+    "addAgent": {
+      "title": "Ajouter un agent",
+      "intro": "Un agent à vous, avec ses propres outils et instructions. Votre app d'IA peut utiliser ses outils via Wysebee Assistant. Il ne peut pas modifier les paramètres, les tâches ni les rappels de Wysebee.",
+      "label": "Nom",
+      "labelPlaceholder": "ex. Planificateur de voyage",
+      "handle": "Nom @",
+      "handleHelp": "Ce que vous tapez après @ pour lui demander : lettres minuscules, chiffres, - et _.",
+      "save": "Ajouter l'agent",
+      "needLabel": "Donnez-lui un nom.",
+      "badHandle": "Le nom @ doit commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, - et _ (30 au plus).",
+      "cancel": "Annuler"
+    },
+    "dashboard": {
+      "agents": "Agents",
+      "devices": "Appareils",
+      "viewAll": "Tout voir",
+      "inCloud": "S’exécute dans Wysebee Cloud",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "paused": "En pause",
+      "cloudHint": "Là où chaque agent s’exécute",
+      "workspaces": "Espaces de travail",
+      "tasks": "Tâches",
+      "viewAll_workspaces": "Voir tous les espaces de travail",
+      "viewAll_agents": "Voir tous les agents",
+      "viewAll_tasks": "Voir toutes les tâches",
+      "viewAll_devices": "Voir tous les appareils",
+      "changed": "Modifié {{when}}"
+    },
+    "list": {
+      "intro": "Wysebee et vos propres agents : où chacun travaille, et s’il peut répondre maintenant."
+    }
+  }
+}

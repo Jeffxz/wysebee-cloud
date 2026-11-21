@@ -1,0 +1,12 @@
+**/node_modules
+**/__pycache__
+.venv
+.pytest_cache
+apps/cloud/dist
+.git
+.env
+.env.*
+scripts/azure.env
+tests
+data
+ui/coverage

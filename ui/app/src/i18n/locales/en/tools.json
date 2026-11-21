@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "intro": "The kinds of tool you can make, and the tools you have made. Press + on one to give it to an agent.",
+    "templates": "New tools",
+    "yours": "Your tools",
+    "yoursHelp": "One of your tools: give it to an agent with its +.",
+    "noneYours": "None of yours here yet. Make one with a + above.",
+    "loading": "Loading…",
+    "addTo": "Give {{name}} to an agent",
+    "addToHeading": "Add to…",
+    "noAgents": "No agents yet.",
+    "has": "Has it",
+    "typesLoading": "Reading which agents may have it…",
+    "for": {
+      "browser": "Browser agents",
+      "osx": "Mac and PC agents"
+    },
+    "only": {
+      "browser": "Browser agents only",
+      "osx": "Mac and PC agents only"
+    },
+    "added": "Gave {{tool}} to {{agent}}.",
+    "nav": {
+      "label": "Tools",
+      "title": "Tools",
+      "all": "All tools"
+    }
+  }
+}

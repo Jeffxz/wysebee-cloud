@@ -1,0 +1,46 @@
+{
+  "common": {
+    "people": {
+      "made": "作成者: {{made}}",
+      "madeAndChanged": "作成者: {{made}} · 最終更新者: {{changed}}",
+      "you": "あなた",
+      "someone": "不明なユーザー"
+    },
+    "autoSave": {
+      "saved": "保存しました"
+    },
+    "inlineField": {
+      "save": "{{what}}を保存",
+      "discardTitle": "変更を破棄",
+      "discard": "{{what}}の変更を破棄"
+    },
+    "saveBar": {
+      "unsaved": "未保存の変更があります",
+      "discard": "破棄",
+      "save": "保存",
+      "saving": "保存中…"
+    },
+    "avatar": {
+      "named": "{{label}}のアバター",
+      "unnamed": "エージェントのアバター"
+    },
+    "copy": {
+      "ariaLabel": "{{label}}のアドレスをコピー",
+      "copied": "コピーしました",
+      "failed": "コピーできませんでした"
+    },
+    "presence": {
+      "online": "オンライン",
+      "offline": "オフライン"
+    },
+    "confirm": {
+      "ok": "OK",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "discard": "破棄",
+      "leave": "移動する",
+      "disconnect": "接続を解除",
+      "unpair": "ペアリングを解除"
+    }
+  }
+}

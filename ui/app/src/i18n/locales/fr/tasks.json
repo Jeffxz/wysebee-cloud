@@ -1,0 +1,121 @@
+{
+  "tasks": {
+    "list": {
+      "intro": "Une tâche est un rappel ou un travail planifié : à l'échéance, Wysebee Cloud exécute ses étapes et publie le résultat dans Activité. Demandez à votre app d'IA d'en créer une via Wysebee Assistant.",
+      "add": "Ajouter une tâche",
+      "loading": "Chargement…",
+      "empty": "Aucune tâche pour l'instant.",
+      "emptyHint": "Créez-en une : donnez-lui un nom, écrivez son plan et choisissez son navigateur.",
+      "noPlan": "Pas encore de plan"
+    },
+    "status": {
+      "never": "Jamais lancée",
+      "running": "En cours",
+      "succeeded": "Terminée",
+      "failed": "Échec",
+      "stopped": "Arrêtée",
+      "interrupted": "Interrompue"
+    },
+    "form": {
+      "newTitle": "Nouvelle tâche",
+      "name": "Nom",
+      "namePlaceholder": "ex. Résumé quotidien des ventes",
+      "create": "Créer la tâche",
+      "saving": "Enregistrement…",
+      "cancel": "Annuler",
+      "errors": {
+        "name": "Donnez un nom à la tâche."
+      },
+      "nameHelp": "Vous écrirez ensuite le plan et choisirez son navigateur et son modèle.",
+      "save": "Enregistrer"
+    },
+    "kind": {
+      "manual": "Manuelle",
+      "once": "Minuteur",
+      "recurring": "Récurrente"
+    },
+    "tabs": {
+      "general": "Général",
+      "plan": "Plan",
+      "run": "Exécution"
+    },
+    "plan": {
+      "title": "Plan",
+      "help": "Ce que cette tâche doit faire, en Markdown — rédigé comme des instructions à exécuter. Chaque exécution l'envoie comme unique message ; la tâche le suit dans le navigateur et termine par un compte rendu.",
+      "placeholder": "1. Consulter le tableau de bord des ventes d'hier.\n2. Résumer les trois plus grands changements.\n3. M'envoyer une notification avec le résumé.",
+      "empty": "Pas encore de plan. Une tâche ne peut pas s'exécuter sans plan."
+    },
+    "general": {
+      "confirmDelete": "Supprimer la tâche « {{name}} » et l'historique de ses exécutions ?",
+      "deleteHelp": "La suppression retire cette tâche et l'historique de ses exécutions.",
+      "deleteTitle": "Supprimer cette tâche",
+      "delete": "Supprimer la tâche",
+      "labelPlaceholder": "Un court libellé d'affichage pour cette tâche",
+      "deleteFailed": "Échec de la suppression de la tâche.",
+      "readOnlyEditor": "Lecture seule : vous ne pouvez modifier que les tâches que vous avez créées.",
+      "readOnlyViewer": "Lecture seule : votre rôle permet de consulter les tâches, pas de les modifier."
+    },
+    "detail": {
+      "start": "Démarrer",
+      "running": "En cours…"
+    },
+    "result": {
+      "none": "Jamais lancée. Appuyez sur Démarrer pour la lancer maintenant.",
+      "history": "Exécutions précédentes",
+      "startedAt": "Démarrée le {{when}}",
+      "stop": "Arrêter",
+      "working": "L'agent y travaille…",
+      "noOutput": "L'agent a terminé sans réponse écrite.",
+      "steps_one": "{{count}} étape",
+      "steps_many": "{{count}} étapes",
+      "steps_other": "{{count}} étapes",
+      "byScheduleShort": "planifiée",
+      "startedBySchedule": "Démarrée par le planning le {{when}}",
+      "openRecording": "Ouvrir l’enregistrement",
+      "recordingGone": "Le dossier de l’enregistrement n’existe plus — il a peut-être été déplacé ou supprimé."
+    },
+    "schedule": {
+      "title": "Planification",
+      "manual": "S'exécute seulement quand on la lance",
+      "once": "Une fois, {{when}}",
+      "minutes_one": "Toutes les {{count}} minutes",
+      "minutes_many": "Toutes les {{count}} minutes",
+      "minutes_other": "Toutes les {{count}} minutes",
+      "hours_one": "Toutes les {{count}} heures",
+      "hours_many": "Toutes les {{count}} heures",
+      "hours_other": "Toutes les {{count}} heures",
+      "daily": "Chaque jour à {{time}} ({{tz}})",
+      "weekly": "Chaque {{days}} à {{time}} ({{tz}})",
+      "next": "Prochaine : {{when}}",
+      "notScheduled": "Non planifiée",
+      "steps": "Étapes",
+      "noSteps": "Aucune étape : à l'échéance, son plan est publié dans Activité comme rappel.",
+      "via": "Créée et modifiée depuis votre app d'IA via Wysebee Assistant.",
+      "deletedAgent": "un agent supprimé"
+    },
+    "run": {
+      "changeSchedule": "Modifier",
+      "needsPlan": "Écrivez le plan dans l'onglet Plan avant d'exécuter cette tâche.",
+      "needsModel": "Choisissez d'abord un modèle.",
+      "modelGone": "Ce modèle n'est plus disponible — choisissez-en un autre.",
+      "noModel": "Pas encore de modèle d'IA"
+    },
+    "reminders": {
+      "title": "Rappels",
+      "intro": "Les rappels créés avec Wysebee, encore à venir. Annulez-en un ici.",
+      "cancel": "Annuler le rappel",
+      "cancelOne": "Annuler le rappel « {{text}} »"
+    },
+    "web": {
+      "runsNote": "Les exécutions se font dans Wysebee Cloud ; voici celles qu’il a enregistrées.",
+      "noRuns": "Aucune exécution pour l’instant.",
+      "bySchedule": "Planifiée",
+      "byHand": "Lancée à la main"
+    },
+    "nav": {
+      "label": "Tâches",
+      "title": "Tâches",
+      "all": "Toutes les tâches"
+    }
+  }
+}

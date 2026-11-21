@@ -1,0 +1,11 @@
+{
+  "pages": {
+    "tab": "Page",
+    "loading": "Loading the page…",
+    "none": "No page for this document yet.",
+    "howTo": "Ask your AI app, connected to Wysebee Assistant, to make one from this document (it uses write_page). It shows here, and at its own address.",
+    "refresh": "Refresh",
+    "open": "Open on its own",
+    "sandboxed": "Made by your AI app. Shown sandboxed: its scripts run, but it cannot reach Wysebee or the internet."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "workspaces": {
+    "loading": "Chargement…",
+    "notFound": "Cet espace de travail n’existe plus.",
+    "nav": {
+      "label": "Espaces de travail",
+      "title": "Espaces de travail",
+      "add": "Créer un espace de travail",
+      "name": "Nom de l’espace de travail",
+      "placeholder": "Nom de l’espace de travail",
+      "loading": "Chargement…",
+      "none": "Aucun espace de travail pour l’instant.",
+      "deleteFolder": "Supprimer le dossier {{name}}",
+      "deleteFolderConfirm": "Supprimer le dossier « {{name}} » et tout son contenu ? Cette action est irréversible.",
+      "addIn": "Ajouter dans {{name}}",
+      "newPage": "Nouvelle page",
+      "newFolder": "Nouveau dossier",
+      "pageName": "Nom de la page",
+      "folderName": "Nom du dossier",
+      "rename": "Renommer {{name}}",
+      "all": "Tous les espaces de travail"
+    },
+    "start": {
+      "titleFirst": "Créez votre premier espace de travail",
+      "title": "Créer un espace de travail",
+      "hint": "Un espace de travail est un dossier de documentation, conservé dans Wysebee Cloud. Il commence par un README dans lequel vous pouvez écrire.",
+      "name": "Nom de l’espace de travail",
+      "placeholder": "p. ex. Refonte du site",
+      "create": "Créer l’espace de travail"
+    },
+    "overview": {
+      "delete": "Supprimer l’espace de travail",
+      "deleteConfirm": "Supprimer l’espace de travail « {{name}} » et tous ses fichiers ? Cette action est irréversible.",
+      "counts": "{{files}} fichiers dans {{folders}} dossiers. Choisissez un fichier dans le menu pour y écrire.",
+      "newPage": "Nouvelle page",
+      "newFolder": "Nouveau dossier",
+      "pageName": "Nom de la page",
+      "pagePlaceholder": "p. ex. guide/demarrage",
+      "folderName": "Nom du dossier",
+      "folderPlaceholder": "p. ex. guide",
+      "create": "Créer",
+      "cancel": "Annuler"
+    },
+    "editor": {
+      "edit": "Modifier",
+      "preview": "Aperçu",
+      "save": "Enregistrer",
+      "saved": "Enregistré dans Wysebee Cloud.",
+      "delete": "Supprimer ce fichier",
+      "deleteConfirm": "Supprimer « {{name}} » ? Cette action est irréversible.",
+      "empty": "*Rien d’écrit pour l’instant.*",
+      "label": "Le texte de {{name}}",
+      "leaveConfirm": "Ce fichier contient des modifications non enregistrées. Quitter sans enregistrer ?",
+      "frontmatter": "Détails de la page"
+    },
+    "assistant": {
+      "name": "Wysebee Assistant",
+      "info": "Comment utiliser Wysebee Assistant",
+      "usage": "Dans votre app d'IA, demandez à Wysebee Assistant d'écrire ce que vous voulez sur cette page. Ce qu'il écrit s'affiche ici aussitôt ; relisez-le, puis enregistrez.",
+      "setup": "Ajoutez Wysebee Assistant une fois à votre app d'IA, avec cette adresse :",
+      "howTo": "Claude : Paramètres → Connecteurs → Ajouter un connecteur personnalisé. ChatGPT : Paramètres → Apps et connecteurs → Paramètres avancés → Mode développeur, puis Créer. Connectez-vous avec votre compte Wysebee quand c'est demandé.",
+      "copy": "Copier l'adresse",
+      "elsewhere": "Votre app d'IA écrit dans une page ouverte ailleurs.",
+      "useHere": "Utiliser ici"
+    },
+    "list": {
+      "intro": "Vos espaces de travail : des dossiers de documentation conservés dans Wysebee Cloud."
+    }
+  }
+}

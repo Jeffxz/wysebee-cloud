@@ -1,0 +1,54 @@
+{
+  "home": {
+    "nav": {
+      "label": "Agents",
+      "title": "Agents",
+      "addAgent": "Add an agent",
+      "addAgentRow": "Add an agent",
+      "all": "All agents"
+    },
+    "settings": {
+      "title": "Wysebee's settings",
+      "discard": "Leave without saving your changes?",
+      "agentTitle": "{{name}}'s settings",
+      "agentSubtitle": "@{{name}} · its tools and instructions"
+    },
+    "web": {
+      "done": "Done"
+    },
+    "agentGone": "This agent no longer exists.",
+    "backToWysebee": "Back to Wysebee",
+    "addAgent": {
+      "title": "Add an agent",
+      "intro": "An agent of your own, with its own tools and instructions. Your AI app can use its tools through Wysebee Assistant. It cannot change Wysebee's settings, tasks or reminders.",
+      "label": "Name",
+      "labelPlaceholder": "e.g. Travel Planner",
+      "handle": "@ name",
+      "handleHelp": "What you type after @ to ask it: lowercase letters, digits, - and _.",
+      "save": "Add agent",
+      "needLabel": "Give it a name.",
+      "badHandle": "The @ name must start with a lowercase letter and hold only lowercase letters, digits, - and _ (30 at most).",
+      "cancel": "Cancel"
+    },
+    "dashboard": {
+      "agents": "Agents",
+      "devices": "Devices",
+      "viewAll": "View all",
+      "inCloud": "Runs in Wysebee Cloud",
+      "online": "Online",
+      "offline": "Offline",
+      "paused": "Paused",
+      "cloudHint": "Where every agent runs",
+      "workspaces": "Workspaces",
+      "tasks": "Tasks",
+      "viewAll_workspaces": "View all workspaces",
+      "viewAll_agents": "View all agents",
+      "viewAll_tasks": "View all tasks",
+      "viewAll_devices": "View all devices",
+      "changed": "Changed {{when}}"
+    },
+    "list": {
+      "intro": "Wysebee and your own agents: where each one works, and whether it can answer now."
+    }
+  }
+}

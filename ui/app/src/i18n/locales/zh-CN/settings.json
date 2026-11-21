@@ -1,0 +1,140 @@
+{
+  "settings": {
+    "connections": {
+      "title": "连接",
+      "intro": "Wysebee Cloud、运行你的智能体的设备，以及与 Wysebee Agent 扩展配对的浏览器。"
+    },
+    "desktops": {
+      "heading": "你的设备",
+      "hint": "Wysebee Cloud，以及你的智能体正在运行或曾经运行的每台设备：每台与 Wysebee Agent 配对的 Mac、Windows PC、Linux 机器或 Android 手机，以及配对时创建的智能体。只有该智能体会使用这台设备——仅限你在设备上的 Wysebee Agent 中允许的。可以在这里配对设备：它的智能体驻留在 Wysebee Cloud 中。",
+      "loading": "正在读取你的设备…",
+      "none": "还没有设备运行你的智能体。",
+      "cloudHint": "保存你的智能体、任务和工作区。",
+      "cloudConnected": "已连接",
+      "pair": "配对设备"
+    },
+    "browsers": {
+      "heading": "浏览器",
+      "hint": "每个与 Wysebee Agent 扩展配对的浏览器都有自己的智能体，只有该智能体使用它。在智能体对你尚未信任的网站执行操作之前，扩展会在浏览器中询问你。",
+      "loading": "正在读取你的浏览器…",
+      "none": "尚未配对任何浏览器。",
+      "signedOut": "登录后可查看你的浏览器。",
+      "connected": "已连接",
+      "offline": "离线 — 最后在线 {{when}}",
+      "offlineNever": "离线",
+      "pausedBadge": "已暂停",
+      "version": "Wysebee Agent {{version}}",
+      "unpair": "取消配对",
+      "unpairConfirm": "要取消 {{device}} 与 {{label}} 的配对吗？智能体会保留，但不再有浏览器。要再次使用它，请配对一个浏览器，并在 Wysebee 询问时将其重新连接到此智能体。",
+      "pair": "配对浏览器",
+      "pairDialog": {
+        "title": "配对浏览器",
+        "step1": "在浏览器中安装 Wysebee Agent 扩展。",
+        "step2": "打开扩展，为将使用此浏览器的智能体输入一个名称。",
+        "step3": "在这里输入扩展显示的代码。",
+        "note": "配对会以该名称创建一个新的智能体。只有该智能体使用此浏览器，它驻留在 Wysebee Cloud 中。",
+        "code": "配对代码",
+        "needCode": "请输入扩展显示的 8 位代码。",
+        "pair": "配对",
+        "cancel": "取消",
+        "paired": "{{label}}（@{{name}}）现在使用该浏览器。",
+        "pairedNote": "在智能体对你尚未信任的网站执行操作之前，扩展会在浏览器中询问你。",
+        "open": "打开它的设置",
+        "done": "完成",
+        "reconnect": "重新连接到 {{label}}",
+        "otherName": "另一个名称",
+        "otherNameHint": "新智能体将以此名称创建，而不是在设备上输入的名称。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用该名称。它是一个目前没有浏览器的{{type}}：将此浏览器重新连接到它，保留其设置——或在下方输入另一个名称以创建新的智能体。",
+        "typeFallback": "浏览器智能体"
+      },
+      "refused": {
+        "codeUnknown": "该代码有误、已被使用或已过期。请查看扩展现在显示的代码并重新输入。",
+        "nameTaken": "你已有一个名为 {{label}}（@{{name}}）的智能体，且此设备无法重新连接到它。请在下方输入另一个名称，然后点击“配对”：同一个代码仍然有效。",
+        "nameTakenPlain": "你已有一个同名的智能体。请在下方输入另一个名称，然后点击“配对”：同一个代码仍然有效。",
+        "tooMany": "你已有 20 个智能体。请删除一个，然后再次点击“配对”：同一个代码仍然有效。",
+        "invalidName": "该名称无法用作智能体的 @ 名称。请在下方输入以字母开头的名称，然后点击“配对”：同一个代码仍然有效。",
+        "reserved": "该名称已被保留。请在下方输入另一个名称，然后点击“配对”：同一个代码仍然有效。",
+        "tooManyTries": "错误的代码次数过多。请等待十分钟后再试。"
+      }
+    },
+    "macAgents": {
+      "pair": "配对 Mac",
+      "unpairConfirm": "要取消 {{device}} 与 {{label}} 的配对吗？智能体会保留，但不能再在那台 Mac 上运行程序。要再次使用它，请配对一台 Mac，并在 Wysebee 询问时将其重新连接到此智能体。",
+      "pairDialog": {
+        "title": "配对 Mac",
+        "step1": "在 Mac 上安装并打开 Wysebee Agent。",
+        "step2": "在其中为将使用这台 Mac 的智能体输入一个名称。",
+        "step3": "在这里输入 Wysebee Agent 显示的代码。",
+        "note": "配对会以该名称创建一个新的智能体。它驻留在 Wysebee Cloud 中，只有它会在这台 Mac 上运行程序、技能脚本和文件夹工具——仅限你在 Mac 上的 Wysebee Agent 中允许的。",
+        "needCode": "请输入 Wysebee Agent 显示的 8 位代码。",
+        "paired": "已创建 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它的每个程序都必须先在 Mac 上的 Wysebee Agent 中允许才能运行，它的文件夹也在那里选择。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用该名称。它是一个目前没有 Mac 的 {{type}}：将此 Mac 重新连接到它，保留其设置——或在下方输入另一个名称以创建新的智能体。它的程序和技能需要在 Mac 上重新允许。",
+        "typeFallback": "Mac 智能体"
+      }
+    },
+    "pcAgents": {
+      "pair": "配对 Windows PC",
+      "unpairConfirm": "要取消 {{device}} 与 {{label}} 的配对吗？智能体会保留，但不能再在那台 PC 上运行程序。要再次使用它，请配对一台 PC，并在 Wysebee 询问时将其重新连接到此智能体。",
+      "pairDialog": {
+        "title": "配对 Windows PC",
+        "step1": "在 PC 上安装并打开 Wysebee Agent。",
+        "step2": "在其中为将使用这台 PC 的智能体输入一个名称。",
+        "step3": "在这里输入 Wysebee Agent 显示的代码。",
+        "note": "配对会以该名称创建一个新的智能体。它驻留在 Wysebee Cloud 中，只有它会在这台 PC 上运行程序、技能脚本和文件夹工具——仅限你在 PC 上的 Wysebee Agent 中允许的。",
+        "needCode": "请输入 Wysebee Agent 显示的 8 位代码。",
+        "paired": "已创建 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它的每个程序都必须先在 PC 上的 Wysebee Agent 中允许才能运行，它的文件夹也在那里选择。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用该名称。它是一个目前没有 PC 的 {{type}}：将此 PC 重新连接到它，保留其设置——或在下方输入另一个名称以创建新的智能体。它的程序和技能需要在 PC 上重新允许。",
+        "typeFallback": "Windows 智能体"
+      }
+    },
+    "linuxAgents": {
+      "pair": "配对 Linux 机器",
+      "unpairConfirm": "要取消 {{device}} 与 {{label}} 的配对吗？智能体会保留，但无法再在那台机器上运行程序。要再次使用，请配对一台机器，并在 Wysebee 询问时将其重新连接到此智能体。",
+      "pairDialog": {
+        "title": "配对 Linux 机器",
+        "step1": "在机器（桌面、服务器或云虚拟机）上安装 Wysebee Agent for Linux。",
+        "step2": "在那里运行 wysebee-agent pair，并为将使用这台机器的智能体起一个名字。",
+        "step3": "在这里输入它显示的代码。",
+        "note": "配对会以该名字创建一个新智能体。它运行在 Wysebee Cloud 中，只有它能在那台机器上运行程序、技能脚本、文件夹工具和开发者工具 — 仅限你在机器上用 wysebee-agent allow 和 enable 允许的。",
+        "needCode": "输入 wysebee-agent pair 显示的 8 个字符的代码。",
+        "paired": "{{label}}（@{{name}}）已创建，并使用 {{browser}}。",
+        "pairedNote": "它的每个程序都必须先在机器上允许（wysebee-agent allow）才能运行，文件夹也在那里添加（wysebee-agent folder add）。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用该名字。它是一个当前没有机器的{{type}}：将这台机器重新连接到它并保留其设置 — 或在下方输入另一个名字以创建新智能体。它的程序和技能需要在机器上重新允许。",
+        "typeFallback": "Linux 智能体"
+      }
+    },
+    "phoneAgents": {
+      "pair": "配对 Android 手机",
+      "unpairConfirm": "要取消 {{device}} 与 {{label}} 的配对吗？智能体会保留，但不能再使用那部手机。要再次使用它，请配对一部手机，并在 Wysebee 询问时将其重新连接到此智能体。",
+      "pairDialog": {
+        "title": "配对 Android 手机",
+        "step1": "在手机上安装并打开 Wysebee Agent，并开启它的无障碍服务。",
+        "step2": "在其中为将使用这部手机的智能体输入一个名称。",
+        "step3": "在这里输入 Wysebee Agent 显示的代码。",
+        "note": "配对会以该名称创建一个新的智能体。它驻留在 Wysebee Cloud 中，只有它会使用这部手机——仅限你在 Wysebee Agent 中允许的应用。",
+        "needCode": "请输入 Wysebee Agent 显示的 8 位代码。",
+        "paired": "已创建 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它只会打开和操作你在手机上的 Wysebee Agent 中允许的应用，且绝不会在密码栏中输入。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用该名称。它是一个目前没有手机的 {{type}}：将这部手机重新连接到它，保留其设置——或在下方输入另一个名称以创建新的智能体。",
+        "typeFallback": "手机智能体",
+        "qrTitle": "用手机扫描",
+        "qrHint": "在手机上的 Wysebee Agent 中输入智能体名称，点按“扫描二维码”并将相机对准此处。或在下方输入它显示的代码。",
+        "qrAlt": "用于配对 Android 手机的二维码",
+        "qrLoading": "正在生成二维码…",
+        "qrFailed": "无法生成二维码。",
+        "qrExpired": "此二维码已过期。",
+        "qrNew": "显示新的二维码",
+        "pairedByQr": "已创建 {{label}} (@{{name}})，它使用扫描此代码的手机。"
+      }
+    },
+    "system": {
+      "analytics": {
+        "title": "使用情况分析",
+        "send": "发送使用情况分析",
+        "help": "你打开的页面和点击的内容——绝不包括你输入的内容，也不包括你的智能体、话题和任务的名称——用于改进 Wysebee。此选择跟随你的账号。"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "common": {
+    "people": {
+      "made": "创建者：{{made}}",
+      "madeAndChanged": "创建者：{{made}} · 最后修改者：{{changed}}",
+      "you": "你",
+      "someone": "某人"
+    },
+    "autoSave": {
+      "saved": "已保存"
+    },
+    "inlineField": {
+      "save": "保存{{what}}",
+      "discardTitle": "放弃更改",
+      "discard": "放弃对{{what}}的更改"
+    },
+    "saveBar": {
+      "unsaved": "有未保存的更改",
+      "discard": "放弃",
+      "save": "保存",
+      "saving": "正在保存…"
+    },
+    "avatar": {
+      "named": "{{label}}的头像",
+      "unnamed": "智能体头像"
+    },
+    "copy": {
+      "ariaLabel": "复制{{label}}地址",
+      "copied": "已复制",
+      "failed": "复制失败"
+    },
+    "presence": {
+      "online": "在线",
+      "offline": "离线"
+    },
+    "confirm": {
+      "ok": "确定",
+      "cancel": "取消",
+      "delete": "删除",
+      "discard": "放弃",
+      "leave": "离开",
+      "disconnect": "断开连接",
+      "unpair": "取消配对"
+    }
+  }
+}

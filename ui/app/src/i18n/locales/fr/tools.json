@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "intro": "Les types d’outils que vous pouvez créer, et les outils que vous avez créés. Appuyez sur + pour en donner un à un agent.",
+    "templates": "Nouveaux outils",
+    "yours": "Vos outils",
+    "yoursHelp": "Un de vos outils : donnez-le à un agent avec son +.",
+    "noneYours": "Aucun des vôtres ici pour l’instant. Créez-en un avec un + ci-dessus.",
+    "loading": "Chargement…",
+    "addTo": "Donner {{name}} à un agent",
+    "addToHeading": "Ajouter à…",
+    "noAgents": "Aucun agent pour l’instant.",
+    "has": "L’a déjà",
+    "typesLoading": "Lecture des agents qui peuvent l'avoir…",
+    "for": {
+      "browser": "Agents navigateur",
+      "osx": "Agents Mac et PC"
+    },
+    "only": {
+      "browser": "Agents navigateur uniquement",
+      "osx": "Agents Mac et PC uniquement"
+    },
+    "added": "{{tool}} donné à {{agent}}.",
+    "nav": {
+      "label": "Outils",
+      "title": "Outils",
+      "all": "Tous les outils"
+    }
+  }
+}

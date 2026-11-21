@@ -1,0 +1,20 @@
+{
+  "activity": {
+    "list": "Notifications",
+    "new": "Nouveau",
+    "empty": "Aucune activité pour l'instant",
+    "emptyHelp": "Quand l'un de vos agents vous envoie une notification — à la demande de votre app d'IA ou comme étape d'une tâche planifiée — elle apparaît ici, la plus récente en premier.",
+    "browser": {
+      "title": "Notifications du navigateur",
+      "help": "Afficher chaque nouvelle notification dans votre navigateur quand Wysebee n'est pas au premier plan.",
+      "blocked": "Bloquées pour ce site : autorisez les notifications dans les paramètres du site de votre navigateur, puis rechargez."
+    },
+    "delete": "Supprimer « {{title}} »",
+    "nav": {
+      "label": "Activité",
+      "title": "Activité",
+      "all": "Toute l’activité"
+    },
+    "noneFrom": "Aucune notification de {{agent}}."
+  }
+}

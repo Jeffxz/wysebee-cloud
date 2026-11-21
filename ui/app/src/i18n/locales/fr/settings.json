@@ -1,0 +1,140 @@
+{
+  "settings": {
+    "connections": {
+      "title": "Connexions",
+      "intro": "Wysebee Cloud, les appareils où fonctionnent vos agents, et les navigateurs jumelés avec l'extension Wysebee Agent."
+    },
+    "desktops": {
+      "heading": "Vos appareils",
+      "hint": "Wysebee Cloud, et chaque appareil où l'un de vos agents fonctionne ou a fonctionné : chaque Mac, PC Windows, machine Linux ou téléphone Android associé à Wysebee Agent, avec l'agent créé lors de l'association. Seul cet agent utilise l'appareil — seulement ce que vous avez autorisé dans Wysebee Agent sur celui-ci. Associez un appareil ici : son agent vit dans Wysebee Cloud.",
+      "loading": "Lecture de vos appareils…",
+      "none": "Aucun appareil n'exécute encore l'un de vos agents.",
+      "cloudHint": "Garde vos agents, tâches et espaces de travail.",
+      "cloudConnected": "Connecté",
+      "pair": "Associer un appareil"
+    },
+    "browsers": {
+      "heading": "Navigateurs",
+      "hint": "Chaque navigateur associé à l'extension Wysebee Agent a son propre agent, et seul cet agent l'utilise. L'extension vous demande dans le navigateur avant que l'agent n'agisse sur un site que vous n'avez pas approuvé.",
+      "loading": "Lecture de vos navigateurs…",
+      "none": "Aucun navigateur n'est encore associé.",
+      "signedOut": "Connectez-vous pour voir vos navigateurs.",
+      "connected": "Connecté",
+      "offline": "Hors ligne — vu pour la dernière fois {{when}}",
+      "offlineNever": "Hors ligne",
+      "pausedBadge": "En pause",
+      "version": "Wysebee Agent {{version}}",
+      "unpair": "Dissocier",
+      "unpairConfirm": "Dissocier {{device}} de {{label}} ? L'agent reste, sans navigateur. Pour le réutiliser, associez un navigateur et reconnectez-le à cet agent quand Wysebee le propose.",
+      "pair": "Associer un navigateur",
+      "pairDialog": {
+        "title": "Associer un navigateur",
+        "step1": "Installez l'extension Wysebee Agent dans le navigateur.",
+        "step2": "Ouvrez l'extension et saisissez un nom pour l'agent qui utilisera ce navigateur.",
+        "step3": "Saisissez ici le code que l'extension affiche.",
+        "note": "L'association crée un nouvel agent sous ce nom. Seul cet agent utilise le navigateur, et il vit dans Wysebee Cloud.",
+        "code": "Code d'association",
+        "needCode": "Saisissez les 8 caractères du code que l'extension affiche.",
+        "pair": "Associer",
+        "cancel": "Annuler",
+        "paired": "{{label}} (@{{name}}) utilise maintenant ce navigateur.",
+        "pairedNote": "L'extension vous demande dans le navigateur avant que l'agent n'agisse sur un site que vous n'avez pas approuvé.",
+        "open": "Ouvrir ses paramètres",
+        "done": "Terminé",
+        "reconnect": "Reconnecter à {{label}}",
+        "otherName": "Un autre nom",
+        "otherNameHint": "Le nouvel agent est créé sous ce nom au lieu de celui saisi sur l'appareil.",
+        "takenReconnect": "{{label}} (@{{name}}) porte déjà ce nom. C'est un {{type}} sans navigateur pour l'instant : reconnectez-y ce navigateur, en gardant ses réglages — ou saisissez un autre nom ci-dessous pour un nouvel agent.",
+        "typeFallback": "agent de navigateur"
+      },
+      "refused": {
+        "codeUnknown": "Ce code est erroné, déjà utilisé ou expiré. Vérifiez le code que l'extension affiche maintenant et saisissez-le de nouveau.",
+        "nameTaken": "Vous avez déjà un agent nommé {{label}} (@{{name}}), et cet appareil ne peut pas y être reconnecté. Saisissez un autre nom ci-dessous, puis Associer : le même code fonctionne encore.",
+        "nameTakenPlain": "Vous avez déjà un agent de ce nom. Saisissez un autre nom ci-dessous, puis Associer : le même code fonctionne encore.",
+        "tooMany": "Vous avez déjà 20 agents. Supprimez-en un, puis Associer de nouveau : le même code fonctionne encore.",
+        "invalidName": "Ce nom ne peut pas devenir le nom @ d'un agent. Saisissez ci-dessous un nom qui commence par une lettre, puis Associer : le même code fonctionne encore.",
+        "reserved": "Ce nom est réservé. Saisissez un autre nom ci-dessous, puis Associer : le même code fonctionne encore.",
+        "tooManyTries": "Trop de codes erronés. Attendez dix minutes, puis réessayez."
+      }
+    },
+    "macAgents": {
+      "pair": "Associer un Mac",
+      "unpairConfirm": "Dissocier {{device}} de {{label}} ? L'agent reste, et ne peut plus exécuter de programmes sur ce Mac. Pour le réutiliser, associez un Mac et reconnectez-le à cet agent quand Wysebee le propose.",
+      "pairDialog": {
+        "title": "Associer un Mac",
+        "step1": "Installez et ouvrez Wysebee Agent sur le Mac.",
+        "step2": "Saisissez-y un nom pour l'agent qui utilisera ce Mac.",
+        "step3": "Saisissez ici le code que Wysebee Agent affiche.",
+        "note": "L'association crée un nouvel agent sous ce nom. Il vit dans Wysebee Cloud, et lui seul exécute des programmes, des scripts de compétences et des outils de dossier sur ce Mac — seulement ceux que vous autorisez dans Wysebee Agent.",
+        "needCode": "Saisissez les 8 caractères du code que Wysebee Agent affiche.",
+        "paired": "{{label}} (@{{name}}) a été créé et utilise {{browser}}.",
+        "pairedNote": "Chacun de ses programmes doit être autorisé dans Wysebee Agent sur le Mac avant de s'exécuter, et ses dossiers s'y choisissent.",
+        "takenReconnect": "{{label}} (@{{name}}) porte déjà ce nom. C'est un {{type}} sans Mac pour l'instant : reconnectez-y ce Mac, en gardant ses réglages — ou saisissez un autre nom ci-dessous pour un nouvel agent. Ses programmes et compétences devront être autorisés de nouveau sur le Mac.",
+        "typeFallback": "agent Mac"
+      }
+    },
+    "pcAgents": {
+      "pair": "Associer un PC Windows",
+      "unpairConfirm": "Dissocier {{device}} de {{label}} ? L'agent reste, et ne peut plus exécuter de programmes sur ce PC. Pour le réutiliser, associez un PC et reconnectez-le à cet agent quand Wysebee le propose.",
+      "pairDialog": {
+        "title": "Associer un PC Windows",
+        "step1": "Installez et ouvrez Wysebee Agent sur le PC.",
+        "step2": "Saisissez-y un nom pour l'agent qui utilisera ce PC.",
+        "step3": "Saisissez ici le code que Wysebee Agent affiche.",
+        "note": "L'association crée un nouvel agent sous ce nom. Il vit dans Wysebee Cloud, et lui seul exécute des programmes, des scripts de compétences et des outils de dossier sur ce PC — seulement ceux que vous autorisez dans Wysebee Agent.",
+        "needCode": "Saisissez les 8 caractères du code que Wysebee Agent affiche.",
+        "paired": "{{label}} (@{{name}}) a été créé et utilise {{browser}}.",
+        "pairedNote": "Chacun de ses programmes doit être autorisé dans Wysebee Agent sur le PC avant de s'exécuter, et ses dossiers s'y choisissent.",
+        "takenReconnect": "{{label}} (@{{name}}) porte déjà ce nom. C'est un {{type}} sans PC pour l'instant : reconnectez-y ce PC, en gardant ses réglages — ou saisissez un autre nom ci-dessous pour un nouvel agent. Ses programmes et compétences devront être autorisés de nouveau sur le PC.",
+        "typeFallback": "agent Windows"
+      }
+    },
+    "linuxAgents": {
+      "pair": "Associer une machine Linux",
+      "unpairConfirm": "Dissocier {{device}} de {{label}} ? L'agent reste, mais ne peut plus lancer de programmes sur cette machine. Pour l'utiliser à nouveau, associez une machine et reconnectez-la à cet agent quand Wysebee le propose.",
+      "pairDialog": {
+        "title": "Associer une machine Linux",
+        "step1": "Installez Wysebee Agent pour Linux sur la machine (un poste, un serveur ou une VM cloud).",
+        "step2": "Lancez-y wysebee-agent pair avec un nom pour l'agent qui utilisera cette machine.",
+        "step3": "Saisissez ici le code qu'il affiche.",
+        "note": "L'association crée un nouvel agent sous ce nom. Il vit dans Wysebee Cloud, et lui seul lance des programmes, des scripts de compétences, des outils de dossiers et de développement sur cette machine — uniquement ceux que vous y autorisez avec wysebee-agent allow et enable.",
+        "needCode": "Saisissez les 8 caractères du code qu'affiche wysebee-agent pair.",
+        "paired": "{{label}} (@{{name}}) a été créé et utilise {{browser}}.",
+        "pairedNote": "Chacun de ses programmes doit être autorisé sur la machine (wysebee-agent allow) avant de s'exécuter, et ses dossiers y sont ajoutés (wysebee-agent folder add).",
+        "takenReconnect": "{{label}} (@{{name}}) porte déjà ce nom. C'est un {{type}} sans machine pour l'instant : reconnectez-y cette machine en gardant ses réglages — ou saisissez un autre nom ci-dessous pour un nouvel agent. Ses programmes et compétences devront être autorisés à nouveau sur la machine.",
+        "typeFallback": "agent Linux"
+      }
+    },
+    "phoneAgents": {
+      "pair": "Associer un téléphone Android",
+      "unpairConfirm": "Dissocier {{device}} de {{label}} ? L'agent reste, et ne peut plus utiliser ce téléphone. Pour le réutiliser, associez un téléphone et reconnectez-le à cet agent quand Wysebee le propose.",
+      "pairDialog": {
+        "title": "Associer un téléphone Android",
+        "step1": "Installez et ouvrez Wysebee Agent sur le téléphone, et activez son service d'accessibilité.",
+        "step2": "Saisissez-y un nom pour l'agent qui utilisera ce téléphone.",
+        "step3": "Saisissez ici le code que Wysebee Agent affiche.",
+        "note": "L'association crée un nouvel agent sous ce nom. Il vit dans Wysebee Cloud, et lui seul utilise ce téléphone — seulement les applications que vous autorisez dans Wysebee Agent.",
+        "needCode": "Saisissez les 8 caractères du code que Wysebee Agent affiche.",
+        "paired": "{{label}} (@{{name}}) a été créé et utilise {{browser}}.",
+        "pairedNote": "Il n'ouvre et n'utilise que les applications que vous autorisez dans Wysebee Agent sur le téléphone, et ne saisit jamais rien dans un champ de mot de passe.",
+        "takenReconnect": "{{label}} (@{{name}}) porte déjà ce nom. C'est un {{type}} sans téléphone pour l'instant : reconnectez-y ce téléphone, en gardant ses réglages — ou saisissez un autre nom ci-dessous pour un nouvel agent.",
+        "typeFallback": "agent téléphone",
+        "qrTitle": "Scanner avec le téléphone",
+        "qrHint": "Dans Wysebee Agent sur le téléphone, saisissez un nom pour l'agent, touchez Scanner le code QR et pointez l'appareil photo ici. Ou saisissez ci-dessous le code qu'il affiche.",
+        "qrAlt": "Code QR pour associer un téléphone Android",
+        "qrLoading": "Création d'un code QR…",
+        "qrFailed": "Le code QR n'a pas pu être créé.",
+        "qrExpired": "Ce code QR a expiré.",
+        "qrNew": "Afficher un nouveau code QR",
+        "pairedByQr": "{{label}} (@{{name}}) a été créé et utilise le téléphone qui a scanné le code."
+      }
+    },
+    "system": {
+      "analytics": {
+        "title": "Statistiques d'utilisation",
+        "send": "Envoyer des statistiques d'utilisation",
+        "help": "Les pages que vous ouvrez et ce sur quoi vous cliquez — jamais ce que vous tapez, ni les noms de vos agents, sujets et tâches — pour améliorer Wysebee. Ce choix suit votre compte."
+      }
+    }
+  }
+}

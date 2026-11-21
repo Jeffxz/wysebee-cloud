@@ -1,0 +1,73 @@
+{
+  "skills": {
+    "loading": "Loading…",
+    "notFound": "This skill is not there any more.",
+    "nav": {
+      "label": "Skills",
+      "title": "Skills",
+      "add": "Start a skill",
+      "name": "Skill name",
+      "placeholder": "e.g. weekly-report",
+      "loading": "Loading…",
+      "none": "No skills yet.",
+      "rename": "Rename {{name}}",
+      "addIn": "Add to {{name}}",
+      "newFile": "New file",
+      "newFolder": "New folder",
+      "upload": "Upload files…",
+      "uploaded": "Uploaded {{n}} file(s).",
+      "fileName": "File name",
+      "folderName": "Folder name",
+      "deleteFolder": "Delete the folder {{name}}",
+      "deleteFolderConfirm": "Delete the folder “{{name}}” and everything in it? This cannot be undone.",
+      "deleteFile": "Delete {{name}}",
+      "deleteFileConfirm": "Delete “{{name}}”? This cannot be undone.",
+      "all": "All skills"
+    },
+    "start": {
+      "titleFirst": "Start your first skill",
+      "title": "Start a skill",
+      "hint": "A skill is a folder kept in Wysebee Cloud: its SKILL.md says what it is for and what to do, beside the scripts and files it needs. Give it to your agents in their settings.",
+      "name": "Skill name",
+      "placeholder": "e.g. weekly-report",
+      "create": "Start skill"
+    },
+    "overview": {
+      "delete": "Delete skill",
+      "deleteConfirm": "Delete the skill “{{name}}” and all its files? Every agent that has it loses it. This cannot be undone.",
+      "counts": "{{files}} files.",
+      "edit": "Edit SKILL.md",
+      "hint": "Add scripts and other files from the menu beside: a folder's + adds a file, a folder or files from your computer. Give the skill to an agent in the agent's Skills tab.",
+      "agents": "Agents that have it:",
+      "noAgents": "No agent has it yet: give it to one in the agent's Skills tab."
+    },
+    "editor": {
+      "saved": "Saved.",
+      "notText": "This file is not text ({{size}} bytes): it is kept with the skill as it is.",
+      "download": "Download",
+      "cardHint": "The skill's card: its description and scripts are read from the front matter when you save, and its name is the skill's."
+    },
+    "changes": {
+      "title": "Changes proposed by your AI app",
+      "note": "Not saved: the skill stays as it is until you apply a change. View each one before you apply it — a script runs on your computer.",
+      "kind": {
+        "newFile": "New file",
+        "changedFile": "Changes a file",
+        "folder": "New folder"
+      },
+      "view": "View",
+      "hide": "Hide",
+      "apply": "Apply",
+      "discard": "Discard",
+      "applyOne": "Apply {{path}}",
+      "discardOne": "Discard {{path}}",
+      "applyAll_one": "Apply {{count}}",
+      "applyAll_other": "Apply all {{count}}",
+      "now": "Now",
+      "proposed": "Proposed"
+    },
+    "list": {
+      "intro": "Your skills: what each one is for, kept in Wysebee Cloud and given to your agents in their settings."
+    }
+  }
+}

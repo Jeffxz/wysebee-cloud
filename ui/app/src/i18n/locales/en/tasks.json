@@ -1,0 +1,118 @@
+{
+  "tasks": {
+    "list": {
+      "intro": "A task is a reminder or scheduled work: when it's due, Wysebee Cloud runs its steps and posts the result to Activity. Ask your AI app to set one up through Wysebee Assistant.",
+      "add": "Add Task",
+      "loading": "Loading…",
+      "empty": "No tasks yet.",
+      "emptyHint": "Create one: give it a name, write its plan, and choose its browser.",
+      "noPlan": "No plan yet"
+    },
+    "status": {
+      "never": "Not run yet",
+      "running": "Running",
+      "succeeded": "Done",
+      "failed": "Failed",
+      "stopped": "Stopped",
+      "interrupted": "Interrupted"
+    },
+    "form": {
+      "newTitle": "New task",
+      "name": "Name",
+      "namePlaceholder": "e.g. Daily sales summary",
+      "create": "Create task",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "errors": {
+        "name": "Give the task a name."
+      },
+      "nameHelp": "You write the plan and choose its browser and model next.",
+      "save": "Save"
+    },
+    "kind": {
+      "manual": "Manual",
+      "once": "Timer",
+      "recurring": "Recurring"
+    },
+    "tabs": {
+      "general": "General",
+      "plan": "Plan",
+      "run": "Run"
+    },
+    "plan": {
+      "title": "Plan",
+      "help": "What this task should do, in Markdown — written as instructions to carry out. Each run sends it as the one message; the task works through it in the browser and finishes with a report.",
+      "placeholder": "1. Check the sales dashboard for yesterday.\n2. Summarise the three biggest changes.\n3. Send me a notification with the summary.",
+      "empty": "No plan yet. A task cannot run without one."
+    },
+    "general": {
+      "confirmDelete": "Delete the task \"{{name}}\" and its run history?",
+      "deleteHelp": "Deleting removes this task and the history of its runs.",
+      "deleteTitle": "Delete this task",
+      "delete": "Delete task",
+      "labelPlaceholder": "A short display label for this task",
+      "deleteFailed": "Failed to delete task.",
+      "readOnlyEditor": "Read-only — you can only edit tasks you created.",
+      "readOnlyViewer": "Read-only — your role can view but not edit tasks."
+    },
+    "detail": {
+      "start": "Start",
+      "running": "Running…"
+    },
+    "result": {
+      "none": "Not run yet. Press Start to run it now.",
+      "history": "Earlier runs",
+      "startedAt": "Started {{when}}",
+      "stop": "Stop",
+      "working": "The agent is working on it…",
+      "noOutput": "The agent finished without a written answer.",
+      "steps_one": "{{count}} step",
+      "steps_other": "{{count}} steps",
+      "byScheduleShort": "scheduled",
+      "startedBySchedule": "Started by schedule {{when}}",
+      "openRecording": "Open recording",
+      "recordingGone": "The recording folder is gone — it may have been moved or deleted."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "manual": "Runs only when started",
+      "once": "Once, {{when}}",
+      "minutes_one": "Every minute",
+      "minutes_other": "Every {{count}} minutes",
+      "hours_one": "Every hour",
+      "hours_other": "Every {{count}} hours",
+      "daily": "Every day at {{time}} ({{tz}})",
+      "weekly": "Every {{days}} at {{time}} ({{tz}})",
+      "next": "Next: {{when}}",
+      "notScheduled": "Not scheduled",
+      "steps": "Steps",
+      "noSteps": "No steps: when it's due, its plan is posted to Activity as a reminder.",
+      "via": "Set up and changed from your AI app through Wysebee Assistant.",
+      "deletedAgent": "a deleted agent"
+    },
+    "run": {
+      "changeSchedule": "Change",
+      "needsPlan": "Write the plan on the Plan tab before running this task.",
+      "needsModel": "Choose a model first.",
+      "modelGone": "This model is no longer available — choose another.",
+      "noModel": "No AI model yet"
+    },
+    "reminders": {
+      "title": "Reminders",
+      "intro": "Reminders set with Wysebee, still to come. Cancel one here.",
+      "cancel": "Cancel reminder",
+      "cancelOne": "Cancel the reminder “{{text}}”"
+    },
+    "web": {
+      "runsNote": "Runs happen in Wysebee Cloud; here are the ones it recorded.",
+      "noRuns": "No runs yet.",
+      "bySchedule": "Scheduled",
+      "byHand": "Started by hand"
+    },
+    "nav": {
+      "label": "Tasks",
+      "title": "Tasks",
+      "all": "All tasks"
+    }
+  }
+}

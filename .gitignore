@@ -1,0 +1,33 @@
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+apps/cloud/dist/
+ui/coverage/
+# UI coverage from driving the dev server (yarn dev:coverage, yarn coverage:report).
+ui/.nyc_output/
+ui/coverage-e2e/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+!.env.selfhost.example
+# Azure resource names, kept out of the repository.
+scripts/azure.env
+scripts/azure.dev.env
+.DS_Store
+.vscode/
+.idea/
+# Local cloud backups and assets (WYSEBEE_BACKUP_DIR, WYSEBEE_ASSET_DIR defaults).
+data/
+# …but not the cloud agents' copies of the desktop's guide and prompts (apps/cloud/agent_chat/prompts.py).
+!apps/cloud/agent_chat/data/
+
+# coverage.py data (uv run pytest --cov)
+.coverage
+.coverage.*
+
+# Local Claude Code settings and worktrees.
+.claude/

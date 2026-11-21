@@ -1,0 +1,115 @@
+{
+  "tasks": {
+    "list": {
+      "intro": "タスクはリマインダーまたは定期的な作業です。期限になると Wysebee Cloud がステップを実行し、結果をアクティビティに投稿します。AI アプリに Wysebee Assistant を通じて設定を依頼してください。",
+      "add": "タスクを追加",
+      "loading": "読み込み中…",
+      "empty": "タスクはまだありません。",
+      "emptyHint": "名前を付けて作成し、プランを書いてブラウザーを選びましょう。",
+      "noPlan": "プラン未設定"
+    },
+    "status": {
+      "never": "未実行",
+      "running": "実行中",
+      "succeeded": "完了",
+      "failed": "失敗",
+      "stopped": "停止",
+      "interrupted": "中断"
+    },
+    "form": {
+      "newTitle": "新しいタスク",
+      "name": "名前",
+      "namePlaceholder": "例: 毎日の売上サマリー",
+      "create": "タスクを作成",
+      "saving": "保存中…",
+      "cancel": "キャンセル",
+      "errors": {
+        "name": "タスクに名前を付けてください。"
+      },
+      "nameHelp": "このあとプランを書き、ブラウザー・モデルを選びます。",
+      "save": "保存"
+    },
+    "kind": {
+      "manual": "手動",
+      "once": "タイマー",
+      "recurring": "繰り返し"
+    },
+    "tabs": {
+      "general": "一般",
+      "plan": "プラン",
+      "run": "実行"
+    },
+    "plan": {
+      "title": "プラン",
+      "help": "このタスクが行うことを Markdown で、実行する指示として書きます。毎回の実行でこれが唯一のメッセージとして送られ、タスクはブラウザーで進め、最後に報告します。",
+      "placeholder": "1. 昨日の売上ダッシュボードを確認する。\n2. 大きな変化を 3 つ要約する。\n3. 要約を通知で送る。",
+      "empty": "プランがまだありません。プランがないとタスクは実行できません。"
+    },
+    "general": {
+      "confirmDelete": "タスク「{{name}}」と実行履歴を削除しますか？",
+      "deleteHelp": "削除すると、このタスクと実行履歴が消えます。",
+      "deleteTitle": "このタスクを削除",
+      "delete": "タスクを削除",
+      "labelPlaceholder": "このタスクの短い表示ラベル",
+      "deleteFailed": "タスクを削除できませんでした。",
+      "readOnlyEditor": "読み取り専用：編集できるのは自分が作成したタスクのみです。",
+      "readOnlyViewer": "読み取り専用：あなたのロールではタスクを表示できますが、編集はできません。"
+    },
+    "detail": {
+      "start": "開始",
+      "running": "実行中…"
+    },
+    "result": {
+      "none": "まだ実行されていません。「開始」を押すと今すぐ実行します。",
+      "history": "これまでの実行",
+      "startedAt": "{{when}} に開始",
+      "stop": "停止",
+      "working": "エージェントが作業しています…",
+      "noOutput": "エージェントは文章での回答なしに終了しました。",
+      "steps_other": "{{count}} ステップ",
+      "byScheduleShort": "スケジュール",
+      "startedBySchedule": "スケジュールにより {{when}} に開始",
+      "openRecording": "録画を開く",
+      "recordingGone": "録画のフォルダが見つかりません。移動または削除された可能性があります。"
+    },
+    "schedule": {
+      "title": "スケジュール",
+      "manual": "開始したときだけ実行",
+      "once": "1 回、{{when}}",
+      "minutes_other": "{{count}} 分ごと",
+      "hours_other": "{{count}} 時間ごと",
+      "daily": "毎日 {{time}}（{{tz}}）",
+      "weekly": "毎週 {{days}} {{time}}（{{tz}}）",
+      "next": "次回: {{when}}",
+      "notScheduled": "スケジュールなし",
+      "steps": "ステップ",
+      "noSteps": "ステップなし: 期限になると、プランがリマインダーとしてアクティビティに投稿されます。",
+      "via": "AI アプリから Wysebee Assistant を通じて設定・変更します。",
+      "deletedAgent": "削除されたエージェント"
+    },
+    "run": {
+      "changeSchedule": "変更",
+      "needsPlan": "実行する前に「プラン」タブでプランを書いてください。",
+      "needsModel": "先にモデルを選んでください。",
+      "modelGone": "このモデルは利用できなくなりました。別のモデルを選んでください。",
+      "noModel": "AI モデルはまだありません"
+    },
+    "reminders": {
+      "title": "リマインダー",
+      "intro": "Wysebee で設定した、これからのリマインダーです。ここで取り消せます。",
+      "cancel": "リマインダーを取り消す",
+      "cancelOne": "リマインダー「{{text}}」を取り消す"
+    },
+    "web": {
+      "runsNote": "実行は Wysebee Cloud で行われます。ここには記録された実行が表示されます。",
+      "noRuns": "まだ実行はありません。",
+      "bySchedule": "スケジュール",
+      "byHand": "手動で開始"
+    },
+    "nav": {
+      "label": "タスク",
+      "title": "タスク",
+      "all": "すべてのタスク"
+    }
+  }
+}

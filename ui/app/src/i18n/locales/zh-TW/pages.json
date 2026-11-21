@@ -1,0 +1,11 @@
+{
+  "pages": {
+    "tab": "頁面",
+    "loading": "正在載入頁面…",
+    "none": "此文件還沒有頁面。",
+    "howTo": "請讓連接了 Wysebee Assistant 的 AI 應用程式根據此文件產生一個（它使用 write_page）。頁面會顯示在這裡，也有自己的網址。",
+    "refresh": "重新整理",
+    "open": "單獨開啟",
+    "sandboxed": "由你的 AI 應用程式產生。在沙箱中顯示：指令碼可以執行，但無法存取 Wysebee 或網際網路。"
+  }
+}

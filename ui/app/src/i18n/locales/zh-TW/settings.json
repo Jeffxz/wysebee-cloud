@@ -1,0 +1,140 @@
+{
+  "settings": {
+    "connections": {
+      "title": "連線",
+      "intro": "Wysebee Cloud、執行你的代理程式的裝置，以及與 Wysebee Agent 擴充功能配對的瀏覽器。"
+    },
+    "desktops": {
+      "heading": "你的裝置",
+      "hint": "Wysebee Cloud，以及你的代理程式正在執行或曾經執行的每台裝置：每台與 Wysebee Agent 配對的 Mac、Windows PC、Linux 機器或 Android 手機，以及配對時建立的代理程式。只有該代理程式會使用這台裝置——僅限你在裝置上的 Wysebee Agent 中允許的。可以在這裡配對裝置：它的代理程式常駐在 Wysebee Cloud 中。",
+      "loading": "正在讀取你的裝置…",
+      "none": "還沒有裝置執行你的代理程式。",
+      "cloudHint": "保存你的代理、任務和工作區。",
+      "cloudConnected": "已連線",
+      "pair": "配對裝置"
+    },
+    "browsers": {
+      "heading": "瀏覽器",
+      "hint": "每個與 Wysebee Agent 擴充功能配對的瀏覽器都有自己的代理程式，只有該代理程式使用它。在代理程式對你尚未信任的網站執行操作之前，擴充功能會在瀏覽器中詢問你。",
+      "loading": "正在讀取你的瀏覽器…",
+      "none": "尚未配對任何瀏覽器。",
+      "signedOut": "登入後可查看你的瀏覽器。",
+      "connected": "已連線",
+      "offline": "離線 — 最後上線 {{when}}",
+      "offlineNever": "離線",
+      "pausedBadge": "已暫停",
+      "version": "Wysebee Agent {{version}}",
+      "unpair": "取消配對",
+      "unpairConfirm": "要取消 {{device}} 與 {{label}} 的配對嗎？代理程式會保留，但不再有瀏覽器。要再次使用它，請配對一個瀏覽器，並在 Wysebee 詢問時將其重新連線到此代理程式。",
+      "pair": "配對瀏覽器",
+      "pairDialog": {
+        "title": "配對瀏覽器",
+        "step1": "在瀏覽器中安裝 Wysebee Agent 擴充功能。",
+        "step2": "開啟擴充功能，為將使用此瀏覽器的代理程式輸入一個名稱。",
+        "step3": "在這裡輸入擴充功能顯示的代碼。",
+        "note": "配對會以該名稱建立一個新的代理程式。只有該代理程式使用此瀏覽器，它常駐在 Wysebee Cloud 中。",
+        "code": "配對代碼",
+        "needCode": "請輸入擴充功能顯示的 8 位代碼。",
+        "pair": "配對",
+        "cancel": "取消",
+        "paired": "{{label}}（@{{name}}）現在使用該瀏覽器。",
+        "pairedNote": "在代理程式對你尚未信任的網站執行操作之前，擴充功能會在瀏覽器中詢問你。",
+        "open": "開啟它的設定",
+        "done": "完成",
+        "reconnect": "重新連線到 {{label}}",
+        "otherName": "另一個名稱",
+        "otherNameHint": "新代理程式將以此名稱建立，而不是在裝置上輸入的名稱。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用該名稱。它是一個目前沒有瀏覽器的{{type}}：將此瀏覽器重新連線到它，保留其設定——或在下方輸入另一個名稱以建立新的代理程式。",
+        "typeFallback": "瀏覽器代理程式"
+      },
+      "refused": {
+        "codeUnknown": "該代碼有誤、已被使用或已過期。請查看擴充功能現在顯示的代碼並重新輸入。",
+        "nameTaken": "你已有一個名為 {{label}}（@{{name}}）的代理程式，且此裝置無法重新連線到它。請在下方輸入另一個名稱，然後點選「配對」：同一個代碼仍然有效。",
+        "nameTakenPlain": "你已有一個同名的代理程式。請在下方輸入另一個名稱，然後點選「配對」：同一個代碼仍然有效。",
+        "tooMany": "你已有 20 個代理程式。請刪除一個，然後再次點選「配對」：同一個代碼仍然有效。",
+        "invalidName": "該名稱無法用作代理程式的 @ 名稱。請在下方輸入以字母開頭的名稱，然後點選「配對」：同一個代碼仍然有效。",
+        "reserved": "該名稱已被保留。請在下方輸入另一個名稱，然後點選「配對」：同一個代碼仍然有效。",
+        "tooManyTries": "錯誤的代碼次數過多。請等待十分鐘後再試。"
+      }
+    },
+    "macAgents": {
+      "pair": "配對 Mac",
+      "unpairConfirm": "要取消 {{device}} 與 {{label}} 的配對嗎？代理程式會保留，但不能再在那台 Mac 上執行程式。要再次使用它，請配對一台 Mac，並在 Wysebee 詢問時將其重新連線到此代理程式。",
+      "pairDialog": {
+        "title": "配對 Mac",
+        "step1": "在 Mac 上安裝並開啟 Wysebee Agent。",
+        "step2": "在其中為將使用這台 Mac 的代理程式輸入一個名稱。",
+        "step3": "在這裡輸入 Wysebee Agent 顯示的代碼。",
+        "note": "配對會以該名稱建立一個新的代理程式。它常駐在 Wysebee Cloud 中，只有它會在這台 Mac 上執行程式、技能指令碼和資料夾工具——僅限你在 Mac 上的 Wysebee Agent 中允許的。",
+        "needCode": "請輸入 Wysebee Agent 顯示的 8 位代碼。",
+        "paired": "已建立 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它的每個程式都必須先在 Mac 上的 Wysebee Agent 中允許才能執行，它的資料夾也在那裡選擇。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用該名稱。它是一個目前沒有 Mac 的 {{type}}：將此 Mac 重新連線到它，保留其設定——或在下方輸入另一個名稱以建立新的代理程式。它的程式和技能需要在 Mac 上重新允許。",
+        "typeFallback": "Mac 代理程式"
+      }
+    },
+    "pcAgents": {
+      "pair": "配對 Windows PC",
+      "unpairConfirm": "要取消 {{device}} 與 {{label}} 的配對嗎？代理程式會保留，但不能再在那台 PC 上執行程式。要再次使用它，請配對一台 PC，並在 Wysebee 詢問時將其重新連線到此代理程式。",
+      "pairDialog": {
+        "title": "配對 Windows PC",
+        "step1": "在 PC 上安裝並開啟 Wysebee Agent。",
+        "step2": "在其中為將使用這台 PC 的代理程式輸入一個名稱。",
+        "step3": "在這裡輸入 Wysebee Agent 顯示的代碼。",
+        "note": "配對會以該名稱建立一個新的代理程式。它常駐在 Wysebee Cloud 中，只有它會在這台 PC 上執行程式、技能指令碼和資料夾工具——僅限你在 PC 上的 Wysebee Agent 中允許的。",
+        "needCode": "請輸入 Wysebee Agent 顯示的 8 位代碼。",
+        "paired": "已建立 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它的每個程式都必須先在 PC 上的 Wysebee Agent 中允許才能執行，它的資料夾也在那裡選擇。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用該名稱。它是一個目前沒有 PC 的 {{type}}：將此 PC 重新連線到它，保留其設定——或在下方輸入另一個名稱以建立新的代理程式。它的程式和技能需要在 PC 上重新允許。",
+        "typeFallback": "Windows 代理程式"
+      }
+    },
+    "linuxAgents": {
+      "pair": "配對 Linux 機器",
+      "unpairConfirm": "要取消 {{device}} 與 {{label}} 的配對嗎？代理會保留，但無法再在那台機器上執行程式。要再次使用，請配對一台機器，並在 Wysebee 詢問時將其重新連接到此代理。",
+      "pairDialog": {
+        "title": "配對 Linux 機器",
+        "step1": "在機器（桌機、伺服器或雲端虛擬機）上安裝 Wysebee Agent for Linux。",
+        "step2": "在那裡執行 wysebee-agent pair，並為將使用這台機器的代理取一個名稱。",
+        "step3": "在這裡輸入它顯示的代碼。",
+        "note": "配對會以該名稱建立一個新代理。它執行於 Wysebee Cloud 中，只有它能在那台機器上執行程式、技能指令碼、資料夾工具和開發者工具 — 僅限你在機器上用 wysebee-agent allow 和 enable 允許的。",
+        "needCode": "輸入 wysebee-agent pair 顯示的 8 個字元的代碼。",
+        "paired": "{{label}}（@{{name}}）已建立，並使用 {{browser}}。",
+        "pairedNote": "它的每個程式都必須先在機器上允許（wysebee-agent allow）才能執行，資料夾也在那裡新增（wysebee-agent folder add）。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用該名稱。它是一個目前沒有機器的{{type}}：將這台機器重新連接到它並保留其設定 — 或在下方輸入另一個名稱以建立新代理。它的程式和技能需要在機器上重新允許。",
+        "typeFallback": "Linux 代理"
+      }
+    },
+    "phoneAgents": {
+      "pair": "配對 Android 手機",
+      "unpairConfirm": "要取消 {{device}} 與 {{label}} 的配對嗎？代理程式會保留，但不能再使用那支手機。要再次使用它，請配對一支手機，並在 Wysebee 詢問時將其重新連線到此代理程式。",
+      "pairDialog": {
+        "title": "配對 Android 手機",
+        "step1": "在手機上安裝並開啟 Wysebee Agent，並開啟它的無障礙服務。",
+        "step2": "在其中為將使用這支手機的代理程式輸入一個名稱。",
+        "step3": "在這裡輸入 Wysebee Agent 顯示的代碼。",
+        "note": "配對會以該名稱建立一個新的代理程式。它常駐在 Wysebee Cloud 中，只有它會使用這支手機——僅限你在 Wysebee Agent 中允許的 App。",
+        "needCode": "請輸入 Wysebee Agent 顯示的 8 位代碼。",
+        "paired": "已建立 {{label}}（@{{name}}），它使用 {{browser}}。",
+        "pairedNote": "它只會開啟和操作你在手機上的 Wysebee Agent 中允許的 App，且絕不會在密碼欄位中輸入。",
+        "takenReconnect": "{{label}}（@{{name}}）已使用該名稱。它是一個目前沒有手機的 {{type}}：將這支手機重新連線到它，保留其設定——或在下方輸入另一個名稱以建立新的代理程式。",
+        "typeFallback": "手機代理程式",
+        "qrTitle": "用手機掃描",
+        "qrHint": "在手機上的 Wysebee Agent 中輸入代理程式名稱，點一下「掃描 QR 碼」並將相機對準此處。或在下方輸入它顯示的代碼。",
+        "qrAlt": "用於配對 Android 手機的 QR 碼",
+        "qrLoading": "正在產生 QR 碼…",
+        "qrFailed": "無法產生 QR 碼。",
+        "qrExpired": "此 QR 碼已過期。",
+        "qrNew": "顯示新的 QR 碼",
+        "pairedByQr": "已建立 {{label}} (@{{name}})，它使用掃描此代碼的手機。"
+      }
+    },
+    "system": {
+      "analytics": {
+        "title": "使用情況分析",
+        "send": "傳送使用情況分析",
+        "help": "你開啟的頁面和點擊的內容——絕不包括你輸入的內容，也不包括你的代理程式、話題和任務的名稱——用於改進 Wysebee。此選擇跟隨你的帳號。"
+      }
+    }
+  }
+}

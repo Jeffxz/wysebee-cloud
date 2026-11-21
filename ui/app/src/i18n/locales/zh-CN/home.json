@@ -1,0 +1,54 @@
+{
+  "home": {
+    "nav": {
+      "label": "智能体",
+      "title": "智能体",
+      "addAgent": "添加智能体",
+      "addAgentRow": "添加智能体",
+      "all": "所有智能体"
+    },
+    "settings": {
+      "title": "Wysebee 的设置",
+      "discard": "不保存更改就离开？",
+      "agentTitle": "{{name}} 的设置",
+      "agentSubtitle": "@{{name}} · 它的工具和指令"
+    },
+    "web": {
+      "done": "完成"
+    },
+    "agentGone": "此智能体已不存在。",
+    "backToWysebee": "返回 Wysebee",
+    "addAgent": {
+      "title": "添加智能体",
+      "intro": "属于你自己的智能体，有自己的工具和指令。你的 AI 应用可以通过 Wysebee Assistant 使用它的工具。它不能更改 Wysebee 的设置、任务或提醒。",
+      "label": "名称",
+      "labelPlaceholder": "例如：旅行规划师",
+      "handle": "@ 名称",
+      "handleHelp": "请它帮忙时在 @ 后输入的名称：小写字母、数字、- 和 _。",
+      "save": "添加智能体",
+      "needLabel": "请为它起个名字。",
+      "badHandle": "@ 名称必须以小写字母开头，只能包含小写字母、数字、- 和 _（最多 30 个）。",
+      "cancel": "取消"
+    },
+    "dashboard": {
+      "agents": "智能体",
+      "devices": "设备",
+      "viewAll": "查看全部",
+      "inCloud": "在 Wysebee Cloud 中运行",
+      "online": "在线",
+      "offline": "离线",
+      "paused": "已暂停",
+      "cloudHint": "所有智能体运行的地方",
+      "workspaces": "工作区",
+      "tasks": "任务",
+      "viewAll_workspaces": "查看全部工作区",
+      "viewAll_agents": "查看全部智能体",
+      "viewAll_tasks": "查看全部任务",
+      "viewAll_devices": "查看全部设备",
+      "changed": "{{when}}更改"
+    },
+    "list": {
+      "intro": "Wysebee 和你自己的智能体：各自在哪里运行，以及现在能否响应。"
+    }
+  }
+}

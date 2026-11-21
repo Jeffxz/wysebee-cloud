@@ -1,0 +1,40 @@
+{
+  "sideNav": {
+    "primaryNav": "Principale",
+    "items": {
+      "tasks": "Tâches",
+      "home": "Accueil",
+      "agents": "Agents",
+      "activity": "Activité",
+      "settings": "Paramètres",
+      "devices": "Appareils",
+      "workspaces": "Espaces de travail",
+      "skills": "Compétences",
+      "tools": "Outils",
+      "more": "Plus"
+    },
+    "secondaryNav": "Secondaire",
+    "createOptions": {
+      "newTask": "Nouvelle tâche"
+    },
+    "secondary": {
+      "settingsHeading": "Paramètres",
+      "settingsSystem": "Système",
+      "settingsMachines": "Connexions",
+      "loading": "Chargement…",
+      "add": "Ajouter",
+      "renameCategory": "Renommer {{name}}",
+      "deleteCategory": "Supprimer {{name}}",
+      "dragHandle": "Réorganiser {{name}}",
+      "tasksHeading": "Tâches",
+      "noTasksYet": "Aucune tâche pour l'instant."
+    },
+    "darkMode": "Mode sombre",
+    "toLight": "Passer en clair",
+    "toDark": "Passer en sombre",
+    "themeNotSaved": "L'apparence a changé ici, mais n'a pas pu être enregistrée dans Wysebee Cloud : {{error}}",
+    "unread_one": "{{count}} non lue",
+    "unread_many": "{{count}} non lues",
+    "unread_other": "{{count}} non lues"
+  }
+}

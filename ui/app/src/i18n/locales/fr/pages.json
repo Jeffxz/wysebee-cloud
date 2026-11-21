@@ -1,0 +1,11 @@
+{
+  "pages": {
+    "tab": "Page",
+    "loading": "Chargement de la page…",
+    "none": "Pas encore de page pour ce document.",
+    "howTo": "Demandez à votre application IA, connectée à Wysebee Assistant, d'en créer une à partir de ce document (elle utilise write_page). Elle s'affiche ici, et à sa propre adresse.",
+    "refresh": "Actualiser",
+    "open": "Ouvrir seule",
+    "sandboxed": "Créée par votre application IA. Affichée isolée : ses scripts s'exécutent, mais elle ne peut atteindre ni Wysebee ni Internet."
+  }
+}

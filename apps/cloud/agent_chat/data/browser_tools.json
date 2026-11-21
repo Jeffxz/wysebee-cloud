@@ -1,0 +1,1054 @@
+{
+  "tools": [
+    {
+      "name": "browser_tabs",
+      "pack": "browser",
+      "description": "List the tabs open in the user's Chrome.\n\nOnly each tab's id, title and site (origin) are returned, never the full URL.\n\nReturns a JSON object with ``tabs``: id, title, origin, active, and\nopened_by_probe — true for a tab browser_open_tab opened, which\nbrowser_close_tab may close without asking the user.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_activate",
+      "pack": "browser",
+      "description": "Bring a tab to the front so it can be screenshotted. May ask the user.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "type": "integer",
+            "description": "A tab id from browser_tabs."
+          }
+        },
+        "required": [
+          "tab_id"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_snapshot",
+      "pack": "browser",
+      "description": "Read a page: its visible text and its interactive elements.\n\nEach element has a ``ref`` that browser_click and browser_type take. Refs are\nonly valid until the page changes; take a new snapshot after navigating or\nclicking. The user may be asked to approve this for the site.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab to read; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_screenshot",
+      "pack": "browser",
+      "description": "Take a screenshot of a tab's visible area.\n\nThe only way to see what a page draws rather than writes — a game on a canvas,\na chart, anything inside a frame browser_snapshot cannot read. Scaled to at\nmost 1568 px on its long side and sent as JPEG. A point in this image, in its\nown pixels, is what browser_mouse takes as x/y.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab to capture; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_navigate",
+      "pack": "browser",
+      "description": "Open a URL in a tab. The user is asked to approve unless the site is trusted.\n\nWhen the page links to where you are going, click that link instead\n(browser_click): the user watches a pointer follow your clicks, and an address\ntyped in shows them nothing of how you got there. Navigate to reach the first\npage, an address the user gave, or a place nothing on the page leads to.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "An http(s) address."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab to navigate; the active tab if omitted."
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_click",
+      "pack": "browser",
+      "description": "Click an element from the latest browser_snapshot.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "description": "The element's ref."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "required": [
+          "ref"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_type",
+      "pack": "browser",
+      "description": "Type into an input from the latest browser_snapshot, replacing its value.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "description": "The input's ref."
+          },
+          "text": {
+            "type": "string",
+            "description": "What to enter."
+          },
+          "submit": {
+            "default": false,
+            "type": "boolean",
+            "description": "Press Enter afterwards."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "required": [
+          "ref",
+          "text"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_open_tab",
+      "pack": "browser",
+      "description": "Open a URL in a new tab, leaving the user's other tabs as they are.\n\nPrefer this to browser_navigate when the user's current tab should be kept,\nand like it, only for a page nothing on the current one links to — otherwise\nclick the link, so the user can follow.\nThe user is asked to approve unless the site is trusted.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "An http(s) address."
+          },
+          "active": {
+            "default": true,
+            "type": "boolean",
+            "description": "Bring the new tab to the front."
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_close_tab",
+      "pack": "browser",
+      "description": "Close a tab.\n\nA tab opened with browser_open_tab closes straight away. Any other tab is\nthe user's and they are always asked first — even on a site they trust —\nbecause closing it can lose unsaved work.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "type": "integer",
+            "description": "The tab to close, from browser_tabs or browser_open_tab."
+          }
+        },
+        "required": [
+          "tab_id"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_scroll",
+      "pack": "browser",
+      "description": "Scroll the page, or with ``ref`` the panel or list that element sits in.\n\nbrowser_snapshot already reads the whole page; scroll to bring something into\na screenshot, or to make a page load what it only loads on scroll (feeds,\nlazy images) — then take a new snapshot. The user may be asked to approve.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "direction": {
+            "default": "down",
+            "enum": [
+              "up",
+              "down",
+              "left",
+              "right"
+            ],
+            "type": "string",
+            "description": "up, down, left or right."
+          },
+          "pages": {
+            "default": 1.0,
+            "type": "number",
+            "description": "How far, in screens (at most 20)."
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "An element from the latest snapshot whose scrollable container to\nscroll; the whole page if omitted."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_drag",
+      "pack": "browser",
+      "description": "Drag an element onto another, or by a pixel offset (sliders, sortable lists).\n\nDrop onto an element by ``to_ref``, or by ``to_text`` for a drop zone with\nnothing clickable in it (a \"Drop files here\" box, a board column's heading),\nor move by ``dx``/``dy`` pixels.\nElements marked ``draggable`` in browser_snapshot are drag sources. The events\nare simulated, which some sites ignore — check the result with a new snapshot.\nThe user may be asked to approve.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "from_ref": {
+            "type": "string",
+            "description": "The element to pick up, from the latest snapshot."
+          },
+          "to_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The element to drop it on, from the latest snapshot."
+          },
+          "to_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Visible text of the drop zone, when it has no ref."
+          },
+          "dx": {
+            "default": 0,
+            "type": "integer",
+            "description": "Pixels to move right (negative: left), when there is no to_ref."
+          },
+          "dy": {
+            "default": 0,
+            "type": "integer",
+            "description": "Pixels to move down (negative: up), when there is no to_ref."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "required": [
+          "from_ref"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_mouse",
+      "pack": "browser",
+      "description": "One mouse action: press, move, release, click, double_click, wheel — or a\nwhole stroke with path.\n\nFor what browser_click and browser_drag cannot express: drawing, a drag with a\npause in it, hovering to open a menu, a double click, a scroll-wheel turn over\na map or a canvas.\n\n**To draw, use action=\"path\"**: one call per stroke. It presses at the first\nof ``points``, moves through the rest in order and releases at the last, so a\nline, a curve or a whole outline is a single call. Give 2 to 500 points; more\npoints make a smoother curve. Lift the pen between strokes by making each one\nits own path call. Use press, move and release only for a gesture that needs a\npause or a look at the page part-way through; each of those is a separate\ncall, and a chat turn allows a limited number of rounds.\n\nBy default events are **simulated**, which some sites ignore. ``native=True``\nsends real input through Chrome's debugger instead — sites cannot tell it from\na person — and Chrome shows a \"debugging this browser\" bar on the tab while it\nis in use. Try simulated first; use native when a site does not respond. If\nthe user cancels that bar, native input on the tab is refused from then on.\n\nTarget a point with ``x``/``y`` in the pixels of the latest browser_screenshot,\nor an element's centre with ``ref``. The user may be asked to approve once; the\nrest of the gesture on that tab and site then runs for a minute (real input\nneeds its own approval, even mid-gesture).",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "press",
+              "move",
+              "release",
+              "click",
+              "double_click",
+              "wheel",
+              "path"
+            ],
+            "type": "string",
+            "description": "press, move, release, click, double_click, wheel or path."
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Horizontal position, in screenshot pixels."
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Vertical position, in screenshot pixels."
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "An element from the latest snapshot, instead of x/y."
+          },
+          "button": {
+            "default": "left",
+            "enum": [
+              "left",
+              "middle",
+              "right"
+            ],
+            "type": "string",
+            "description": "left, middle or right."
+          },
+          "delta_x": {
+            "default": 0,
+            "type": "number",
+            "description": "For wheel: pixels to scroll right (negative: left)."
+          },
+          "delta_y": {
+            "default": 0,
+            "type": "number",
+            "description": "For wheel: pixels to scroll down (negative: up)."
+          },
+          "native": {
+            "default": false,
+            "type": "boolean",
+            "description": "Send real input through the debugger instead of simulated events."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          },
+          "points": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "For path: the stroke as [[x, y], ...] in screenshot pixels, 2 to 500\npoints, every one on the visible page."
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_bookmarks",
+      "pack": "browser",
+      "description": "Read the user's bookmarks, or search them.\n\nThe user is asked every time: bookmarks hold full URLs and belong to no site,\nso there is no trusting them in advance.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Words to find in a bookmark's title or URL; all bookmarks if omitted."
+          },
+          "limit": {
+            "default": 100,
+            "type": "integer",
+            "description": "How many to return, at most 500."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_record",
+      "pack": "browser",
+      "description": "Film a tab as a video of a scenario: start right before the scenario, do it, and\nstop right after, giving each recording a descriptive name (\"checkout with an\nexpired card\") so the person can tell the videos apart.\n\naction start: begin filming the tab -> {recording, tab_id, name, started_at,\nelapsed_ms, frames, note}. The person is asked unless the site is trusted. One\nrecording a tab, at most 3 at once.\naction stop: end it and save it -> {tab_id, name, ended, file, bytes, duration_ms,\nframes, upload}. Never asks. With no tab_id it stops the only recording, else the\nactive tab's. The video goes to Downloads/Wysebee Agent/; it is uploaded to the person's\nWysebee account only if they turned that on in the extension (off by default).\naction status (the default): {recordings (those running), recent (the last saved,\neach with its upload: uploading, uploaded, failed: ..., off, or not paired)}.\n\nA recording also ends by itself after 15 minutes in all, 5 minutes after your last\naction on the tab, or when the tab closes, the agent is paused or the debugging\nbar is cancelled; what was filmed until then is still saved.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "default": "status",
+            "type": "string",
+            "enum": [
+              "start",
+              "stop",
+              "status"
+            ],
+            "description": "start, stop or status."
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "start: what the scenario is, at most 120 characters (\"scenario\" if omitted); it names the video."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted (stop: the only recording, if just one)."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_console",
+      "pack": "devtools",
+      "description": "Read a tab's console: console.log/warn/error output, uncaught exceptions, and\nthe browser's own messages (failed loads, CSP violations, deprecations).\n\nThe first developer-tool call on a tab starts recording it, so messages logged\nearlier may be missing — call browser_reload to capture a page from its start.\nRecording carries on across navigations in that tab until it has been idle for\nten minutes. Chrome shows a \"debugging this browser\" bar on the tab meanwhile.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "default": "all",
+            "enum": [
+              "all",
+              "error",
+              "warning",
+              "info",
+              "debug"
+            ],
+            "type": "string",
+            "description": "The least severe level to include: \"error\" is errors only, \"warning\"\nis warnings and errors, \"all\" is everything."
+          },
+          "limit": {
+            "default": 200,
+            "type": "integer",
+            "description": "How many of the newest entries to return, at most 1000."
+          },
+          "after": {
+            "default": 0,
+            "type": "integer",
+            "description": "Only entries with a ``seq`` greater than this — pass the last seq you\nsaw to read just what is new."
+          },
+          "clear": {
+            "default": false,
+            "type": "boolean",
+            "description": "Empty the log after reading it."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_network",
+      "pack": "devtools",
+      "description": "Read a tab's network log, as in the DevTools Network panel.\n\nRecording starts with the first developer-tool call on a tab (see\nbrowser_console); call browser_reload to capture every request a page makes as\nit loads. Sign-in headers (Authorization, Cookie, Set-Cookie, API keys) and\npassword-like fields in request bodies are always hidden.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Only requests whose URL contains this text (case-insensitive)."
+          },
+          "resource_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Only this type: Document, Stylesheet, Image, Media, Font,\nScript, XHR, Fetch, WebSocket, Manifest, Other."
+          },
+          "failed_only": {
+            "default": false,
+            "type": "boolean",
+            "description": "Only requests that failed or answered with status 400 or above."
+          },
+          "include_headers": {
+            "default": false,
+            "type": "boolean",
+            "description": "Add request and response headers and the request body."
+          },
+          "limit": {
+            "default": 200,
+            "type": "integer",
+            "description": "How many of the newest to return, at most 1000."
+          },
+          "clear": {
+            "default": false,
+            "type": "boolean",
+            "description": "Empty the log after reading it."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_network_body",
+      "pack": "devtools",
+      "description": "Read the response body of one request from browser_network.\n\nText (HTML, JSON, JavaScript, CSS, XML) is returned, up to 100,000 characters;\nfor an image or other binary response only its type and size are. A body can\nno longer be available once the page has moved far on.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "description": "The request's ``id`` from browser_network."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab it was made in; the active tab if omitted."
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_evaluate",
+      "pack": "devtools",
+      "description": "Run JavaScript in the page and return its result, as in the DevTools console.\n\nFor anything the other tools do not cover: reading application state, the DOM,\nlocalStorage, computed values, calling the page's own functions. Top-level\n``await`` works. The result must be JSON-serialisable — return\n``el.outerHTML`` or a plain object rather than a DOM element. Unless the site\nis trusted the user is asked first, and sees the script. Times out after 15 s.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "expression": {
+            "type": "string",
+            "description": "The JavaScript to run; the value of its last expression is the\nresult."
+          },
+          "await_promise": {
+            "default": true,
+            "type": "boolean",
+            "description": "Wait for a returned promise and give its value."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "required": [
+          "expression"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_viewport",
+      "pack": "devtools",
+      "description": "Emulate a screen size — a phone, a tablet, a narrow window — or put it back.\n\nThe page is laid out at that size without resizing the user's window; take a\nbrowser_screenshot to see it. The emulation lasts until ``reset`` or until the\ntab's developer-tool session ends (ten minutes without a developer-tool call).\n\nCommon sizes: iPhone 15 390x844 at 3, Pixel 8 412x915 at 2.625, iPad 820x1180\nat 2, laptop 1366x768, desktop 1920x1080.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Viewport width in CSS pixels, 200 to 5000."
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Viewport height in CSS pixels, 200 to 5000."
+          },
+          "device_scale_factor": {
+            "default": 0,
+            "type": "number",
+            "description": "Device pixel ratio, 0.5 to 4; 0 keeps the screen's own."
+          },
+          "mobile": {
+            "default": false,
+            "type": "boolean",
+            "description": "Emulate a mobile device: touch events and the mobile viewport."
+          },
+          "user_agent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A user-agent string to send and report instead of the real one."
+          },
+          "reset": {
+            "default": false,
+            "type": "boolean",
+            "description": "Undo all of the above; the other arguments are ignored."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_inspect",
+      "pack": "devtools",
+      "description": "Inspect one element, as in the DevTools Elements panel.\n\nReturns its tag and attributes, its box (position, size, whether it is visible\nand on screen), computed styles, accessible role and name, text and HTML.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "An element's ref from the latest browser_snapshot."
+          },
+          "selector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A CSS selector instead of ref; the result also says how many\nelements match."
+          },
+          "index": {
+            "default": 0,
+            "type": "integer",
+            "description": "Which match of ``selector`` to inspect, from 0."
+          },
+          "styles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "CSS properties to read (e.g. [\"z-index\", \"overflow\"]); a set that\ndecides layout and look if omitted."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_audit",
+      "pack": "devtools",
+      "description": "Audit a page for common problems: accessibility (missing alt text, unlabeled\nfields and buttons, low contrast, heading order, lang), SEO (title, meta\ndescription, viewport, h1) and best practices (duplicate ids, mixed content,\noversized images, unsafe target=_blank).\n\nA fast first pass, not Lighthouse. Each issue gives a count and a few example\nelements; follow up with browser_inspect. Includes the console's error count\nwhen the tab is being recorded.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_performance",
+      "pack": "devtools",
+      "description": "Measure a page's performance.\n\nReturns load timings (time to first byte, DOMContentLoaded, load), first and\nlargest contentful paint, cumulative layout shift, long tasks, resources by type\nwith the slowest five, DOM size, and Chrome's runtime counters (JS heap, nodes,\nlayouts, style recalculations, script time). Call browser_reload first for\nnumbers from a fresh load.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_reload",
+      "pack": "devtools",
+      "description": "Reload a tab, recording its console and network from the very start.",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bypass_cache": {
+            "default": false,
+            "type": "boolean",
+            "description": "Reload without the cache, like Shift+Reload."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_mock",
+      "pack": "devtools",
+      "description": "Fake network responses on a tab, for testing how the app being developed handles\nerrors: answer an API call with a 500, fail it with ConnectionRefused, or hold it\nback to test a slow server — then drive the page and see what a person would see.\n\nEach rule picks requests by URL glob (and optionally method, resource type and\nhow many times) and says what happens: `status` (+ `headers`, `body`), `error`, or\n`delay_ms` alone. The first matching rule with uses left wins; requests no rule\nmatches go on as normal. New rules are added after the tab's current ones; `clear`\ndrops those first, and `clear` with no `rules` stops faking. Called with no\narguments it lists the active rules. Returns {tab_id, origin, rules (each with its\nhits), note}; faked requests show in browser_network.\n\nRules end when the tab goes to another site, the agent is paused, or after about\nten minutes without a developer-tool call. Whole pages are never faked, only what\na page loads. The person is asked each time unless the site is set to \"Allow\neverything\".",
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "rules": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "url"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The requests' full URL as a glob: * matches any run of characters, ? one character. Must start with http:, https: or *, such as */api/orders*."
+                    },
+                    "method": {
+                      "type": "string",
+                      "enum": [
+                        "GET",
+                        "HEAD",
+                        "POST",
+                        "PUT",
+                        "PATCH",
+                        "DELETE",
+                        "OPTIONS"
+                      ],
+                      "description": "Only requests with this method; any method if omitted."
+                    },
+                    "resource_type": {
+                      "type": "string",
+                      "enum": [
+                        "XHR",
+                        "Fetch",
+                        "Script",
+                        "Stylesheet",
+                        "Image",
+                        "Media",
+                        "Font",
+                        "EventSource",
+                        "WebSocket",
+                        "Manifest",
+                        "Other"
+                      ],
+                      "description": "Only requests of this type; any if omitted. Never Document: whole pages are not faked."
+                    },
+                    "times": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "Use the rule this many times, then let requests through; forever if omitted."
+                    },
+                    "delay_ms": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 30000,
+                      "description": "Wait this long first, 0 to 30000. Alone (no status or error) it holds the real request back, to test a slow server."
+                    },
+                    "status": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 599,
+                      "description": "Answer with a fake response of this status, such as 500. Not with error."
+                    },
+                    "headers": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "The fake response's headers. Set-Cookie, Content-Security-Policy, Strict-Transport-Security and Access-Control-Allow-Credentials are refused."
+                    },
+                    "body": {
+                      "description": "The fake response's body, at most 1,000,000 characters: a string, or any JSON value, sent as application/json."
+                    },
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "Failed",
+                        "Aborted",
+                        "TimedOut",
+                        "AccessDenied",
+                        "ConnectionClosed",
+                        "ConnectionReset",
+                        "ConnectionRefused",
+                        "ConnectionAborted",
+                        "ConnectionFailed",
+                        "NameNotResolved",
+                        "InternetDisconnected",
+                        "AddressUnreachable",
+                        "BlockedByClient",
+                        "BlockedByResponse"
+                      ],
+                      "description": "Fail the request as the network would, such as ConnectionRefused. Not with status."
+                    }
+                  }
+                },
+                "maxItems": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Rules to add, at most 50 a tab. Checked whole: if one is wrong, none is added."
+          },
+          "clear": {
+            "default": false,
+            "type": "boolean",
+            "description": "Drop the tab's existing rules first; with no rules, just stop faking."
+          },
+          "tab_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The tab; the active tab if omitted."
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

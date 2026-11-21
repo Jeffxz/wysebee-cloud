@@ -1,0 +1,70 @@
+{
+  "workspaces": {
+    "loading": "正在載入…",
+    "notFound": "此工作區已不存在。",
+    "nav": {
+      "label": "工作區",
+      "title": "工作區",
+      "add": "建立工作區",
+      "name": "工作區名稱",
+      "placeholder": "工作區名稱",
+      "loading": "正在載入…",
+      "none": "還沒有工作區。",
+      "deleteFolder": "刪除資料夾 {{name}}",
+      "deleteFolderConfirm": "刪除資料夾「{{name}}」及其中的所有內容？此操作無法復原。",
+      "addIn": "新增到 {{name}}",
+      "newPage": "新增頁面",
+      "newFolder": "新增資料夾",
+      "pageName": "頁面名稱",
+      "folderName": "資料夾名稱",
+      "rename": "重新命名 {{name}}",
+      "all": "所有工作區"
+    },
+    "start": {
+      "titleFirst": "建立你的第一個工作區",
+      "title": "建立工作區",
+      "hint": "工作區是保存在 Wysebee Cloud 中的文件資料夾，開始時包含一個可以撰寫的 README。",
+      "name": "工作區名稱",
+      "placeholder": "例如：網站改版",
+      "create": "建立工作區"
+    },
+    "overview": {
+      "delete": "刪除工作區",
+      "deleteConfirm": "刪除工作區「{{name}}」及其所有檔案？此操作無法復原。",
+      "counts": "{{folders}} 個資料夾中共 {{files}} 個檔案。在選單中選擇一個檔案即可撰寫。",
+      "newPage": "新頁面",
+      "newFolder": "新資料夾",
+      "pageName": "頁面名稱",
+      "pagePlaceholder": "例如：guide/getting-started",
+      "folderName": "資料夾名稱",
+      "folderPlaceholder": "例如：guide",
+      "create": "建立",
+      "cancel": "取消"
+    },
+    "editor": {
+      "edit": "編輯",
+      "preview": "預覽",
+      "save": "儲存",
+      "saved": "已儲存到 Wysebee Cloud。",
+      "delete": "刪除此檔案",
+      "deleteConfirm": "刪除「{{name}}」？此操作無法復原。",
+      "empty": "*還沒有內容。*",
+      "label": "{{name}} 的文字",
+      "leaveConfirm": "此檔案有未儲存的變更。不儲存就離開嗎？",
+      "frontmatter": "頁面資訊"
+    },
+    "assistant": {
+      "name": "Wysebee Assistant",
+      "info": "如何使用 Wysebee Assistant",
+      "usage": "在你的 AI 應用程式中，請 Wysebee Assistant 在這個頁面寫下你想要的內容。它寫的內容會立即顯示在這裡；檢查後再儲存。",
+      "setup": "用這個位址把 Wysebee Assistant 新增到你的 AI 應用程式一次：",
+      "howTo": "Claude：設定 → 連接器 → 新增自訂連接器。ChatGPT：設定 → 應用程式與連接器 → 進階設定 → 開發者模式，然後建立。依提示用你的 Wysebee 帳戶登入。",
+      "copy": "複製位址",
+      "elsewhere": "你的 AI 應用程式正在寫入在別處開啟的頁面。",
+      "useHere": "在這裡使用"
+    },
+    "list": {
+      "intro": "你的工作區：保存在 Wysebee Cloud 中的文件資料夾。"
+    }
+  }
+}

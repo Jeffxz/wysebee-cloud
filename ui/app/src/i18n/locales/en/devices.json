@@ -1,0 +1,34 @@
+{
+  "devices": {
+    "nav": {
+      "label": "Devices",
+      "title": "Devices",
+      "all": "All devices",
+      "browsers": "Browsers",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "detail": {
+      "about": "About",
+      "agent": "Agent",
+      "type": "Type",
+      "device": "Device",
+      "browser": "Browser",
+      "version": "Version",
+      "status": "Status",
+      "paused": "Paused in Wysebee Agent",
+      "lastSeen": "Last seen",
+      "paired": "Paired",
+      "programs": "Programs allowed",
+      "skills": "Skills allowed",
+      "folders": "Folders allowed",
+      "noneAllowed": "None allowed yet.",
+      "readOnly": "Read only",
+      "readWrite": "Read and write",
+      "openAgent": "Open agent",
+      "notFound": "This device is not paired any more.",
+      "back": "All devices",
+      "cloudAbout": "Every agent of yours lives in Wysebee Cloud, which runs them, keeps their tasks and workspaces, and reaches the devices and browsers paired with them."
+    }
+  }
+}

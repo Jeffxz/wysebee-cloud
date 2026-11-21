@@ -1,0 +1,74 @@
+{
+  "skills": {
+    "loading": "Chargement…",
+    "notFound": "Cette compétence n’existe plus.",
+    "nav": {
+      "label": "Compétences",
+      "title": "Compétences",
+      "add": "Créer une compétence",
+      "name": "Nom de la compétence",
+      "placeholder": "p. ex. weekly-report",
+      "loading": "Chargement…",
+      "none": "Aucune compétence pour l’instant.",
+      "rename": "Renommer {{name}}",
+      "addIn": "Ajouter à {{name}}",
+      "newFile": "Nouveau fichier",
+      "newFolder": "Nouveau dossier",
+      "upload": "Importer des fichiers…",
+      "uploaded": "{{n}} fichier(s) importé(s).",
+      "fileName": "Nom du fichier",
+      "folderName": "Nom du dossier",
+      "deleteFolder": "Supprimer le dossier {{name}}",
+      "deleteFolderConfirm": "Supprimer le dossier « {{name}} » et tout son contenu ? Action irréversible.",
+      "deleteFile": "Supprimer {{name}}",
+      "deleteFileConfirm": "Supprimer « {{name}} » ? Action irréversible.",
+      "all": "Toutes les compétences"
+    },
+    "start": {
+      "titleFirst": "Créez votre première compétence",
+      "title": "Créer une compétence",
+      "hint": "Une compétence est un dossier conservé dans Wysebee Cloud : son SKILL.md dit à quoi elle sert et quoi faire, à côté des scripts et fichiers nécessaires. Attribuez-la à vos agents dans leurs réglages.",
+      "name": "Nom de la compétence",
+      "placeholder": "p. ex. weekly-report",
+      "create": "Créer la compétence"
+    },
+    "overview": {
+      "delete": "Supprimer la compétence",
+      "deleteConfirm": "Supprimer la compétence « {{name}} » et tous ses fichiers ? Chaque agent qui l’a la perd. Action irréversible.",
+      "counts": "{{files}} fichiers.",
+      "edit": "Modifier SKILL.md",
+      "hint": "Ajoutez des scripts et d’autres fichiers depuis le menu à côté : le + d’un dossier ajoute un fichier, un dossier ou des fichiers de votre ordinateur. Attribuez la compétence à un agent dans son onglet Compétences.",
+      "agents": "Agents qui l’ont :",
+      "noAgents": "Aucun agent ne l’a encore : donnez-la à un agent dans son onglet Compétences."
+    },
+    "editor": {
+      "saved": "Enregistré.",
+      "notText": "Ce fichier n’est pas du texte ({{size}} octets) : il est conservé tel quel avec la compétence.",
+      "download": "Télécharger",
+      "cardHint": "La fiche de la compétence : sa description et ses scripts sont lus dans l’en-tête à l’enregistrement, et son nom est celui de la compétence."
+    },
+    "changes": {
+      "title": "Modifications proposées par votre application IA",
+      "note": "Non enregistrées : la compétence reste telle quelle tant que vous n'appliquez pas une modification. Consultez chacune avant de l'appliquer — un script s'exécute sur votre ordinateur.",
+      "kind": {
+        "newFile": "Nouveau fichier",
+        "changedFile": "Modifie un fichier",
+        "folder": "Nouveau dossier"
+      },
+      "view": "Voir",
+      "hide": "Masquer",
+      "apply": "Appliquer",
+      "discard": "Abandonner",
+      "applyOne": "Appliquer {{path}}",
+      "discardOne": "Abandonner {{path}}",
+      "applyAll_one": "Appliquer {{count}}",
+      "applyAll_many": "Tout appliquer ({{count}})",
+      "applyAll_other": "Tout appliquer ({{count}})",
+      "now": "Actuel",
+      "proposed": "Proposé"
+    },
+    "list": {
+      "intro": "Vos compétences : à quoi sert chacune, conservées dans Wysebee Cloud et données à vos agents dans leurs réglages."
+    }
+  }
+}

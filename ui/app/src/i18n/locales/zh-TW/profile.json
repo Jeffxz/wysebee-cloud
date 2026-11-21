@@ -1,0 +1,65 @@
+{
+  "profile": {
+    "title": "個人資料",
+    "open": "個人資料：{{name}}",
+    "picture": "你的頭像",
+    "changePicture": "更換頭像",
+    "pictureHint": "點擊你的圖片即可變更。",
+    "displayName": "顯示名稱",
+    "displayNameHint": "Wysebee 對你的稱呼。留空則使用你的帳戶名稱。",
+    "save": "儲存",
+    "saved": "個人資料已儲存。",
+    "page": "帳戶",
+    "tabs": {
+      "profile": "個人資料",
+      "billing": "帳單"
+    },
+    "billing": {
+      "subscribe": "訂閱",
+      "manage": "管理訂閱",
+      "unavailable": "方案尚未開放。",
+      "active": "你的 {{plan}} 方案將於 {{date}} 續訂。",
+      "activeNoDate": "你正在使用 {{plan}} 方案。",
+      "ending": "你的 {{plan}} 方案將於 {{date}} 結束。",
+      "pastDue": "你上次的付款未成功。Stripe 會再試一次；請在「管理訂閱」中更新信用卡以保留你的方案。",
+      "history": "付款紀錄",
+      "none": "尚無付款。",
+      "date": "日期",
+      "amount": "金額",
+      "status": "狀態",
+      "paid": "已付款",
+      "failed": "失敗",
+      "plans": "方案",
+      "perMonth": "{{price}} / 月",
+      "planDevices": "{{devices}} 台註冊裝置，同時上線 {{online}} 台",
+      "planRelay": "每月 {{size}} 中繼流量",
+      "planStorage": "{{size}} 儲存空間",
+      "current": "目前方案",
+      "switchHint": "如需變更方案或取消，請使用「管理訂閱」。",
+      "paidPlan": "付費"
+    },
+    "storage": {
+      "title": "儲存空間",
+      "used": "已使用 {{used}}，共 {{limit}}",
+      "what": "Wysebee Cloud 為你保存的檔案（你的圖片和技能檔案），所有裝置合計。",
+      "kinds": {
+        "assets": "圖片",
+        "skill_files": "技能檔案"
+      }
+    },
+    "usage": {
+      "title": "用量",
+      "devices": "已註冊裝置 {{used}} / {{limit}} 台",
+      "devicesLabel": "已註冊裝置",
+      "online": "目前上線裝置 {{used}} / {{limit}} 台",
+      "onlineLabel": "上線裝置",
+      "relay": "本月中繼流量 {{used}} / {{limit}}",
+      "relayLabel": "中繼流量",
+      "relayWhat": "中繼流量是你的 AI 應用程式與裝置之間透過 Wysebee Cloud 傳輸的資料，將於 {{date}} 重新計算。"
+    },
+    "paywall": {
+      "title": "選擇一個方案，開始使用 Wysebee Cloud",
+      "body": "Wysebee Cloud 採按月訂閱。請在下方選擇一個方案；你可以隨時在「帳單」中變更方案或取消訂閱。"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "sideNav": {
+    "primaryNav": "主导航",
+    "items": {
+      "tasks": "任务",
+      "home": "首页",
+      "agents": "智能体",
+      "activity": "动态",
+      "settings": "设置",
+      "devices": "设备",
+      "workspaces": "工作区",
+      "skills": "技能",
+      "tools": "工具",
+      "more": "更多"
+    },
+    "secondaryNav": "次级导航",
+    "createOptions": {
+      "newTask": "新建任务"
+    },
+    "secondary": {
+      "settingsHeading": "设置",
+      "settingsSystem": "系统",
+      "settingsMachines": "连接",
+      "loading": "正在加载…",
+      "add": "添加",
+      "renameCategory": "重命名{{name}}",
+      "deleteCategory": "删除{{name}}",
+      "dragHandle": "调整{{name}}的顺序",
+      "tasksHeading": "任务",
+      "noTasksYet": "还没有任务。"
+    },
+    "darkMode": "深色模式",
+    "toLight": "切换到浅色",
+    "toDark": "切换到深色",
+    "themeNotSaved": "外观已在此处更改，但未能保存到 Wysebee Cloud：{{error}}",
+    "unread_other": "{{count}} 条未读"
+  }
+}

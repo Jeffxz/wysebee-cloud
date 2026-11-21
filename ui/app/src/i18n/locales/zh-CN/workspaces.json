@@ -1,0 +1,70 @@
+{
+  "workspaces": {
+    "loading": "正在加载…",
+    "notFound": "此工作区已不存在。",
+    "nav": {
+      "label": "工作区",
+      "title": "工作区",
+      "add": "新建工作区",
+      "name": "工作区名称",
+      "placeholder": "工作区名称",
+      "loading": "正在加载…",
+      "none": "还没有工作区。",
+      "deleteFolder": "删除文件夹 {{name}}",
+      "deleteFolderConfirm": "删除文件夹“{{name}}”及其中的所有内容？此操作无法撤销。",
+      "addIn": "添加到 {{name}}",
+      "newPage": "新建页面",
+      "newFolder": "新建文件夹",
+      "pageName": "页面名称",
+      "folderName": "文件夹名称",
+      "rename": "重命名 {{name}}",
+      "all": "所有工作区"
+    },
+    "start": {
+      "titleFirst": "创建你的第一个工作区",
+      "title": "新建工作区",
+      "hint": "工作区是保存在 Wysebee Cloud 中的文档文件夹，开始时包含一个可以编写的 README。",
+      "name": "工作区名称",
+      "placeholder": "例如：网站改版",
+      "create": "创建工作区"
+    },
+    "overview": {
+      "delete": "删除工作区",
+      "deleteConfirm": "删除工作区“{{name}}”及其所有文件？此操作无法撤销。",
+      "counts": "{{folders}} 个文件夹中共 {{files}} 个文件。在菜单中选择一个文件即可编写。",
+      "newPage": "新页面",
+      "newFolder": "新文件夹",
+      "pageName": "页面名称",
+      "pagePlaceholder": "例如：guide/getting-started",
+      "folderName": "文件夹名称",
+      "folderPlaceholder": "例如：guide",
+      "create": "创建",
+      "cancel": "取消"
+    },
+    "editor": {
+      "edit": "编辑",
+      "preview": "预览",
+      "save": "保存",
+      "saved": "已保存到 Wysebee Cloud。",
+      "delete": "删除此文件",
+      "deleteConfirm": "删除“{{name}}”？此操作无法撤销。",
+      "empty": "*还没有内容。*",
+      "label": "{{name}} 的文本",
+      "leaveConfirm": "此文件有未保存的更改。不保存就离开吗？",
+      "frontmatter": "页面信息"
+    },
+    "assistant": {
+      "name": "Wysebee Assistant",
+      "info": "如何使用 Wysebee Assistant",
+      "usage": "在你的 AI 应用中，让 Wysebee Assistant 在这个页面上写下你想要的内容。它写的内容会立即显示在这里；检查后再保存。",
+      "setup": "用这个地址把 Wysebee Assistant 添加到你的 AI 应用一次：",
+      "howTo": "Claude：设置 → 连接器 → 添加自定义连接器。ChatGPT：设置 → 应用与连接器 → 高级设置 → 开发者模式，然后创建。按提示用你的 Wysebee 账户登录。",
+      "copy": "复制地址",
+      "elsewhere": "你的 AI 应用正在写入在别处打开的页面。",
+      "useHere": "在这里使用"
+    },
+    "list": {
+      "intro": "你的工作区：保存在 Wysebee Cloud 中的文档文件夹。"
+    }
+  }
+}

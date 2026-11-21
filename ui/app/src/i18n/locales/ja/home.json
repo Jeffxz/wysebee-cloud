@@ -1,0 +1,54 @@
+{
+  "home": {
+    "nav": {
+      "label": "エージェント",
+      "title": "エージェント",
+      "addAgent": "エージェントを追加",
+      "addAgentRow": "エージェントを追加",
+      "all": "すべてのエージェント"
+    },
+    "settings": {
+      "title": "Wysebee の設定",
+      "discard": "変更を保存せずに移動しますか？",
+      "agentTitle": "{{name}} の設定",
+      "agentSubtitle": "@{{name}} · ツールと指示"
+    },
+    "web": {
+      "done": "完了"
+    },
+    "agentGone": "このエージェントはもう存在しません。",
+    "backToWysebee": "Wysebee に戻る",
+    "addAgent": {
+      "title": "エージェントを追加",
+      "intro": "独自のツールと指示を持つ、あなた専用のエージェントです。AI アプリは Wysebee Assistant を通じてそのツールを使えます。Wysebee の設定、タスク、リマインダーは変更できません。",
+      "label": "名前",
+      "labelPlaceholder": "例：旅行プランナー",
+      "handle": "@ 名",
+      "handleHelp": "依頼するときに @ の後に入力する名前：小文字の英字、数字、- と _。",
+      "save": "エージェントを追加",
+      "needLabel": "名前を付けてください。",
+      "badHandle": "@ 名は小文字の英字で始め、小文字の英字、数字、- と _ のみを使ってください（30 文字以内）。",
+      "cancel": "キャンセル"
+    },
+    "dashboard": {
+      "agents": "エージェント",
+      "devices": "デバイス",
+      "viewAll": "すべて表示",
+      "inCloud": "Wysebee Cloud で動作",
+      "online": "オンライン",
+      "offline": "オフライン",
+      "paused": "一時停止中",
+      "cloudHint": "すべてのエージェントが動作する場所",
+      "workspaces": "ワークスペース",
+      "tasks": "タスク",
+      "viewAll_workspaces": "すべてのワークスペースを表示",
+      "viewAll_agents": "すべてのエージェントを表示",
+      "viewAll_tasks": "すべてのタスクを表示",
+      "viewAll_devices": "すべてのデバイスを表示",
+      "changed": "{{when}}に変更"
+    },
+    "list": {
+      "intro": "Wysebee とあなたのエージェント：それぞれが動作する場所と、今応答できるかどうか。"
+    }
+  }
+}

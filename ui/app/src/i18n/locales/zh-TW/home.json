@@ -1,0 +1,54 @@
+{
+  "home": {
+    "nav": {
+      "label": "代理",
+      "title": "代理",
+      "addAgent": "新增代理",
+      "addAgentRow": "新增代理",
+      "all": "所有代理"
+    },
+    "settings": {
+      "title": "Wysebee 的設定",
+      "discard": "不儲存變更就離開？",
+      "agentTitle": "{{name}} 的設定",
+      "agentSubtitle": "@{{name}} · 它的工具和指示"
+    },
+    "web": {
+      "done": "完成"
+    },
+    "agentGone": "此代理已不存在。",
+    "backToWysebee": "返回 Wysebee",
+    "addAgent": {
+      "title": "新增代理",
+      "intro": "屬於你自己的代理，有自己的工具和指示。你的 AI 應用程式可以透過 Wysebee Assistant 使用它的工具。它不能變更 Wysebee 的設定、任務或提醒。",
+      "label": "名稱",
+      "labelPlaceholder": "例如：旅行規劃師",
+      "handle": "@ 名稱",
+      "handleHelp": "請它幫忙時在 @ 後輸入的名稱：小寫字母、數字、- 和 _。",
+      "save": "新增代理",
+      "needLabel": "請為它取個名字。",
+      "badHandle": "@ 名稱必須以小寫字母開頭，只能包含小寫字母、數字、- 和 _（最多 30 個）。",
+      "cancel": "取消"
+    },
+    "dashboard": {
+      "agents": "代理",
+      "devices": "裝置",
+      "viewAll": "查看全部",
+      "inCloud": "在 Wysebee Cloud 中執行",
+      "online": "線上",
+      "offline": "離線",
+      "paused": "已暫停",
+      "cloudHint": "所有代理執行的地方",
+      "workspaces": "工作區",
+      "tasks": "任務",
+      "viewAll_workspaces": "查看全部工作區",
+      "viewAll_agents": "查看全部代理",
+      "viewAll_tasks": "查看全部任務",
+      "viewAll_devices": "查看全部裝置",
+      "changed": "{{when}}變更"
+    },
+    "list": {
+      "intro": "Wysebee 和你自己的代理：各自在哪裡執行，以及現在能否回應。"
+    }
+  }
+}

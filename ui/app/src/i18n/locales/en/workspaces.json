@@ -1,0 +1,70 @@
+{
+  "workspaces": {
+    "loading": "Loading…",
+    "notFound": "This workspace is not there any more.",
+    "nav": {
+      "label": "Workspaces",
+      "title": "Workspaces",
+      "add": "Start a workspace",
+      "name": "Workspace name",
+      "placeholder": "Workspace name",
+      "loading": "Loading…",
+      "none": "No workspaces yet.",
+      "deleteFolder": "Delete the folder {{name}}",
+      "deleteFolderConfirm": "Delete the folder “{{name}}” and everything in it? This cannot be undone.",
+      "addIn": "Add to {{name}}",
+      "newPage": "New page",
+      "newFolder": "New folder",
+      "pageName": "Page name",
+      "folderName": "Folder name",
+      "rename": "Rename {{name}}",
+      "all": "All workspaces"
+    },
+    "start": {
+      "titleFirst": "Start your first workspace",
+      "title": "Start a workspace",
+      "hint": "A workspace is a folder of documentation, kept in Wysebee Cloud. It starts with a README you can write in.",
+      "name": "Workspace name",
+      "placeholder": "e.g. Website redesign",
+      "create": "Start workspace"
+    },
+    "overview": {
+      "delete": "Delete workspace",
+      "deleteConfirm": "Delete the workspace “{{name}}” and all its files? This cannot be undone.",
+      "counts": "{{files}} files in {{folders}} folders. Pick a file in the menu to write in it.",
+      "newPage": "New page",
+      "newFolder": "New folder",
+      "pageName": "Page name",
+      "pagePlaceholder": "e.g. guide/getting-started",
+      "folderName": "Folder name",
+      "folderPlaceholder": "e.g. guide",
+      "create": "Create",
+      "cancel": "Cancel"
+    },
+    "editor": {
+      "edit": "Edit",
+      "preview": "Preview",
+      "save": "Save",
+      "saved": "Saved to Wysebee Cloud.",
+      "delete": "Delete this file",
+      "deleteConfirm": "Delete “{{name}}”? This cannot be undone.",
+      "empty": "*Nothing written yet.*",
+      "label": "The text of {{name}}",
+      "leaveConfirm": "This file has changes that are not saved. Leave without saving?",
+      "frontmatter": "Page details"
+    },
+    "assistant": {
+      "name": "Wysebee Assistant",
+      "info": "How to use Wysebee Assistant",
+      "usage": "In your AI app, ask Wysebee Assistant to write what you want on this page. What it writes shows here at once; review it, then Save.",
+      "setup": "Add Wysebee Assistant to your AI app once, with this address:",
+      "howTo": "Claude: Settings → Connectors → Add custom connector. ChatGPT: Settings → Apps & Connectors → Advanced settings → Developer mode, then Create. Sign in with your Wysebee account when asked.",
+      "copy": "Copy the address",
+      "elsewhere": "Your AI app is writing to a page open elsewhere.",
+      "useHere": "Use here"
+    },
+    "list": {
+      "intro": "Your workspaces: folders of documentation kept in Wysebee Cloud."
+    }
+  }
+}

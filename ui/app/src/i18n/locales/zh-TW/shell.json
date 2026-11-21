@@ -1,0 +1,16 @@
+{
+  "shell": {
+    "headers": {
+      "tasks": "任務",
+      "home": "首頁",
+      "agents": "代理",
+      "settings": "設定",
+      "devices": "裝置",
+      "workspaces": "工作區",
+      "activity": "動態",
+      "skills": "技能",
+      "tools": "工具"
+    },
+    "loading": "正在載入…"
+  }
+}

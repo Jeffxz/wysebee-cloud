@@ -1,0 +1,70 @@
+{
+  "workspaces": {
+    "loading": "読み込み中…",
+    "notFound": "このワークスペースはもうありません。",
+    "nav": {
+      "label": "ワークスペース",
+      "title": "ワークスペース",
+      "add": "ワークスペースを始める",
+      "name": "ワークスペース名",
+      "placeholder": "ワークスペース名",
+      "loading": "読み込み中…",
+      "none": "ワークスペースはまだありません。",
+      "deleteFolder": "フォルダー {{name}} を削除",
+      "deleteFolderConfirm": "フォルダー「{{name}}」とその中身をすべて削除しますか？元に戻せません。",
+      "addIn": "{{name}} に追加",
+      "newPage": "新しいページ",
+      "newFolder": "新しいフォルダー",
+      "pageName": "ページ名",
+      "folderName": "フォルダー名",
+      "rename": "{{name}} の名前を変更",
+      "all": "すべてのワークスペース"
+    },
+    "start": {
+      "titleFirst": "最初のワークスペースを始めましょう",
+      "title": "ワークスペースを始める",
+      "hint": "ワークスペースは Wysebee Cloud に保存されるドキュメントのフォルダーです。最初は書き込める README から始まります。",
+      "name": "ワークスペース名",
+      "placeholder": "例: ウェブサイトのリニューアル",
+      "create": "ワークスペースを始める"
+    },
+    "overview": {
+      "delete": "ワークスペースを削除",
+      "deleteConfirm": "ワークスペース「{{name}}」とそのすべてのファイルを削除しますか？元に戻せません。",
+      "counts": "{{folders}} 個のフォルダーに {{files}} 個のファイル。メニューでファイルを選ぶと書き込めます。",
+      "newPage": "新しいページ",
+      "newFolder": "新しいフォルダー",
+      "pageName": "ページ名",
+      "pagePlaceholder": "例: guide/getting-started",
+      "folderName": "フォルダー名",
+      "folderPlaceholder": "例: guide",
+      "create": "作成",
+      "cancel": "キャンセル"
+    },
+    "editor": {
+      "edit": "編集",
+      "preview": "プレビュー",
+      "save": "保存",
+      "saved": "Wysebee Cloud に保存しました。",
+      "delete": "このファイルを削除",
+      "deleteConfirm": "「{{name}}」を削除しますか？元に戻せません。",
+      "empty": "*まだ何も書かれていません。*",
+      "label": "{{name}} のテキスト",
+      "leaveConfirm": "このファイルには保存されていない変更があります。保存せずに移動しますか？",
+      "frontmatter": "ページの詳細"
+    },
+    "assistant": {
+      "name": "Wysebee Assistant",
+      "info": "Wysebee Assistant の使い方",
+      "usage": "AI アプリで、このページに書いてほしい内容を Wysebee Assistant に頼んでください。書いた内容はすぐここに表示されます。確認してから保存してください。",
+      "setup": "このアドレスで、Wysebee Assistant を AI アプリに一度追加します:",
+      "howTo": "Claude: 設定 → コネクタ → カスタムコネクタを追加。ChatGPT: 設定 → アプリとコネクタ → 詳細設定 → 開発者モード、そして作成。求められたら Wysebee アカウントでサインインします。",
+      "copy": "アドレスをコピー",
+      "elsewhere": "AI アプリは別の場所で開いているページに書き込んでいます。",
+      "useHere": "ここで使う"
+    },
+    "list": {
+      "intro": "あなたのワークスペース：Wysebee Cloud に保管されたドキュメントのフォルダ。"
+    }
+  }
+}
