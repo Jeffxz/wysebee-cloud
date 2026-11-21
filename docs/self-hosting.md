@@ -13,24 +13,50 @@ A self-hosted server is **one person's**. It's the same code as the hosted servi
 | Extensions (e.g. the hosted plans) | As the deployment loads them | None. No Billing page, no limits |
 | Account deletion | Auth0, and what extensions hold | Not served (it's your database) |
 | Usage events | On, optionally forwarded to Mixpanel | Off unless `WYSEBEE_EVENTS_ENABLED=true` |
-| Storage quota | 1 GiB on Free | 100 GiB unless `WYSEBEE_STORAGE_QUOTA_BYTES` is set |
+| Storage quota | 1 GiB, or what an extension gives | 100 GiB unless `WYSEBEE_STORAGE_QUOTA_BYTES` is set |
 | `/` | Landing page | Redirects to the web app at `/app/` |
 
 ## Start it
 
-You need Docker with Compose.
+You need Docker with Compose v2, and this repository checked out. Then:
 
 ```bash
-cp .env.selfhost.example .env.selfhost
+./scripts/selfhost.sh
 ```
 
-Fill in `POSTGRES_PASSWORD` and `WYSEBEE_AI_KEK` (`openssl rand -base64 32` for each), then:
+The first time, it walks you through six steps and starts the server:
 
-```bash
-docker compose -f docker-compose.selfhost.yml --env-file .env.selfhost up -d --build
-```
+1. **Docker**: checks it is installed and running.
+2. **The settings file**: makes `.env.selfhost` from `.env.selfhost.example` (git-ignored, readable by you alone).
+3. **Secrets**: makes the database password and `WYSEBEE_AI_KEK`, the key your agents' saved database
+   passwords are sealed under. **Back up `.env.selfhost`**: without that key they cannot be read.
+4. **About you**: your name and email, as the pages show you.
+5. **Who can reach it**: this computer only (no token), or other devices on your network too (an
+   access token, the port published on your network, and an optional public HTTPS address).
+6. **Port**: 8000, or the next free one.
 
-Open http://localhost:8000. The database schema is migrated each time the container starts.
+Then it builds the image from your checkout, starts it, waits until it answers, and says what to
+do next: the address to open, the access token if there is one, the command that connects your AI
+app, and how to pair each kind of device. The database schema is migrated each time it starts.
+
+After that:
+
+| Command | |
+|---|---|
+| `./scripts/selfhost.sh` or `start` | Start it |
+| `./scripts/selfhost.sh setup` | Change the settings (secrets are kept), then restart |
+| `./scripts/selfhost.sh update` | After a `git pull`: rebuild and restart |
+| `./scripts/selfhost.sh stop` | Stop it; your data stays |
+| `./scripts/selfhost.sh status` / `logs` / `token` | Is it running and where / follow its logs / show the access token |
+
+It runs as its own Docker Compose project, `wysebee-selfhost`, so it never touches the development
+stack (`docker-compose.yml`) in the same checkout. **Your data** is in that project's volumes
+(`pgdata`, `assets`, `user-skills`, `user-workspaces`, `recordings`): back them up with `.env.selfhost`.
+
+By hand instead: `cp .env.selfhost.example .env.selfhost`, set `POSTGRES_PASSWORD` (letters and
+digits: `openssl rand -hex 24`; it goes into the database's URL) and `WYSEBEE_AI_KEK`
+(`openssl rand -base64 32`), then
+`docker compose -f docker-compose.selfhost.yml --env-file .env.selfhost up -d --build`.
 
 ## The token, and who can reach it
 

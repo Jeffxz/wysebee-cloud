@@ -24,8 +24,8 @@ tests/          pytest
 
 **Self-hosting**: the same code runs as one person's own server with `WYSEBEE_EDITION=selfhost`.
 There's no Auth0, no extension and no account deletion: every request is the owner, optionally
-behind a shared token (`WYSEBEE_SELFHOST_TOKEN`). See [docs/self-hosting.md](docs/self-hosting.md)
-and `docker-compose.selfhost.yml`.
+behind a shared token (`WYSEBEE_SELFHOST_TOKEN`). Start it with `./scripts/selfhost.sh`, which walks
+you through the first run; see [docs/self-hosting.md](docs/self-hosting.md).
 
 **AI apps propose, the person approves**: through Wysebee Assistant an AI app may read, run what
 the person approved, and propose changes — never change what an agent can do itself. Every
