@@ -1,12 +1,16 @@
 # Self-hosted Wysebee Cloud: your own server, no Auth0 and no extensions (docs/self-hosting.md).
-#   cp .env.selfhost.example .env.selfhost     # then set WYSEBEE_AI_KEK (and a token, below)
-#   docker compose -f docker-compose.selfhost.yml --env-file .env.selfhost up -d --build
+#   ./scripts/selfhost.sh          # the first time: walks you through it, then starts it
+#   (or by hand: cp .env.selfhost.example .env.selfhost, fill it in, then
+#    docker compose -f docker-compose.selfhost.yml --env-file .env.selfhost up -d --build)
 #   → http://localhost:8000
 #
 # Every request is the one owner (WYSEBEE_SELFHOST_USER_*). Without WYSEBEE_SELFHOST_TOKEN anyone
 # who can reach the port is that owner, so the port is published on 127.0.0.1 only. To pair agents
 # on other devices (a phone, another PC), set a token AND publish it wider (WEB_BIND=0.0.0.0),
 # ideally behind HTTPS.
+# Its own project, so it never touches the development stack (docker-compose.yml) in the same checkout.
+name: wysebee-selfhost
+
 services:
   db:
     image: postgres:17-alpine
