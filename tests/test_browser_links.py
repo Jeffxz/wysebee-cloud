@@ -157,6 +157,8 @@ def test_starts_from_one_address_are_limited(ui_dist: Path) -> None:
         # The address the ingress saw is the last hop; another one is not held back.
         assert refusal(c.post(f"{BASE}/start", json={}, headers={"X-Forwarded-For": "198.51.100.7, 203.0.113.10"})) == (422, "invalid_name")
         assert refusal(c.post(f"{BASE}/start", json={})) == (422, "invalid_name")
+        # Asking whose QR code was scanned shares the limit.
+        assert refusal(c.post(f"{AGENT}/offers/preview", json={}, headers=here)) == (429, "too_many_starts")
 
 
 # --- pairing -----------------------------------------------------------------------------------
@@ -1783,6 +1785,28 @@ def test_a_device_that_scans_the_qr_code_is_paired_at_once(client: TestClient, m
         assert refusal(scan(client, bad)[0]) == (404, "offer_unknown")
     assert refusal(client.get(f"{AGENT}/offers/{offer_id}", headers={"X-Test-User": "someone-else"})) == (404, "offer_unknown")
     assert refusal(client.get(f"{AGENT}/offers/{'0' * 32}", headers=me)) == (404, "offer_unknown")
+
+
+@needs_db
+def test_a_scanned_qr_code_says_whose_it_is_before_pairing(client: TestClient, me: dict[str, str]) -> None:
+    # The device shows whose QR code it scanned, for the person to confirm it is their own (2026-11-22).
+    preview = lambda token: client.post(f"{AGENT}/offers/preview", json={"offer": token})
+    token = client.post(f"{AGENT}/offers", headers=me).json()["token"]
+    # Nothing known of the person yet: blank, and still a good offer.
+    r = preview(token)
+    assert r.status_code == 200 and r.json()["user"] == {"name": ""} and 0 < r.json()["expires_in"] <= 600
+    assert client.put("/api/v1/me", json={"email": "jeff@example.com", "name": "Jeff Xu"}, headers=me).status_code == 204
+    # Only the name: the email is not shown to whoever holds the code.
+    assert preview(token).json()["user"] == {"name": "Jeff Xu"}
+    # The name they chose in Wysebee wins.
+    client.put("/api/v1/profile", json={"display_name": "Jeff"}, headers=me)
+    assert preview(token).json()["user"] == {"name": "Jeff"}
+    # Looking takes nothing: the offer still pairs, and then it is no more.
+    r, _ = scan(client, token)
+    assert r.status_code == 200, r.text
+    assert refusal(preview(token)) == (404, "offer_unknown")
+    for bad in ({"offer": "x"}, {"offer": "A" * 43}, {"offer": 5}, {}):
+        assert refusal(client.post(f"{AGENT}/offers/preview", json=bad)) == (404, "offer_unknown")
 
 
 @needs_db

@@ -115,7 +115,7 @@ from apps.cloud import agent_packs, agent_types, changes, skills, tool_kinds, tr
 from apps.cloud.auth import User, current_user
 from apps.cloud.config import Settings
 from apps.cloud.asset_storage import AssetStore
-from apps.cloud.models import AgentLinkOffer, AgentSkill, BrowserCall, BrowserLink, CloudSkillFile, UserAgent
+from apps.cloud.models import AgentLinkOffer, AgentSkill, BrowserCall, BrowserLink, CloudSkillFile, UserAgent, UserProfile
 from apps.cloud.relay import RECHECK_SECONDS, RelayHub, _notify, _wait, public_base
 
 logger = logging.getLogger("wysebee.cloud.browser_links")
@@ -745,6 +745,32 @@ async def make_offer(request: Request, user: User = Depends(current_user)) -> di
             await session.execute(delete(AgentLinkOffer).where(AgentLinkOffer.id.in_(mine[MAX_OFFERS - 1:])))
         session.add(offer)
     return {"id": offer.id, "token": token, "expires_in": int(s.browser_link_code_seconds), "cloud": public_base(request)}
+
+
+@links.post("/offers/preview")
+async def preview_offer(request: Request) -> dict[str, Any]:
+    """Whose QR code a device scanned, for it to show before it pairs (2026-11-22, the owner's
+    call: the person confirms on the phone that it pairs with their own account):
+    ``{user: {name}, expires_in}`` — the name only, never the email (the owner's call). Signed out, as :func:`start` is: the token in the
+    body is the proof, and whoever holds it is about to pair with that account anyway. Nothing
+    changes; 404 ``offer_unknown`` when the offer is unknown, used or run out."""
+    state = request.app.state
+    if not state.browser_link_starts.allow(_client_address(request)):
+        raise Refused(429, "too_many_starts", "Too many pairing attempts from here. Wait a minute, then try again.")
+    body = await _body(request, SMALL_BODY)
+    token = body.get("offer")
+    if not (isinstance(token, str) and OFFER_TOKEN.match(token)):
+        raise Refused(404, "offer_unknown", OFFER_UNKNOWN)
+    now = _now()
+    async with state.db.sessionmaker() as session:
+        offer = await session.scalar(
+            select(AgentLinkOffer).where(AgentLinkOffer.token_hash == hashlib.sha256(token.encode()).hexdigest(), AgentLinkOffer.used_at.is_(None), AgentLinkOffer.expires_at > now)
+        )
+        if offer is None:
+            raise Refused(404, "offer_unknown", OFFER_UNKNOWN)
+        profile = await session.get(UserProfile, offer.user_id)
+    name = (profile.display_name or profile.name) if profile else ""
+    return {"user": {"name": name}, "expires_in": max(int((offer.expires_at - now).total_seconds()), 0)}
 
 
 @links.get("/offers/{offer_id}")
