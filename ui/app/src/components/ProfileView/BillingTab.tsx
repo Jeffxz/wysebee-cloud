@@ -21,21 +21,23 @@ export function money(amount: number, currency: string, language: string): strin
   }
 }
 
-/** What the subscription line says: renews, ends, a payment being retried — or nothing
- * to say of one that no longer gives its plan (the offer to subscribe shows instead). */
+/** What the subscription line says: renews, ends, a free trial and when it ends, a payment
+ * being retried — or nothing to say of one that no longer gives its plan (the offer to
+ * subscribe shows instead). */
 export function subscriptionLine(sub: Subscription | null): { key: string; withDate: boolean } | null {
   if (!sub?.active) return null;
   if (sub.status === "past_due") return { key: "profile.billing.pastDue", withDate: false };
   if (!sub.current_period_end) return { key: "profile.billing.activeNoDate", withDate: false };
-  return { key: sub.cancel_at_period_end ? "profile.billing.ending" : "profile.billing.active", withDate: true };
+  if (sub.cancel_at_period_end) return { key: "profile.billing.ending", withDate: true };
+  return { key: sub.status === "trialing" ? "profile.billing.trialing" : "profile.billing.active", withDate: true };
 }
 
 /**
  * Account → **Billing**, where the server serves plans (an extension's `features.billing`,
  * cloud/auth.ts): the person's plan and how much of it they use — devices paired and online,
  * this month's relay traffic, their file storage — then the **plans** as the server lists them
- * (`GET /api/v1/billing`: names, prices, what each gives), each with **Subscribe** while the
- * person has none, the one they are on marked — **Manage subscription** (the payment
+ * (`GET /api/v1/billing`: names, prices, what each gives, any free trial), each with
+ * **Subscribe** (**Start free trial** where its link starts with one) while the person has none, the one they are on marked — **Manage subscription** (the payment
  * provider's customer portal: switch plan, cancel, change the card) once they have one, and
  * their payments (date, amount, status). It is the one page a person without a plan can open
  * (components/PlanGate.tsx). The payment provider brings the person back here after paying;
@@ -153,11 +155,13 @@ export function BillingTab() {
 }
 
 /** One plan: its name, price, devices, relay traffic and file storage; "Current plan" on the
- * one the person is on, else Subscribe when it can be chosen. */
+ * one the person is on, else Subscribe when it can be chosen — Start free trial, and how long
+ * the trial is, when its link starts with one. */
 function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
   const { t, i18n } = useTranslation();
   const number = (n: number) => n.toLocaleString(i18n.language);
   const size = (n: number) => formatBytes(n, i18n.language);
+  const trial = !current && plan.buy_url && plan.trial && plan.trial.days > 0 ? plan.trial : null;
   return (
     <div
       className={cn(
@@ -168,6 +172,11 @@ function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
     >
       <div className="font-semibold">{plan.name}</div>
       <div className="text-lg font-semibold">{t("profile.billing.perMonth", { price: money(plan.amount, plan.currency, i18n.language) })}</div>
+      {trial && (
+        <div className="text-xs font-medium text-primary-700 dark:text-primary-300">
+          {t(trial.card ? "profile.billing.trial" : "profile.billing.trialNoCard", { days: number(trial.days) })}
+        </div>
+      )}
       <ul className={cn(muted, "flex-1 space-y-1 text-xs")}>
         <li>{t("profile.billing.planDevices", { devices: number(plan.devices), online: number(plan.online) })}</li>
         <li>{t("profile.billing.planRelay", { size: size(plan.relay_bytes) })}</li>
@@ -182,7 +191,7 @@ function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
         plan.buy_url && (
           <a href={plan.buy_url} className={cn(btnPrimary, "inline-flex items-center justify-center gap-1.5")} data-track={`subscribe-${plan.id}`}>
             <Sparkles size={14} aria-hidden />
-            {t("profile.billing.subscribe")}
+            {t(trial ? "profile.billing.startTrial" : "profile.billing.subscribe")}
           </a>
         )
       )}

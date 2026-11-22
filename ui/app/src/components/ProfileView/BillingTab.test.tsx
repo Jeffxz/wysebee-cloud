@@ -91,6 +91,24 @@ describe("BillingTab", () => {
     expect(screen.queryByText(/To change plan/)).toBeNull();
   });
 
+  it("offers a plan's free trial, with or without a card, and says when a trial ends", async () => {
+    const trials = plans().map((p, i) => ({ ...p, trial: { days: 7, card: i === 1 } }));
+    mockFetch({ [PLAN]: unpaid, [STORAGE]: storage, [BILLING]: { ...none, plans: trials } });
+    const { unmount } = render(<BillingTab />);
+    const small_ = await screen.findByTestId("plan-small");
+    expect(within(small_).getByText("7-day free trial, no card needed")).toBeTruthy();
+    expect(within(small_).getByRole("link", { name: "Start free trial" }).getAttribute("href")).toBe(SMALL);
+    expect(within(screen.getByTestId("plan-large")).getByText("7-day free trial")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Subscribe" })).toBeNull();
+    unmount();
+    // On the trial: its end, and no trial offered on any card any more.
+    mockFetch({ [PLAN]: small, [STORAGE]: storage, [BILLING]: { ...onSmall({ status: "trialing" }), plans: plans(true).map((p) => ({ ...p, trial: { days: 7, card: false } })) } });
+    render(<BillingTab />);
+    expect(await screen.findByText("Your free trial of Small ends on Dec 4, 2026. To keep your plan after that, add a card in Manage subscription.")).toBeTruthy();
+    expect(screen.queryByText(/free trial, no card/)).toBeNull();
+    expect(subscriptionLine(subscription({ status: "trialing", cancel_at_period_end: true }) as never)).toEqual({ key: "profile.billing.ending", withDate: true });
+  });
+
   it("says the plans are not available until the payment provider is set up", async () => {
     mockFetch({ [PLAN]: unpaid, [BILLING]: { ...none, plans: plans(true) } });
     render(<BillingTab />);

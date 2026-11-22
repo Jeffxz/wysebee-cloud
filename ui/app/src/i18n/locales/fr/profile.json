@@ -36,7 +36,11 @@
       "planStorage": "{{size}} de stockage",
       "current": "Forfait actuel",
       "switchHint": "Pour changer de forfait ou résilier, utilisez Gérer l'abonnement.",
-      "paidPlan": "payant"
+      "paidPlan": "payant",
+      "startTrial": "Commencer l'essai gratuit",
+      "trial": "Essai gratuit de {{days}} jours",
+      "trialNoCard": "Essai gratuit de {{days}} jours, sans carte bancaire",
+      "trialing": "Votre essai gratuit de {{plan}} se termine le {{date}}. Pour garder votre forfait ensuite, ajoutez une carte dans Gérer l'abonnement."
     },
     "storage": {
       "title": "Stockage",
