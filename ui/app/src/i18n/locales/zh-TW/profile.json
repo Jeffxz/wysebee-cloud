@@ -36,7 +36,11 @@
       "planStorage": "{{size}} 儲存空間",
       "current": "目前方案",
       "switchHint": "如需變更方案或取消，請使用「管理訂閱」。",
-      "paidPlan": "付費"
+      "paidPlan": "付費",
+      "startTrial": "開始免費試用",
+      "trial": "{{days}} 天免費試用",
+      "trialNoCard": "{{days}} 天免費試用，無需信用卡",
+      "trialing": "你的 {{plan}} 免費試用將於 {{date}} 結束。如要之後繼續使用此方案，請在「管理訂閱」中新增信用卡。"
     },
     "storage": {
       "title": "儲存空間",

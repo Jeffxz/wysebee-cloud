@@ -36,7 +36,11 @@
       "planStorage": "{{size}} のストレージ",
       "current": "現在のプラン",
       "switchHint": "プランの変更や解約は「サブスクリプションを管理」から行えます。",
-      "paidPlan": "有料"
+      "paidPlan": "有料",
+      "startTrial": "無料トライアルを開始",
+      "trial": "{{days}}日間の無料トライアル",
+      "trialNoCard": "{{days}}日間の無料トライアル（カード不要）",
+      "trialing": "{{plan}} の無料トライアルは {{date}} に終了します。その後もプランを続けるには、「サブスクリプションを管理」でカードを登録してください。"
     },
     "storage": {
       "title": "ストレージ",

@@ -816,14 +816,16 @@ export interface PlanLimits {
 }
 
 /** A plan: its name as the server gives it, its monthly price in the currency's smallest unit,
- * what it gives, and the person's own payment link for it (null for a plan not set up, and for
- * every plan while they are subscribed — they switch in the portal). */
+ * what it gives, the person's own payment link for it (null for a plan not set up, and for
+ * every plan while they are subscribed — they switch in the portal), and the free trial that
+ * link starts with: its days, and whether it asks for a card (null or absent: none). */
 export interface Plan extends PlanLimits {
   id: PlanId;
   name: string;
   amount: number;
   currency: string;
   buy_url: string | null;
+  trial?: { days: number; card: boolean } | null;
 }
 
 /** What the Billing tab shows: the plans, the one the person is on (null: none), the payment
