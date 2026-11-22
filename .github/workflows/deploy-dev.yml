@@ -1,0 +1,33 @@
+# When CI passes on main, asks the hosted service's repository (wysebee/wysebee-cloud-hosted,
+# private) to deploy this commit to the dev environment. The build and rollout happen there:
+# dev runs this server with the hosted plans on top.
+#
+# Only in wysebee/wysebee-cloud itself — forks skip it. Needs the HOSTED_DISPATCH_TOKEN secret:
+# a fine-grained token for wysebee/wysebee-cloud-hosted with Contents: read and write (what
+# GitHub asks of a repository_dispatch), nothing else.
+name: Deploy to dev
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  dispatch:
+    name: Ask wysebee-cloud-hosted to deploy
+    if: >-
+      github.repository == 'wysebee/wysebee-cloud' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.HOSTED_DISPATCH_TOKEN }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh api repos/wysebee/wysebee-cloud-hosted/dispatches \
+            -f event_type=wysebee-cloud-main -f "client_payload[sha]=$SHA"
+          echo "Asked wysebee-cloud-hosted to deploy \`$SHA\` to dev." >> "$GITHUB_STEP_SUMMARY"
