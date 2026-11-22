@@ -1,6 +1,6 @@
 [project]
 name = "wysebee-cloud"
-version = "1.37.0"
+version = "1.38.0"
 description = "Wysebee Cloud: a FastAPI service hosting the Wysebee web SPA"
 requires-python = ">=3.13"
 license = "AGPL-3.0-only"

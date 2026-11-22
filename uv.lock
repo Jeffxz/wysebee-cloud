@@ -1904,7 +1904,7 @@ wheels = [
 
 [[package]]
 name = "wysebee-cloud"
-version = "1.37.0"
+version = "1.38.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
