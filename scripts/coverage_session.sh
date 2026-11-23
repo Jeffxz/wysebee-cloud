@@ -62,7 +62,7 @@ wait_for() {
 tunnel() {
     curl -fsS --max-time 3 http://localhost:4040/api/tunnels 2>/dev/null |
         node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{for(const t of JSON.parse(s).tunnels)console.log(t.public_url+" "+t.config.addr)}catch{}})' |
-        head -n 1
+        head -n 1 || true  # no ngrok running (curl fails): no tunnel, not an error
 }
 
 # Run a command in its own session, detached from this one, its output to a log; its pid
