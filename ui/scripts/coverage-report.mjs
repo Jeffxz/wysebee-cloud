@@ -10,12 +10,17 @@
  * Writes an HTML report to ui/coverage-e2e/index.html and prints a summary. Source files the
  * page never loaded are not in the coverage at all, so they are listed after it: they count
  * as 0% in no figure above them.
+ *
+ * vite-plugin-istanbul counts the code as Vite compiled it (JSX turned into calls) and saves
+ * that code's source map with each file. Every figure and line here is mapped back through it
+ * to the .ts/.tsx as written; unmapped, the report's line numbers point at the compiled code.
  */
 import { existsSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import libCoverage from "istanbul-lib-coverage";
 import libReport from "istanbul-lib-report";
+import libSourceMaps from "istanbul-lib-source-maps";
 import reports from "istanbul-reports";
 
 const UI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -45,22 +50,27 @@ if (!scenarios.length) {
   process.exit(1);
 }
 
-const pct = (summary) => `${summary.pct.toFixed(1).padStart(5)}%`;
+// istanbul's pct is "Unknown" (a string) when there is nothing of that kind to count.
+const pct = (summary) => (typeof summary.pct === "number" ? `${summary.pct.toFixed(1).padStart(5)}%` : "   n/a");
 const line = (label, map) => {
   const s = map.getCoverageSummary();
   return `${label.padEnd(24)} statements ${pct(s.statements)}  branches ${pct(s.branches)}  functions ${pct(s.functions)}  lines ${pct(s.lines)}`;
 };
 
-const all = libCoverage.createCoverageMap({});
+/** The coverage as counted, mapped back to the source as written. */
+const toSource = (map) => libSourceMaps.createSourceMapStore().transformCoverage(map);
+
+const raw = libCoverage.createCoverageMap({});
 console.log("Per scenario:");
 for (const scenario of scenarios) {
   const map = libCoverage.createCoverageMap({});
   for (const file of readdirSync(join(COVERAGE_DIR, scenario)).filter((f) => f.endsWith(".json"))) {
     map.merge(JSON.parse(readFileSync(join(COVERAGE_DIR, scenario, file), "utf8")));
   }
-  all.merge(map);
-  console.log(`  ${line(scenario, map)}`);
+  raw.merge(map);
+  console.log(`  ${line(scenario, await toSource(map))}`);
 }
+const all = await toSource(raw);
 
 rmSync(REPORT_DIR, { recursive: true, force: true });
 const context = libReport.createContext({ dir: REPORT_DIR, coverageMap: all, defaultSummarizer: "nested" });

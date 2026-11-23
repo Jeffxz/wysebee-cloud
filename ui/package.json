@@ -56,6 +56,7 @@
     "@vitest/coverage-v8": "2.1.9",
     "istanbul-lib-coverage": "3.2.2",
     "istanbul-lib-report": "3.0.1",
+    "istanbul-lib-source-maps": "5.0.6",
     "istanbul-reports": "3.2.0",
     "jsdom": "^25.0.1",
     "tailwindcss": "^4.3.0",
