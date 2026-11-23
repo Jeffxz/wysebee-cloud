@@ -224,6 +224,19 @@ describe("WorkspacesView", () => {
     await userEvent.click(screen.getByRole("tab", { name: "Preview" }));
     expect(screen.getByRole("table", { name: "Page details" })).toBeTruthy();
     expect(screen.queryByText("Nothing written yet.")).toBeNull();
+    // A skill's scripts: one row, each script on its own line.
+    await userEvent.click(screen.getByRole("tab", { name: "Edit" }));
+    fireEvent.change(box(), { target: { value: "---\nname: report\nscripts:\n  - name: hello\n    command: ./hello.sh\n---\n" } });
+    await userEvent.click(screen.getByRole("tab", { name: "Preview" }));
+    expect(within(screen.getByRole("table", { name: "Page details" })).getAllByRole("listitem").map((li) => li.textContent)).toEqual(["name: hello · command: ./hello.sh"]);
+    // A block in a shape it does not read: shown as written, not as the page's markdown.
+    await userEvent.click(screen.getByRole("tab", { name: "Edit" }));
+    fireEvent.change(box(), { target: { value: "---\nnot a field\n---\n\n# After\n" } });
+    await userEvent.click(screen.getByRole("tab", { name: "Preview" }));
+    expect(screen.getByLabelText("Page details").tagName).toBe("PRE");
+    expect(screen.getByLabelText("Page details").textContent).toBe("not a field");
+    expect(screen.getByRole("heading", { name: "After" })).toBeTruthy();
+    expect(screen.queryByRole("separator")).toBeNull();
 
     const confirm = vi.spyOn(dialogs, "confirm").mockResolvedValue(false);
     await userEvent.click(screen.getByRole("button", { name: "Delete this file" }));

@@ -28,16 +28,40 @@ describe("splitFrontmatter", () => {
     expect(splitFrontmatter("---\nk: a\n- b\n---\n")?.fields).toEqual([["k", ["a", "b"]]]);
   });
 
-  it("leaves a page with no block, an unclosed one, or one it cannot read as it is", () => {
-    for (const page of [
-      "# Title\n---\nname: x\n---",
-      "---\nname: x\n",
-      "---\n---\nBody",
-      "---\n  orphan\n---\n",
-      "---\nk:\n  - a\n  wrapped\n---\n",
-      "---\nnot a field\n---\n",
-      "",
-    ]) {
+  it("reads a list of key: value items, as a skill's scripts are, each item one line", () => {
+    const page = [
+      "---",
+      "name: report",
+      "scripts:",
+      "  - name: hello",
+      "    command: python3 scripts/hello.py",
+      "    description: 'Says hello'",
+      "      and waves",
+      "  - name: bye",
+      "    command: ./bye.sh",
+      "    args:",
+      "after: x",
+      "---",
+      "# Report",
+    ].join("\n");
+    expect(splitFrontmatter(page)).toEqual({
+      fields: [
+        ["name", "report"],
+        ["scripts", ["name: hello · command: python3 scripts/hello.py · description: Says hello and waves", "name: bye · command: ./bye.sh · args:"]],
+        ["after", "x"],
+      ],
+      body: "# Report",
+    });
+  });
+
+  it("gives a closed block it cannot read back as written, never as the page", () => {
+    for (const block of ["  orphan", "k:\n  - a\n  wrapped", "not a field"]) {
+      expect(splitFrontmatter(`---\n${block}\n---\n\nBody`)).toEqual({ fields: [], raw: block, body: "Body" });
+    }
+  });
+
+  it("leaves a page with no block, an unclosed one, or an empty one as it is", () => {
+    for (const page of ["# Title\n---\nname: x\n---", "---\nname: x\n", "---\n---\nBody", "---\n# only a note\n---\n", ""]) {
       expect(splitFrontmatter(page)).toBeNull();
     }
   });

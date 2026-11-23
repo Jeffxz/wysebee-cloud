@@ -64,6 +64,19 @@ function FrontmatterTable({ fields }: { fields: Frontmatter["fields"] }) {
   );
 }
 
+/** A frontmatter block in a shape the table does not read: shown as written, never as markdown. */
+function FrontmatterRaw({ text }: { text: string }) {
+  const { t } = useTranslation();
+  return (
+    <pre
+      className="mb-4 overflow-x-auto rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-900/50 dark:text-stone-300"
+      aria-label={t("workspaces.editor.frontmatter")}
+    >
+      {text}
+    </pre>
+  );
+}
+
 /** Preview: the page as markdown, its frontmatter (if any) as a table above it. */
 export function Preview({ text }: { text: string }) {
   const { t } = useTranslation();
@@ -71,7 +84,7 @@ export function Preview({ text }: { text: string }) {
   const body = front ? front.body : text;
   return (
     <div>
-      {front && <FrontmatterTable fields={front.fields} />}
+      {front && (front.raw !== undefined ? <FrontmatterRaw text={front.raw} /> : <FrontmatterTable fields={front.fields} />)}
       {(body.trim() || !front) && <AssistantText document text={body || t("workspaces.editor.empty")} />}
     </div>
   );
