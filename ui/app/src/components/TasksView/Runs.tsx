@@ -29,7 +29,7 @@ export function RunsTab({ taskId }: { taskId: string }) {
       .catch((e: Error) => setError(e.message));
   const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(i18n.language) : "");
   // The steps it took, when the run kept them: one that kept only its report shows no list.
-  const steps = chatItems(open?.messages ?? [], undefined).flatMap((i) => (i.kind === "tools" ? i.steps : []));
+  const steps = chatItems(open?.messages ?? []).flatMap((i) => (i.kind === "tools" ? i.steps : []));
 
   return (
     <div className="flex flex-col gap-3">
