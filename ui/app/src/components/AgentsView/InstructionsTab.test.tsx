@@ -17,7 +17,7 @@ function setup(over: Partial<Parameters<typeof InstructionsTab>[0]> = {}) {
 }
 
 describe("InstructionsTab", () => {
-  it("edits, saves by button or shortcut, and discards", async () => {
+  it("edits, saves by shortcut, and discards", () => {
     const { props } = setup();
     const box = screen.getByRole("textbox", { name: "Instructions" });
     fireEvent.change(box, { target: { value: "x" } });
@@ -28,10 +28,6 @@ describe("InstructionsTab", () => {
     expect(props.onSave).toHaveBeenCalledTimes(2);
     fireEvent.keyDown(box, { key: "Escape" });
     expect(props.onDraftChange).toHaveBeenLastCalledWith("old");
-    await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(props.onSave).toHaveBeenCalledTimes(3);
-    await userEvent.click(screen.getByRole("button", { name: "Discard" }));
-    expect(props.onDraftChange).toHaveBeenCalledTimes(3);
     expect(screen.getByText("3 characters")).toBeTruthy();
   });
 
@@ -42,7 +38,6 @@ describe("InstructionsTab", () => {
     fireEvent.keyDown(box, { key: "Escape" });
     expect(clean.props.onSave).not.toHaveBeenCalled();
     expect(clean.props.onDraftChange).not.toHaveBeenCalled();
-    expect((screen.getByRole("button", { name: "Save" }) as HTMLButtonElement).disabled).toBe(true);
     clean.unmount();
     const long = setup({ draft: "x".repeat(INSTRUCTIONS_MAX_LEN + 1) });
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "s", ctrlKey: true });
@@ -60,15 +55,13 @@ describe("InstructionsTab", () => {
     expect(screen.getByRole("textbox")).toBeTruthy();
   });
 
-  it("uses a task's wording, and hides its own actions", () => {
-    setup({ kind: "task", showActions: false, draft: "" });
+  it("uses a task's wording", () => {
+    setup({ kind: "task", draft: "" });
     expect(screen.getByRole("textbox", { name: "Plan" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
   });
 
   it("is read-only without edit rights", () => {
     setup({ canEdit: false });
     expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(true);
-    expect(screen.queryByRole("button", { name: "Discard" })).toBeNull();
   });
 });

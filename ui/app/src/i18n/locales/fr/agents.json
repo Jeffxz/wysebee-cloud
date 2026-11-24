@@ -69,8 +69,6 @@
       "preview": "Aperçu",
       "placeholder": "# Rôle\nVous êtes un assistant d'assistance pour…\n\n## Règles\n- Toujours…\n- Jamais…",
       "empty": "Aucune instruction pour l'instant.",
-      "save": "Enregistrer",
-      "discard": "Annuler",
       "count_one": "{{count}} caractère",
       "count_other": "{{count}} caractères",
       "count_many": "{{count}} caractères",

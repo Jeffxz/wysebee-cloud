@@ -1,7 +1,8 @@
+import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { mockFetch } from "../../test/fetch";
 import { useFetchTransport } from "../../test/transport";
-import { profileNow, updateProfile } from "./profile";
+import { updateProfile, useProfile } from "./profile";
 
 useFetchTransport();
 
@@ -10,7 +11,7 @@ describe("updateProfile", () => {
     const api = mockFetch({ "PUT /api/v1/profile": { display_name: "Annie", avatar: null } });
     expect(await updateProfile({ display_name: "Annie" })).toEqual({ display_name: "Annie", avatar: null });
     expect(api.to("PUT /api/v1/profile")[0].body).toEqual({ display_name: "Annie" });
-    expect(profileNow()).toEqual({ display_name: "Annie", avatar: null });
+    expect(renderHook(() => useProfile()).result.current).toEqual({ display_name: "Annie", avatar: null });
   });
 });
 

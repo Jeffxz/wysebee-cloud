@@ -6,14 +6,6 @@
       "you": "you",
       "someone": "someone"
     },
-    "autoSave": {
-      "saved": "Saved"
-    },
-    "inlineField": {
-      "save": "Save {{what}}",
-      "discardTitle": "Discard change",
-      "discard": "Discard {{what}} change"
-    },
     "saveBar": {
       "unsaved": "Unsaved changes",
       "discard": "Discard",

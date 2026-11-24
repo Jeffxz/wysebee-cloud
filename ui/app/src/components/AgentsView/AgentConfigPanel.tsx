@@ -246,7 +246,6 @@ export function AgentConfigPanel({
             onSave={() => void saveNow()}
             canEdit={canEdit}
             kind="task"
-            showActions={false}
           />
         </TabPanel>
       )}

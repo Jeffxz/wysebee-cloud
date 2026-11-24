@@ -66,8 +66,6 @@
       "preview": "Preview",
       "placeholder": "# Role\nYou are a support assistant for…\n\n## Rules\n- Always…\n- Never…",
       "empty": "No instructions yet.",
-      "save": "Save",
-      "discard": "Discard",
       "count_one": "{{count}} character",
       "count_other": "{{count}} characters",
       "tooLong": "Too long: instructions can be at most {{max}} characters."

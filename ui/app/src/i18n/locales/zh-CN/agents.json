@@ -63,8 +63,6 @@
       "preview": "预览",
       "placeholder": "# 角色\n你是……的客服助手。\n\n## 规则\n- 始终……\n- 绝不……",
       "empty": "尚无指令。",
-      "save": "保存",
-      "discard": "放弃",
       "count_other": "{{count}} 个字符",
       "tooLong": "过长：指令最多 {{max}} 个字符。"
     },

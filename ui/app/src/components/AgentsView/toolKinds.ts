@@ -30,12 +30,6 @@ export function agentKind(config: Record<string, unknown>, types: readonly Agent
   return typeOf(config, types)?.kind ?? "plain";
 }
 
-/** The kind of device a tool needs: `any` unless types list it, else the kind they share (or
- * the first's). */
-export function toolKind(key: string, types: readonly AgentType[]): ToolKind {
-  return listing(key, types)[0]?.kind ?? "any";
-}
-
 /** Whether an agent with these settings may add the tool; while the types are not read (null),
  * nothing — not even a tool every agent may have. */
 export function mayAdd(config: Record<string, unknown>, key: string, types: readonly AgentType[] | null): boolean {
