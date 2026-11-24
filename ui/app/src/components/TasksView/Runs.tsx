@@ -52,7 +52,7 @@ export function RunsTab({ taskId }: { taskId: string }) {
         <div className="flex flex-col gap-2" data-track-private>
           {open.error && <div className={errorBanner}>{open.error}</div>}
           {open.output && <AssistantText text={open.output} />}
-          <ToolCalls steps={chatItems(open.messages ?? [], undefined).flatMap((i) => (i.kind === "tools" ? i.steps : []))} labels={labels} />
+          <ToolCalls steps={chatItems(open.messages ?? []).flatMap((i) => (i.kind === "tools" ? i.steps : []))} labels={labels} />
         </div>
       )}
     </div>

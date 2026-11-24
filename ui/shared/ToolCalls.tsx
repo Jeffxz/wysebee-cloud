@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronRight, Copy, Download } from "lucide-react";
+import { Check, ChevronRight, Copy } from "lucide-react";
 import { ChatMarkdown, MARKDOWN_CLASSES } from "./ChatMarkdown";
 import { cn } from "./cn";
 
 /**
- * Tool calls in a chat — the desktop's Chat (and a task run's steps) and the browser
- * extension's Terminal render them alike from here.
+ * Tool calls in a transcript — a task run's steps — rendered from here.
  *
  * - **Calls in a row are one group**: everything the model called between two things it
  *   said, across tool rounds, collapses under one line ("Used 6 tools") with a chevron;
@@ -14,28 +13,9 @@ import { cn } from "./cn";
  *   formatted and coloured, markdown rendered, anything else as it came — each with a copy
  *   button at its top right.
  * - **Each call stays folded** until the person opens it.
- * - **A picture a call returned** (a `browser_screenshot`) shows under the group whether
- *   or not it is opened: it is what the person most wants to see.
  *
  * Strings come from the app (`labels`): each app has its own translations.
  */
-
-export interface ToolImageData {
-  media_type: string;
-  data: string;
-}
-
-/**
- * Saving a tool's image, where the app can: given, every image `ToolCalls` shows gets a
- * download button at its top right (the Terminal saves through the shell's dialog).
- * `label` is the button's name; `save` is handed the image and the tool that made it.
- */
-export interface ImageSaver {
-  label: string;
-  save: (image: ToolImageData, tool: string) => void;
-}
-
-export const ImageSaverContext = createContext<ImageSaver | null>(null);
 
 /**
  * Copying an output's text: the app's own way when it has one (the desktop goes through its
@@ -55,7 +35,6 @@ export interface ToolStep {
   name: string;
   /** Undefined while the call has not answered (or never ran: the turn was stopped). */
   result?: { content: string; is_error?: boolean };
-  images?: ToolImageData[];
 }
 
 export interface ToolLabels {
@@ -66,9 +45,6 @@ export interface ToolLabels {
   error: string;
   notRun: string;
   noOutput: string;
-  imageAlt: (tool: string) => string;
-  imageEnlarge: string;
-  imageShrink: string;
   /** The copy button on an output, and what it says once copied. */
   copy: string;
   copied: string;
@@ -91,12 +67,9 @@ interface ToolMessageLike {
  * Split a transcript into items: each user message and each assistant message's text
  * stands alone, and the tool calls between them become one run — calls from several
  * assistant messages in a row (one per tool round) join while nothing is said between
- * them. A tool result attaches to its call; images come by call id.
+ * them. A tool result attaches to its call.
  */
-export function chatItems<M extends ToolMessageLike>(
-  messages: M[],
-  images?: Record<string, ToolImageData[] | undefined>,
-): ChatItem<M>[] {
+export function chatItems<M extends ToolMessageLike>(messages: M[]): ChatItem<M>[] {
   const results = new Map<string, { content: string; is_error?: boolean }>();
   for (const m of messages) {
     if (m.role === "tool" && m.tool_call_id) {
@@ -117,7 +90,7 @@ export function chatItems<M extends ToolMessageLike>(
         items.push({ kind: "message", message: m, index });
       }
       for (const c of m.tool_calls ?? []) {
-        run.push({ id: c.id, name: c.name, result: results.get(c.id), images: images?.[c.id] });
+        run.push({ id: c.id, name: c.name, result: results.get(c.id) });
       }
       return;
     }
@@ -130,28 +103,7 @@ export function chatItems<M extends ToolMessageLike>(
 
 /** A run of tool calls: one row when alone, else a group under one chevron. */
 export function ToolCalls({ steps, labels }: { steps: ToolStep[]; labels: ToolLabels }) {
-  const images = steps.flatMap((s) => (s.images ?? []).map((image) => ({ image, tool: s.name })));
-  const pictures = images.length > 0 && (
-    <div className="flex flex-wrap gap-1.5">
-      {images.map(({ image, tool }, i) => (
-        <ToolImage key={i} image={image} tool={tool} labels={labels} />
-      ))}
-    </div>
-  );
-  if (steps.length === 1) {
-    return (
-      <div className="flex flex-col gap-1.5">
-        <ToolRow step={steps[0]} labels={labels} />
-        {pictures}
-      </div>
-    );
-  }
-  return (
-    <div className="flex flex-col gap-1.5">
-      <ToolGroup steps={steps} labels={labels} />
-      {pictures}
-    </div>
-  );
+  return steps.length === 1 ? <ToolRow step={steps[0]} labels={labels} /> : <ToolGroup steps={steps} labels={labels} />;
 }
 
 function Chevron({ open }: { open: boolean }) {
@@ -268,8 +220,8 @@ const pre =
  * rendered, anything else as it came — with a copy button at its top right.
  */
 export function Output({ content, empty, labels }: { content: string; empty: string; labels: Pick<ToolLabels, "copy" | "copied"> }) {
-  // A result that carried a picture ends with the loop's marker for it ("[image
-  // attached]", chat.rs's run_tool); the picture shows on its own.
+  // A result that carried a picture ends with a marker for it ("[image attached]"); the
+  // picture is not shown here, so the marker is dropped.
   const text = content.trim().replace(IMAGE_MARKERS, "").trim();
   if (!text) return <p className="italic text-stone-500 dark:text-stone-400">{empty}</p>;
   const parsed = parseJson(text);
@@ -427,51 +379,5 @@ function renderJson(value: unknown, depth: number): ReactNode {
       {close}
       {"}"}
     </>
-  );
-}
-
-/** A picture a tool returned: small in the conversation, full size on a click. */
-export function ToolImage({
-  image,
-  tool,
-  labels,
-}: {
-  image: ToolImageData;
-  tool: string;
-  labels: ToolLabels;
-}) {
-  const [large, setLarge] = useState(false);
-  const saver = useContext(ImageSaverContext);
-  return (
-    <div className={cn("group relative", large ? "w-full" : "self-start")}>
-      <button
-        type="button"
-        className={cn(
-          "overflow-hidden rounded-md border border-stone-200 bg-white p-0 dark:border-stone-700 dark:bg-stone-800",
-          large && "w-full",
-        )}
-        onClick={() => setLarge((v) => !v)}
-        title={large ? labels.imageShrink : labels.imageEnlarge}
-        data-track="Chat image"
-      >
-        <img
-          src={`data:${image.media_type};base64,${image.data}`}
-          alt={labels.imageAlt(tool)}
-          className={cn("block", large ? "max-w-full" : "max-h-48 max-w-xs object-contain")}
-        />
-      </button>
-      {saver && (
-        <button
-          type="button"
-          className="absolute right-1.5 top-1.5 rounded-md border border-stone-200 bg-white/90 p-1 text-stone-600 shadow-sm hover:bg-white hover:text-stone-900 dark:border-stone-600 dark:bg-stone-800/90 dark:text-stone-300 dark:hover:bg-stone-800"
-          onClick={() => saver.save(image, tool)}
-          title={saver.label}
-          aria-label={saver.label}
-          data-track="Save chat image"
-        >
-          <Download size={14} aria-hidden />
-        </button>
-      )}
-    </div>
   );
 }

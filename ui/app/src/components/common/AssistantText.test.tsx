@@ -77,7 +77,7 @@ describe("useToolLabels", () => {
     const { useToolLabels } = await import("./AssistantText");
     const { result } = renderHook(() => useToolLabels());
     const l = result.current;
-    expect([l.used(2), l.failed(1), l.imageAlt("browser_screenshot")].every((s) => typeof s === "string" && s.length > 0)).toBe(true);
-    expect([l.error, l.notRun, l.noOutput, l.imageEnlarge, l.imageShrink, l.copy, l.copied].every((s) => typeof s === "string" && s.length > 0)).toBe(true);
+    expect([l.used(2), l.failed(1)].every((s) => typeof s === "string" && s.length > 0)).toBe(true);
+    expect([l.error, l.notRun, l.noOutput, l.copy, l.copied].every((s) => typeof s === "string" && s.length > 0)).toBe(true);
   });
 });

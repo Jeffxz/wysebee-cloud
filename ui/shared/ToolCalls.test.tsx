@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import "../app/src/i18n";
 import {
   chatItems,
-  ImageSaverContext,
   looksLikeMarkdown,
   Output,
   TextCopierContext,
@@ -18,16 +17,12 @@ const labels = {
   error: "failed",
   notRun: "not run",
   noOutput: "No output",
-  imageAlt: (tool: string) => `Picture from ${tool}`,
-  imageEnlarge: "Enlarge",
-  imageShrink: "Shrink",
   copy: "Copy",
   copied: "Copied",
 };
-const png = { media_type: "image/png", data: "AAAA" };
 
 describe("chatItems", () => {
-  it("joins calls across tool rounds until something is said, results and images attached", () => {
+  it("joins calls across tool rounds until something is said, results attached", () => {
     const messages = [
       { role: "user", content: "hi" },
       { role: "assistant", content: "", tool_calls: [{ id: "a", name: "browser_tabs" }] },
@@ -39,7 +34,7 @@ describe("chatItems", () => {
       { role: "assistant" },
       { role: "user", content: "next" },
     ];
-    const items = chatItems(messages, { b: [png] });
+    const items = chatItems(messages);
     expect(items.map((i) => (i.kind === "message" ? `m${i.index}` : `t:${i.key}`))).toEqual([
       "m0",
       "t:a",
@@ -50,8 +45,8 @@ describe("chatItems", () => {
     const run = items[1];
     if (run.kind !== "tools") throw new Error("expected tools");
     expect(run.steps).toEqual([
-      { id: "a", name: "browser_tabs", result: { content: "[]", is_error: undefined }, images: undefined },
-      { id: "b", name: "browser_screenshot", result: { content: "", is_error: true }, images: [png] },
+      { id: "a", name: "browser_tabs", result: { content: "[]", is_error: undefined } },
+      { id: "b", name: "browser_screenshot", result: { content: "", is_error: true } },
     ]);
     const pending = items[3];
     expect(pending.kind === "tools" && pending.steps[0].result).toBeUndefined();
@@ -77,18 +72,16 @@ describe("ToolCalls", () => {
     expect((screen.getByRole("button") as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it("groups several calls under one line, with failures counted and pictures beside", async () => {
+  it("groups several calls under one line, with failures counted", async () => {
     const steps: ToolStep[] = [
       { id: "a", name: "browser_tabs", result: { content: "ok" } },
       { id: "b", name: "browser_tabs", result: { content: "boom", is_error: true } },
-      { id: "c", name: "browser_screenshot", result: { content: "[image attached]" }, images: [png] },
+      { id: "c", name: "browser_screenshot", result: { content: "[image attached]" } },
     ];
     render(<ToolCalls steps={steps} labels={labels} />);
     const group = screen.getByRole("button", { name: /Used 3 tools/ });
     expect(screen.getByText("· 1 failed")).toBeTruthy();
     expect(screen.getByText("browser_tabs, browser_screenshot")).toBeTruthy();
-    // The picture shows with the group closed.
-    expect(screen.getByAltText("Picture from browser_screenshot")).toBeTruthy();
     await userEvent.click(group);
     expect(screen.queryByText("browser_tabs, browser_screenshot")).toBeNull();
     expect(screen.getByText("failed")).toBeTruthy();
@@ -107,25 +100,6 @@ describe("ToolCalls", () => {
       />,
     );
     expect(screen.queryByText(/failed/)).toBeNull();
-  });
-
-  it("enlarges a picture on click and offers a download when the app can save", async () => {
-    const save = vi.fn();
-    const { rerender } = render(<ToolCalls steps={[{ id: "a", name: "shot", images: [png] }]} labels={labels} />);
-    expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
-    const enlarge = screen.getByTitle("Enlarge");
-    expect(screen.getByAltText("Picture from shot").getAttribute("src")).toBe("data:image/png;base64,AAAA");
-    await userEvent.click(enlarge);
-    expect(screen.getByTitle("Shrink")).toBe(enlarge);
-    await userEvent.click(enlarge);
-    expect(screen.getByTitle("Enlarge")).toBeTruthy();
-    rerender(
-      <ImageSaverContext.Provider value={{ label: "Save", save }}>
-        <ToolCalls steps={[{ id: "a", name: "shot", images: [png] }]} labels={labels} />
-      </ImageSaverContext.Provider>,
-    );
-    await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(save).toHaveBeenCalledWith(png, "shot");
   });
 });
 

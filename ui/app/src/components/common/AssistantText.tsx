@@ -112,9 +112,6 @@ export function useToolLabels(): ToolLabels {
     error: t("agents.chat.toolFailed"),
     notRun: t("agents.chat.toolNotRun"),
     noOutput: t("agents.chat.toolNoOutput"),
-    imageAlt: (tool) => t("agents.chat.imageAlt", { tool }),
-    imageEnlarge: t("agents.chat.imageEnlarge"),
-    imageShrink: t("agents.chat.imageShrink"),
     copy: t("agents.chat.toolOutputCopy"),
     copied: t("agents.chat.toolOutputCopied"),
   };
