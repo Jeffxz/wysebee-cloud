@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{%- comment -%}
+  Wysebee's Universal Login page template (Auth0 "New" Universal Login).
+  Auth0 renders its sign-in widget where `auth0:widget` sits; everything around it is ours.
+  Applied by scripts/auth0_branding.sh. Page templates need a custom domain on the tenant
+  (auth.wysebee.com); without one only auth0/theme.json applies.
+{%- endcomment -%}
+{%- assign logo = branding.logo_url | default: "https://app.wysebee.com/icon.png" -%}
+<html lang="{{ locale }}">
+  <head>
+    <meta charset="utf-8">
+    {%- auth0:head -%}
+    <meta name="theme-color" content="#291452">
+    <title>{{ prompt.screen.texts.pageTitle | default: "Sign in · Wysebee" }}</title>
+    <style>
+      :root {
+        --wb-50: #f6f3fc; --wb-100: #ede7f9; --wb-300: #bca5e9; --wb-400: #9d7cde;
+        --wb-500: #855cd6; --wb-600: #6c3bce; --wb-800: #492593; --wb-950: #291452;
+        --wb-honey: #f5bd01; --wb-amber: #ff7c24;
+        --wb-page: #f7f5fc; --wb-ink: #1c1917; --wb-muted: #78716c;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        background: var(--wb-page);
+        color: var(--wb-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wb-shell { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 100vh; }
+
+      /* Brand panel */
+      .wb-brand {
+        position: relative; overflow: hidden; color: #fff;
+        padding: 48px 56px; display: flex; flex-direction: column; justify-content: space-between;
+        background:
+          radial-gradient(1200px 600px at 110% -10%, rgba(255,124,36,.28), transparent 60%),
+          radial-gradient(900px 700px at -20% 110%, rgba(157,124,222,.55), transparent 60%),
+          linear-gradient(155deg, var(--wb-950) 0%, var(--wb-800) 45%, var(--wb-600) 100%);
+      }
+      .wb-brand::before {
+        /* honeycomb */
+        content: ""; position: absolute; inset: 0; opacity: .14; pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0 32L0 82' fill='none' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E");
+        background-size: 56px 98px;
+        mask-image: linear-gradient(160deg, #000 10%, transparent 75%);
+        -webkit-mask-image: linear-gradient(160deg, #000 10%, transparent 75%);
+      }
+      .wb-brand > * { position: relative; }
+      .wb-mark { display: inline-flex; align-items: center; gap: 12px; font-weight: 650; font-size: 20px; letter-spacing: -.01em; }
+      .wb-mark-tile {
+        width: 44px; height: 44px; border-radius: 12px; background: #fff;
+        display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.18);
+      }
+      .wb-mark-tile img { width: 30px; height: 30px; object-fit: contain; }
+      .wb-hero { max-width: 520px; margin: 40px 0; }
+      .wb-eyebrow {
+        display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+        background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+        font-size: 13px; font-weight: 550; color: #f3eefe; backdrop-filter: blur(6px);
+      }
+      .wb-eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--wb-honey); box-shadow: 0 0 0 4px rgba(245,189,1,.25); }
+      .wb-hero h1 { font-size: clamp(32px, 3.4vw, 46px); line-height: 1.08; letter-spacing: -.025em; margin: 20px 0 16px; font-weight: 700; }
+      .wb-hero h1 em {
+        font-style: normal;
+        background: linear-gradient(90deg, var(--wb-honey), var(--wb-amber));
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .wb-hero p { font-size: 17px; line-height: 1.55; color: rgba(255,255,255,.78); margin: 0 0 28px; }
+      .wb-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+      .wb-points li { display: flex; gap: 14px; align-items: flex-start; font-size: 15px; line-height: 1.45; color: rgba(255,255,255,.9); }
+      .wb-points b { display: block; color: #fff; font-weight: 600; }
+      .wb-ico {
+        flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+        background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16);
+      }
+      .wb-ico svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+      .wb-foot { font-size: 13px; color: rgba(255,255,255,.6); }
+
+      /* Sign-in side */
+      .wb-auth { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; position: relative; }
+      .wb-auth::before {
+        content: ""; position: absolute; width: 420px; height: 420px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(133,92,214,.16), transparent 70%); pointer-events: none;
+      }
+      .wb-widget { position: relative; width: 100%; display: flex; justify-content: center; }
+      .wb-legal { margin-top: 22px; font-size: 12.5px; color: var(--wb-muted); text-align: center; }
+      .wb-legal a { color: var(--wb-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+      /* Auth0 widget polish (theme.json sets colours; this softens the card) */
+      .wb-widget ._widget, .wb-widget main > section { border-radius: 20px !important; box-shadow: 0 1px 2px rgba(28,25,23,.04), 0 20px 50px -20px rgba(73,37,147,.25) !important; }
+
+      @media (max-width: 900px) {
+        .wb-shell { grid-template-columns: 1fr; }
+        .wb-brand { padding: 28px 20px 32px; }
+        .wb-hero { margin: 24px 0 0; }
+        .wb-hero p, .wb-points, .wb-foot { display: none; }
+        .wb-hero h1 { font-size: 28px; margin-bottom: 0; }
+        .wb-auth { padding: 28px 16px 40px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wb-shell">
+      <aside class="wb-brand">
+        <div class="wb-mark">
+          <span class="wb-mark-tile"><img src="{{ logo }}" alt=""></span>
+          Wysebee
+        </div>
+
+        <div class="wb-hero">
+          <span class="wb-eyebrow"><i></i> Your AI agents, on every device</span>
+          <h1>Put your agents to work <em>wherever you are.</em></h1>
+          <p>Wysebee connects the AI app you already use to your browser, Mac, PC and phone — so it can do the work, not just talk about it.</p>
+          <ul class="wb-points">
+            <li>
+              <span class="wb-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+              <span><b>One assistant, every device</b>Browser, macOS, Windows and Android agents, paired in seconds.</span>
+            </li>
+            <li>
+              <span class="wb-ico"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></span>
+              <span><b>Skills that remember how</b>Teach a task once; reuse it in any workspace.</span>
+            </li>
+            <li>
+              <span class="wb-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+              <span><b>Runs on schedule</b>Reminders and recurring work handled while you're away.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="wb-foot">© Wysebee</div>
+      </aside>
+
+      <main class="wb-auth">
+        <div class="wb-widget">
+          {%- auth0:widget -%}
+        </div>
+        <div class="wb-legal">New here? Create an account and pair your first device in under a minute.</div>
+      </main>
+    </div>
+  </body>
+</html>

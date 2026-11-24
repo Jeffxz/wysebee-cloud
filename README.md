@@ -140,7 +140,7 @@ dashboard, and this app's `.env` / container settings pointing at it:
 
 | Setting | Value |
 |---|---|
-| `WYSEBEE_AUTH_ISSUER` | `https://<tenant>.<region>.auth0.com/` (or the custom domain, e.g. `https://auth.wysebee.ai/`) |
+| `WYSEBEE_AUTH_ISSUER` | `https://<tenant>.<region>.auth0.com/` (or the custom domain, `https://auth.wysebee.com/`) |
 | `WYSEBEE_AUTH_AUDIENCE` | the API's identifier, default `https://wysebee.ai/api` |
 | `WYSEBEE_AUTH_WEB_CLIENT_ID` | the website application's Client ID |
 | `WYSEBEE_AUTH_CONNECTION` | optional: the one Auth0 connection every sign-in goes to (`email` = the email code alone); unset = all of them |
@@ -170,7 +170,11 @@ page and `/app/`, per site address (`http://localhost:8000`, `http://localhost:5
 - Settings → Advanced → **RP-Initiated Logout End Session Endpoint Discovery** on, so
   Sign out ends the Auth0 session the standard way (the pages fall back to Auth0's
   `/v2/logout` without it).
-- Branding → Universal Login: the Wysebee logo and the brand purple `#855cd6`.
+- Branding → Universal Login: `scripts/auth0_branding.sh` applies the Wysebee look from
+  `auth0/` — brand purple `#855cd6` and logo, the theme (`theme.json`), the screens' text
+  (`custom-text.json`, which replaces "Log in to My Company to continue to My App") and the
+  split-screen page (`universal-login.liquid`). The page template needs a custom domain on
+  the tenant; without one the rest still applies.
 
 **4. Passwordless: a code by email** (beside the password and social logins, not instead):
 - Authentication → Passwordless → **Email** on. In its Settings: the sender, subject and

@@ -1,0 +1,37 @@
+{
+  "login": {
+    "login": {
+      "pageTitle": "Sign in · Wysebee",
+      "title": "Welcome back",
+      "description": "Sign in to Wysebee to keep your agents working."
+    }
+  },
+  "login-id": {
+    "login-id": {
+      "pageTitle": "Sign in · Wysebee",
+      "title": "Welcome back",
+      "description": "Sign in to Wysebee to keep your agents working."
+    }
+  },
+  "login-password": {
+    "login-password": {
+      "pageTitle": "Sign in · Wysebee",
+      "title": "Enter your password",
+      "description": "Enter your password for Wysebee."
+    }
+  },
+  "signup": {
+    "signup": {
+      "pageTitle": "Create your account · Wysebee",
+      "title": "Create your Wysebee account",
+      "description": "Pair your first device in under a minute."
+    }
+  },
+  "signup-id": {
+    "signup-id": {
+      "pageTitle": "Create your account · Wysebee",
+      "title": "Create your Wysebee account",
+      "description": "Pair your first device in under a minute."
+    }
+  }
+}
