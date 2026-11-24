@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SITE_KINDS, type AgentType } from "../../api";
 import { TYPES } from "../../../../test/agentTypes";
-import { agentKind, listedMay, listing, mayAdd, switchesOf, toolKind, typeOf } from "./toolKinds";
+import { agentKind, listedMay, listing, mayAdd, switchesOf, typeOf } from "./toolKinds";
 
 const CHROME = { browser_link: "l1", agent_type_id: "t-chrome" };
 const MAC = { mac_link: "m1", agent_type_id: "t-osx" };
@@ -14,11 +14,12 @@ const GLASSES: AgentType = {
 };
 
 describe("toolKinds", () => {
-  it("tags each tool with the kind of device whose types list it, and leaves the rest to any agent", () => {
-    for (const key of ["browser", "devtools", ...SITE_KINDS]) expect(toolKind(key, TYPES)).toBe("browser");
-    for (const key of ["local", "folder", "sqlite", "screen", "ios_toolkit"]) expect(toolKind(key, TYPES)).toBe("osx");
-    expect(toolKind("android", TYPES)).toBe("android");
-    for (const key of ["postgres", "snowflake", "sql", "unheard-of"]) expect(toolKind(key, TYPES)).toBe("any");
+  it("lists the types whose devices take each tool, none for a tool any agent takes", () => {
+    const kind = (key: string) => listing(key, TYPES)[0]?.kind ?? "any";
+    for (const key of ["browser", "devtools", ...SITE_KINDS]) expect(kind(key)).toBe("browser");
+    for (const key of ["local", "folder", "sqlite", "screen", "ios_toolkit"]) expect(kind(key)).toBe("osx");
+    expect(kind("android")).toBe("android");
+    for (const key of ["postgres", "snowflake", "sql", "unheard-of"]) expect(kind(key)).toBe("any");
     expect(listing("screen", TYPES).map((t) => t.key)).toEqual(["wysebee-osx", "wysebee-windows"]);
   });
 
@@ -57,7 +58,7 @@ describe("toolKinds", () => {
     const types = [...TYPES, GLASSES];
     const glasses = { glasses_link: "g1", agent_type_id: "t-glasses" };
     expect(switchesOf(glasses, types)).toEqual(GLASSES.settings);
-    expect([mayAdd(glasses, "camera", types), mayAdd(MAC, "camera", types), toolKind("camera", types)]).toEqual([true, false, "glasses"]);
+    expect([mayAdd(glasses, "camera", types), mayAdd(MAC, "camera", types), listing("camera", types)[0].kind]).toEqual([true, false, "glasses"]);
   });
 
   it("says which of the person's agents may be given a tool, by its paired device's type", () => {

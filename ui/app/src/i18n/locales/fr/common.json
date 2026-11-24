@@ -6,14 +6,6 @@
       "you": "vous",
       "someone": "quelqu’un"
     },
-    "autoSave": {
-      "saved": "Enregistré"
-    },
-    "inlineField": {
-      "save": "Enregistrer : {{what}}",
-      "discardTitle": "Annuler la modification",
-      "discard": "Annuler la modification : {{what}}"
-    },
     "saveBar": {
       "unsaved": "Modifications non enregistrées",
       "discard": "Annuler",

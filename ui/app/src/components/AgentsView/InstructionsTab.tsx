@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Markdown from "react-markdown";
 import { useTranslation } from "react-i18next";
-import { btn, btnPrimary, cn, inputBase, muted } from "@shared/cn";
+import { cn, inputBase, muted } from "@shared/cn";
 
 // Matches INSTRUCTIONS_MAX_LEN in apps/desktop/gateway/api/internal_services.py.
 export const INSTRUCTIONS_MAX_LEN = 50_000;
@@ -11,7 +11,7 @@ export const INSTRUCTIONS_MAX_LEN = 50_000;
  * prompt for every chat (the Terminal, the browser extension's Terminal and its MCP server).
  *
  * Text is never finished mid-keystroke (see components/common/autoSave), so this edits
- * a draft and Save commits it. The draft is held by the panel, not here, so switching
+ * a draft that the page's Unsaved changes bar (or ⌘/Ctrl+S) saves. The draft is held by the panel, not here, so switching
  * tabs does not lose what was typed.
  */
 export function InstructionsTab({
@@ -21,7 +21,6 @@ export function InstructionsTab({
   onSave,
   canEdit,
   kind = "agent",
-  showActions = true,
 }: {
   saved: string;
   draft: string;
@@ -30,11 +29,9 @@ export function InstructionsTab({
   canEdit: boolean;
   /** A task's Plan tab is this editor with its own title, help and placeholder. */
   kind?: "agent" | "task";
-  /** Its own Save / Discard. Off where the page's Unsaved changes bar saves it. */
-  showActions?: boolean;
 }) {
   const { t } = useTranslation();
-  // The words that differ for a task's plan; the rest (count, Save, Discard) are shared.
+  // The words that differ for a task's plan; the rest (the count) are shared.
   const words = (key: "title" | "help" | "placeholder" | "empty") =>
     kind === "task" ? `tasks.plan.${key}` : `agents.instructions.${key}`;
   const [preview, setPreview] = useState(false);
@@ -116,28 +113,6 @@ export function InstructionsTab({
             ? t("agents.instructions.tooLong", { max: INSTRUCTIONS_MAX_LEN.toLocaleString() })
             : t("agents.instructions.count", { count: draft.length })}
         </span>
-        {canEdit && showActions && (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className={btn}
-              onClick={() => onDraftChange(saved)}
-              disabled={!dirty}
-              data-track="Discard instructions"
-            >
-              {t("agents.instructions.discard")}
-            </button>
-            <button
-              type="button"
-              className={btnPrimary}
-              onClick={onSave}
-              disabled={!dirty || tooLong}
-              data-track="Save instructions"
-            >
-              {t("agents.instructions.save")}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

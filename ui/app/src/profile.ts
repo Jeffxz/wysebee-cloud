@@ -36,11 +36,6 @@ export async function updateProfile(change: { display_name?: string; avatar?: st
   return next;
 }
 
-/** The profile as last read, outside React. */
-export function profileNow(): Profile | null {
-  return profile;
-}
-
 export function useProfile(): Profile | null {
   return useSyncExternalStore(
     (l) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isSiteLink, siteProblemOf, sitesOf } from "./sites";
+import { isSiteLink, siteProblemOf } from "./sites";
 
 describe("sites", () => {
   it("takes Gmail's own links for Gmail, any web page for the rest", () => {
@@ -8,14 +8,6 @@ describe("sites", () => {
     expect(isSiteLink("news", "https://www.bbc.com/news")).toBe(true);
     expect(isSiteLink("website", "http://example.com")).toBe(true);
     for (const bad of ["bbc.com", "ftp://x.com/", "javascript:alert(1)", "https://"]) expect(isSiteLink("news", bad)).toBe(false);
-  });
-
-  it("reads the links in a config, dropping an old name", () => {
-    expect(sitesOf([{ name: "w", description: "d", address: "a@b.co" }, 3, { name: 1 }])).toEqual([
-      { description: "d", address: "a@b.co" },
-      { description: "", address: "" },
-    ]);
-    expect(sitesOf("x")).toEqual([]);
   });
 
   it("checks every link, saying which is wrong", () => {

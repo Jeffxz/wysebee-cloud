@@ -6,14 +6,6 @@
       "you": "你",
       "someone": "某人"
     },
-    "autoSave": {
-      "saved": "已保存"
-    },
-    "inlineField": {
-      "save": "保存{{what}}",
-      "discardTitle": "放弃更改",
-      "discard": "放弃对{{what}}的更改"
-    },
     "saveBar": {
       "unsaved": "有未保存的更改",
       "discard": "放弃",

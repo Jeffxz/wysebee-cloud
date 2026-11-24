@@ -1,7 +1,7 @@
 /**
  * Site tools as Wysebee's settings hold them — Open Gmail, Open Calendar, Travel, News and
  * Website, each one tool over a list of links, each with what it is for (the desktop's
- * sites.rs and sites.ts): read from a config, and checked before the dialog saves them.
+ * sites.rs and sites.ts): checked before the dialog saves them.
  * Pure, so it is tested on its own.
  */
 
@@ -11,8 +11,6 @@ const GMAIL = "https://mail.google.com/";
 
 /** Each kind's list in Wysebee's settings. */
 export const SITE_FIELDS: Record<SiteKind, string> = { gmail: "gmail_accounts", calendar: "calendar_sites", travel: "travel_sites", news: "news_sites", website: "websites" };
-
-const str = (v: unknown) => (typeof v === "string" ? v : "");
 
 /** Whether a link may be one of this kind's: Gmail's must be Gmail's own, any other an
  * http(s) page. */
@@ -26,16 +24,6 @@ export function isSiteLink(kind: SiteKind, link: string): boolean {
   } catch {
     return false;
   }
-}
-
-/** The links in a config; an entry that cannot be read is left out. */
-export function sitesOf(value: unknown): SiteLink[] {
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((v) => {
-    if (!v || typeof v !== "object") return [];
-    const o = v as Record<string, unknown>;
-    return [{ description: str(o.description), address: str(o.address) }];
-  });
 }
 
 /** What is wrong with the links about to be saved: a translation key and which link

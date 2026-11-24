@@ -246,7 +246,6 @@ export function AgentSettings({
               onDraftChange={(v) => setDraft({ ...config, [INSTRUCTIONS_FIELD]: v })}
               onSave={save}
               canEdit={canEdit}
-              showActions={false}
             />
           )}
         </div>

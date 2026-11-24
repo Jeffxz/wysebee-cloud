@@ -63,8 +63,6 @@
       "preview": "預覽",
       "placeholder": "# 角色\n你是……的客服助理。\n\n## 規則\n- 一律……\n- 絕不……",
       "empty": "尚無指令。",
-      "save": "儲存",
-      "discard": "捨棄",
       "count_other": "{{count}} 個字元",
       "tooLong": "過長：指令最多 {{max}} 個字元。"
     },
