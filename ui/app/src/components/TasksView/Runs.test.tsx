@@ -25,6 +25,9 @@ describe("RunsTab", () => {
     expect(screen.getByText("browser_tabs")).toBeTruthy();
     await userEvent.click(screen.getAllByRole("button")[1]);
     expect(await screen.findByText("No browser.")).toBeTruthy();
+    // It kept no steps: no empty "Used 0 tools" under its report, only the two runs' rows.
+    expect(screen.queryByText(/Used 0/)).toBeNull();
+    expect(screen.getAllByRole("button")).toHaveLength(2);
   });
 
   it("says when there are none, and why they could not be read", async () => {

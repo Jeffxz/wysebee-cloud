@@ -28,6 +28,8 @@ export function RunsTab({ taskId }: { taskId: string }) {
       .then(setOpen)
       .catch((e: Error) => setError(e.message));
   const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(i18n.language) : "");
+  // The steps it took, when the run kept them: one that kept only its report shows no list.
+  const steps = chatItems(open?.messages ?? [], undefined).flatMap((i) => (i.kind === "tools" ? i.steps : []));
 
   return (
     <div className="flex flex-col gap-3">
@@ -52,7 +54,7 @@ export function RunsTab({ taskId }: { taskId: string }) {
         <div className="flex flex-col gap-2" data-track-private>
           {open.error && <div className={errorBanner}>{open.error}</div>}
           {open.output && <AssistantText text={open.output} />}
-          <ToolCalls steps={chatItems(open.messages ?? [], undefined).flatMap((i) => (i.kind === "tools" ? i.steps : []))} labels={labels} />
+          {steps.length > 0 && <ToolCalls steps={steps} labels={labels} />}
         </div>
       )}
     </div>
