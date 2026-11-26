@@ -141,7 +141,7 @@ dashboard, and this app's `.env` / container settings pointing at it:
 | Setting | Value |
 |---|---|
 | `WYSEBEE_AUTH_ISSUER` | `https://<tenant>.<region>.auth0.com/` (or the custom domain, `https://auth.wysebee.com/`) |
-| `WYSEBEE_AUTH_AUDIENCE` | the API's identifier, default `https://wysebee.ai/api` |
+| `WYSEBEE_AUTH_AUDIENCE` | the API's identifier, default `https://wysebee.ai/api` — a name in Auth0, not an address: the site is `app.wysebee.com`, and an API's identifier cannot be changed once tokens carry it |
 | `WYSEBEE_AUTH_WEB_CLIENT_ID` | the website application's Client ID |
 | `WYSEBEE_AUTH_CONNECTION` | optional: the one Auth0 connection every sign-in goes to (`email` = the email code alone); unset = all of them |
 
@@ -156,7 +156,7 @@ signing in; without that, Auth0 issues an opaque access token this API cannot ve
 
 **2. The website** (Create Application → **Single Page Application**), for the landing
 page and `/app/`, per site address (`http://localhost:8000`, `http://localhost:5173` and
-`http://localhost:5174` for `yarn dev` / `dev:cloud`, the ngrok URL, `https://wysebee.ai`):
+`http://localhost:5174` for `yarn dev` / `dev:cloud`, the ngrok URL, `https://app.wysebee.com`):
 - **Allowed Callback URLs**: `<site>/auth/callback` and `<site>/app/`
 - **Allowed Logout URLs**: `<site>/`
 - **Allowed Web Origins**: `<site>`
@@ -862,6 +862,34 @@ tunnel's address, run `./scripts/ngrok.sh`, and add `<tunnel>/assistant/mcp` to 
 with no authentication: `/assistant/mcp` then answers without sign-in, as that person. The
 setting is refused at start without mock sign-in, so Dev and Prod always sign in with Auth0.
 
+### Sharing a page with everyone
+
+**Added 2026-11-25** (`apps/cloud/workspace_pages.py`, `ui/app/src/components/PageShareDialog.tsx`,
+migration 0084). A page the AI app made from a document (`write_page`) can be shared from the
+editor's Page view → **Share** → **Anyone with the link**: anyone who opens its public address,
+`<share domain>/s/<key>`, sees it with no sign-in. The key is random and kept when the AI app
+writes the page again, so the address always shows the page as it is now; **Only you** drops
+it (the address stops working), and sharing again makes a new one. Friends and colleagues are
+to come (`audience` takes `"public"` only for now).
+
+It is served as the in-app view is — sandboxed, no network, no forms — and framed by nobody,
+with `X-Robots-Tag: noindex`.
+
+| Route | |
+|---|---|
+| `PUT /api/v1/pages/{id}/share` | `{"audience": "public"}` → `{audience, url, shared_at}`; already shared, the same address |
+| `DELETE /api/v1/pages/{id}/share` | 204: only its owner sees it again |
+| `GET /s/{key}` | The page, for anyone — on the share domain only, when there is one |
+
+**The share domain** (`WYSEBEE_SHARE_URL`, e.g. `https://wysebee.io`): what people make is served
+from a domain apart from Wysebee's, so that a page reported as phishing gets that domain flagged
+and not `app.wysebee.com`, and a page that ever slipped its sandbox would run with no Wysebee origin,
+token or cookie within reach. With it set, the server answers on that host with `/s/<key>`,
+`robots.txt` (`Disallow: /`) and its root (a 308 to `WYSEBEE_PUBLIC_URL`) only — every other
+path there is a 404 — and `/s/` is a 404 on Wysebee's own host. The host is read from
+`X-Forwarded-Host`, else `Host`. Unset (local development, self-hosted), pages are shared from
+this site. It must be an origin only, and not `WYSEBEE_PUBLIC_URL`'s host.
+
 ## Activity: your agents' notifications
 
 **Every agent has `send_notification`** (`{title, body?}`: one line of at most 200 characters,
@@ -1565,7 +1593,31 @@ az containerapp create -n wysebee-cloud -g <rg> --environment <env> \
   age-based delete rule for current blobs**. Expect at most `WYSEBEE_ASSET_MAX_COUNT` ×
   `WYSEBEE_ASSET_MAX_BYTES` (100 MiB) of assets per person.
 - Optional: `WYSEBEE_MIGRATE_ON_START=false` if migrations run as a separate release step.
-- Point the `wysebee.ai` custom domain at the app (`az containerapp hostname add` / `bind`).
+- Point the `app.wysebee.com` custom domain at the app (`az containerapp hostname add` / `bind`).
+- **The share domain, `wysebee.io`** ([Sharing a page](#sharing-a-page-with-everyone)): the
+  same app, on a second custom domain, which then answers with shared pages only. Use a
+  registered domain of its own — not a subdomain of `wysebee.com` (where the app is, `app.wysebee.com`), which blocklists and cookies
+  treat as the same site — and keep nothing else on it (no mail, no other site).
+
+  ```bash
+  # 1. DNS at the wysebee.io registrar: an apex domain cannot be a CNAME, so an A record to the
+  #    environment's static IP, and the TXT record that proves the domain is yours.
+  az containerapp env show -n <env> -g <rg> --query properties.staticIp -o tsv          # A    @      -> <ip>
+  az containerapp show -n <app> -g <rg> --query properties.customDomainVerificationId -o tsv   # TXT  asuid  -> <id>
+
+  # 2. Add the hostname and a free managed certificate (once DNS has propagated).
+  az containerapp hostname add -n <app> -g <rg> --hostname wysebee.io
+  az containerapp hostname bind -n <app> -g <rg> --hostname wysebee.io --environment <env> --validation-method HTTP
+
+  # 3. Tell the app.
+  az containerapp update -n <app> -g <rg> --set-env-vars WYSEBEE_SHARE_URL=https://wysebee.io
+  ```
+
+  Then check: `https://wysebee.io/robots.txt` says `Disallow: /`, `https://wysebee.io/app/` is a
+  404, and a page shared afterwards has a `https://wysebee.io/s/…` address. Pages shared before
+  the setting keep their key; their address moves to the new domain (the old `app.wysebee.com/s/…`
+  one stops working). Also worth doing: keep `www.wysebee.io` unset or pointing at the apex, and
+  consider registering the domain with Google Search Console so abuse reports reach you.
 
 ## License
 

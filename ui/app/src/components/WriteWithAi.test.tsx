@@ -8,7 +8,7 @@ import { WorkspacesView } from "./WorkspacesView";
 import { timing } from "./WriteWithAi";
 import { useFetchTransport } from "../../../test/transport";
 
-const URL_ = "https://wysebee.ai/assistant/mcp";
+const URL_ = "https://app.wysebee.com/assistant/mcp";
 const ON = { on: true, url: URL_, path: "README.md", revision: 1, writer: "person", content: "# Docs\n", ai_client: null, ai_seen_at: null };
 const saved = { ...timing };
 

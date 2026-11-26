@@ -376,6 +376,11 @@ def create_app(ui_dist: Path | None = None, settings: Settings | None = None, lo
     # Wysebee Assistant's /assistant/mcp and its OAuth metadata (apps/cloud/agent_mcp.py), at the site root: before
     # the SPA's catch-all.
     app.include_router(mcp_router)
+    # Pages shared publicly, at ``/s/<key>`` (apps/cloud/workspace_pages.py): before the SPA's catch-all.
+    app.include_router(workspace_pages.share_router)
+    if settings.share_url:
+        # …on a domain of their own, which answers with nothing else.
+        app.middleware("http")(workspace_pages.share_host_gate)
     if mock_auth:
         app.include_router(mock_auth_router)
         app.middleware("http")(localhost_cors)

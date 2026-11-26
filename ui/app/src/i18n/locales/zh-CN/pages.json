@@ -6,6 +6,21 @@
     "howTo": "请让连接了 Wysebee Assistant 的 AI 应用根据此文档生成一个（它使用 write_page）。页面会显示在这里，也有自己的地址。",
     "refresh": "刷新",
     "open": "单独打开",
-    "sandboxed": "由你的 AI 应用生成。在沙盒中显示：脚本可以运行，但无法访问 Wysebee 或互联网。"
+    "sandboxed": "由你的 AI 应用生成。在沙盒中显示：脚本可以运行，但无法访问 Wysebee 或互联网。",
+    "share": {
+      "button": "共享",
+      "shared": "公开",
+      "sharedPublic": "已共享：任何拥有链接的人都能查看",
+      "title": "共享页面",
+      "who": "谁可以查看",
+      "private": "仅自己",
+      "privateHint": "仅登录 Wysebee 的你本人。",
+      "public": "任何拥有链接的人",
+      "publicHint": "无需登录：拥有链接的人都能打开，也能转发给他人。",
+      "link": "链接",
+      "live": "链接始终显示页面的最新内容：AI 应用重写后，大家看到的是新版本。选择“仅自己”后链接即失效。",
+      "openLink": "打开链接",
+      "done": "完成"
+    }
   }
 }

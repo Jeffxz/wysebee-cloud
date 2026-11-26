@@ -26,6 +26,7 @@ export default defineConfig({
   server: {
     // `yarn dev:app`: http://localhost:5174/app/ against wysebee-cloud on :8000.
     port: 5174,
-    proxy: { "/api": { target: "http://localhost:8000", changeOrigin: true } },
+    // …and a page shared publicly, at its own address (apps/cloud/workspace_pages.py).
+    proxy: { "/api": { target: "http://localhost:8000", changeOrigin: true }, "/s/": { target: "http://localhost:8000", changeOrigin: true } },
   },
 });

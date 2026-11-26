@@ -6,6 +6,21 @@
     "howTo": "Demandez à votre application IA, connectée à Wysebee Assistant, d'en créer une à partir de ce document (elle utilise write_page). Elle s'affiche ici, et à sa propre adresse.",
     "refresh": "Actualiser",
     "open": "Ouvrir seule",
-    "sandboxed": "Créée par votre application IA. Affichée isolée : ses scripts s'exécutent, mais elle ne peut atteindre ni Wysebee ni Internet."
+    "sandboxed": "Créée par votre application IA. Affichée isolée : ses scripts s'exécutent, mais elle ne peut atteindre ni Wysebee ni Internet.",
+    "share": {
+      "button": "Partager",
+      "shared": "Public",
+      "sharedPublic": "Partagée : toute personne disposant du lien peut la voir",
+      "title": "Partager la page",
+      "who": "Qui peut la voir",
+      "private": "Vous seul",
+      "privateHint": "Vous seul, connecté à Wysebee.",
+      "public": "Toute personne disposant du lien",
+      "publicHint": "Aucune connexion requise : quiconque a le lien peut l'ouvrir et le transmettre.",
+      "link": "le lien",
+      "live": "Le lien montre toujours la page telle qu'elle est : quand votre application IA la réécrit, on voit la nouvelle version. Choisissez Vous seul et le lien cesse de fonctionner.",
+      "openLink": "Ouvrir le lien",
+      "done": "Terminé"
+    }
   }
 }

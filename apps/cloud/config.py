@@ -169,11 +169,18 @@ class Settings(BaseSettings):
     # ChatGPT) uses every agent's tools through Wysebee Assistant, at /assistant/mcp.
     # Off: /assistant/mcp, its OAuth metadata and /api/v1/mcp/* are 404.
     mcp_enabled: bool = True
-    # This site's public address, e.g. https://wysebee.ai: Wysebee Assistant's address is
+    # This site's public address, e.g. https://app.wysebee.com: Wysebee Assistant's address is
     # <it>/assistant/mcp, the resource an AI app asks Auth0 for a token for, and an `aud`
     # it accepts (as well as auth_audience). Unset: taken from each request's Host /
     # X-Forwarded-Host (X-Forwarded-Proto honoured).
     public_url: str | None = None
+    # Where pages shared publicly are served (apps/cloud/workspace_pages.py, 2026-11-25), e.g.
+    # https://wysebee.io: a domain of their own, apart from this site's, so what people make is
+    # never served as Wysebee — a page that slipped its sandbox would find no sign-in there, and
+    # a page reported as phishing would get that domain flagged, not this one. Set, the server
+    # answers on it with shared pages only (and none here); unset, they are served from this
+    # site (local development, self-hosted).
+    share_url: str | None = None
     # How long one tool call may run before it is stopped and answered as timed out — under
     # Azure Container Apps' 240 s request limit.
     mcp_call_wait_seconds: float = 200
@@ -263,7 +270,7 @@ class Settings(BaseSettings):
     @field_validator(
         "auth_issuer", "auth_jwks_url", "auth_web_client_id", "auth_connection", "storage_azure_account_url",
         "asset_azure_account_url", "ai_kek_vault_key_url", "ai_kek",
-        "mixpanel_token", "mixpanel_api_host", "public_url", "auth0_mgmt_domain", "auth0_mgmt_client_id", "auth0_mgmt_client_secret",
+        "mixpanel_token", "mixpanel_api_host", "public_url", "share_url", "auth0_mgmt_domain", "auth0_mgmt_client_id", "auth0_mgmt_client_secret",
         "selfhost_token", mode="before",
     )
     @classmethod
@@ -289,6 +296,28 @@ class Settings(BaseSettings):
             self.events_enabled = False
         if "storage_quota_bytes" not in self.model_fields_set:
             self.storage_quota_bytes = 100 * 1024**3
+        return self
+
+    @field_validator("share_url")
+    @classmethod
+    def _share_url_is_an_origin(cls, v: str | None) -> str | None:
+        """Only a scheme and a host (and port): ``https://wysebee.io``."""
+        from urllib.parse import urlsplit
+
+        if v is None:
+            return v
+        parts = urlsplit(v.strip())
+        if parts.scheme not in ("http", "https") or not parts.hostname or parts.path.strip("/") or parts.query or parts.fragment:
+            raise ValueError("WYSEBEE_SHARE_URL is an origin only, such as https://wysebee.io.")
+        return f"{parts.scheme}://{parts.netloc}".lower()
+
+    @model_validator(mode="after")
+    def _share_url_is_apart(self) -> "Settings":
+        """Shared pages on this site's own host would not be apart at all."""
+        from urllib.parse import urlsplit
+
+        if self.share_url and self.public_url and urlsplit(self.share_url).netloc == urlsplit(self.public_url).netloc.lower():
+            raise ValueError("WYSEBEE_SHARE_URL must be a host of its own, not WYSEBEE_PUBLIC_URL's.")
         return self
 
     @model_validator(mode="after")

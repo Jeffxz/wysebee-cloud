@@ -6,6 +6,21 @@
     "howTo": "Ask your AI app, connected to Wysebee Assistant, to make one from this document (it uses write_page). It shows here, and at its own address.",
     "refresh": "Refresh",
     "open": "Open on its own",
-    "sandboxed": "Made by your AI app. Shown sandboxed: its scripts run, but it cannot reach Wysebee or the internet."
+    "sandboxed": "Made by your AI app. Shown sandboxed: its scripts run, but it cannot reach Wysebee or the internet.",
+    "share": {
+      "button": "Share",
+      "shared": "Public",
+      "sharedPublic": "Shared: anyone with the link can see it",
+      "title": "Share page",
+      "who": "Who can see it",
+      "private": "Only you",
+      "privateHint": "Only you, signed in to Wysebee.",
+      "public": "Anyone with the link",
+      "publicHint": "No sign-in needed: whoever has the link can open it, and pass it on.",
+      "link": "the link",
+      "live": "The link always shows the page as it is now: when your AI app writes it again, people see the new version. Choose Only you and the link stops working.",
+      "openLink": "Open link",
+      "done": "Done"
+    }
   }
 }

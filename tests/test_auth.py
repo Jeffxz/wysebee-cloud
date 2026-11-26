@@ -121,7 +121,7 @@ def test_keys_default_to_auth0s_path():
 def test_an_extra_audience_is_accepted_only_where_asked():
     from apps.cloud.config import Settings
 
-    mcp = "https://wysebee.ai/mcp"
+    mcp = "https://app.wysebee.com/mcp"
     verifier = TokenVerifier(Settings(auth_issuer=ISSUER))
     for_mcp = token(aud=mcp)
     assert verifier.verify(for_mcp, [AUDIENCE, mcp]).sub == "auth0|user-123"
@@ -133,7 +133,7 @@ def test_an_extra_audience_is_accepted_only_where_asked():
 
 
 def test_a_token_for_mcp_is_refused_by_the_rest_of_the_api(ui_dist):
-    assert me(ui_dist, token(aud="https://wysebee.ai/mcp")).status_code == 401
+    assert me(ui_dist, token(aud="https://app.wysebee.com/mcp")).status_code == 401
 
 
 def test_the_issuers_key_set_names_the_signing_key(monkeypatch):

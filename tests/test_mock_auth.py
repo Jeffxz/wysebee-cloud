@@ -98,7 +98,7 @@ def test_off_by_default_and_never_off_localhost(ui_dist):
         assert "issuer" not in c.get("/mock-auth/.well-known/openid-configuration").text
         assert c.get("/api/v1/web/config").json()["auth"]["issuer"] is None
     with pytest.raises(ValidationError):
-        Settings(auth_mock=True, auth_issuer="https://wysebee.ai/mock-auth/")
+        Settings(auth_mock=True, auth_issuer="https://app.wysebee.com/mock-auth/")
 
 
 def test_the_vite_dev_servers_may_read_it(client):

@@ -29,6 +29,8 @@ const CALLS: [string, () => Promise<unknown>, string, Kind][] = [
   ["declineSkillRequest", () => api.declineSkillRequest("a1", "k1"), "DELETE /api/v1/agents/a1/skill-requests/k1", "delete"],
   ["fetchPage", () => api.fetchPage("p 1"), "GET /api/v1/pages/p%201", "get"],
   ["fetchDocumentPage", () => api.fetchDocumentPage("w1", "a b.md"), "GET /api/v1/workspaces/w1/page?path=a%20b.md", "get"],
+  ["sharePage", () => api.sharePage("p 1", "public"), "PUT /api/v1/pages/p%201/share", "put"],
+  ["unsharePage", () => api.unsharePage("p 1"), "DELETE /api/v1/pages/p%201/share", "delete"],
   ["deleteTool", () => api.deleteTool("t 1"), "DELETE /api/v1/tools/t%201", "delete"],
   ["validateSql", () => api.validateSql({ kind: "sql", name: "a", description: "b", config: {} }), "POST /api/v1/tools/validate-sql", "post"],
   ["updateTask", () => api.updateTask("t1", {}), "PUT /api/v1/tasks/t1", "put"],

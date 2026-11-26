@@ -1220,10 +1220,32 @@ export interface WorkspacePage {
   /** Where it is shown from: its own address, the address its permission, sandboxed there. */
   view_url: string;
   updated_at: string;
+  /** Who else sees it, and where (2026-11-25): none when only its owner does. */
+  share?: PageShare | null;
+}
+
+/** Who a page is shared with: everyone, for now (friends and colleagues to come). */
+export type ShareAudience = "public";
+
+/** A page shared: its public address, the same when the AI app writes it again. */
+export interface PageShare {
+  audience: ShareAudience;
+  url: string;
+  shared_at: string;
 }
 
 export function fetchPage(id: string): Promise<WorkspacePage> {
   return authedGet<WorkspacePage>(`/api/v1/pages/${encodeURIComponent(id)}`);
+}
+
+/** Share the page: anyone with its address sees it, no sign-in needed. */
+export function sharePage(id: string, audience: ShareAudience): Promise<PageShare> {
+  return authedPut<PageShare>(`/api/v1/pages/${encodeURIComponent(id)}/share`, { audience });
+}
+
+/** Only its owner sees it again: its public address stops working. */
+export function unsharePage(id: string): Promise<void> {
+  return authedDelete(`/api/v1/pages/${encodeURIComponent(id)}/share`);
 }
 
 /** A document's page, if the AI app made one. */
