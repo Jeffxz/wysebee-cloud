@@ -207,7 +207,7 @@ describe("telemetry: clicks and the person's choice", () => {
     registerSensitiveNames(["Travel Planner", "x", ""]);
     press('<button data-track="Save agent">Save Travel Planner</button>', "button");
     press('<button aria-label="Open Travel Planner\'s settings"><span>⚙</span></button>', "span");
-    press('<a href="#/x" title="Mail sam@example.com at https://wysebee.ai/a in /Users/sam/notes">x</a>', "a");
+    press('<a href="#/x" title="Mail sam@example.com at https://app.wysebee.com/a in /Users/sam/notes">x</a>', "a");
     press('<div role="tab">General</div>', "[role=tab]");
     press('<button role="switch" aria-checked="false">On</button>', "button");
     press('<label><input type="checkbox" /> Send usage analytics</label>', "input");

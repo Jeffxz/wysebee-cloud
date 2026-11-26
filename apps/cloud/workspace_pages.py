@@ -32,8 +32,27 @@ page is served as written and follows the browser.
 - ``GET /workspaces/{workspace_id}/page?path=`` — ``{page: {id, title, updated_at} | null}``:
   the document's page, if it has one (the editor's Page view).
 - ``DELETE /pages/{page_id}`` — 204.
+- ``PUT /pages/{page_id}/share`` ``{audience: "public"}`` — the page's :func:`share_of`; ``DELETE``
+  it — 204, shared no more.
 
 Another person's page is a 404.
+
+**Shared with everyone** (2026-11-25, the person's call; migration 0084): its owner can share a
+page publicly — anyone with its public address, ``/s/<share key>`` at the site's root
+(:data:`share_router`), sees it with no sign-in. The key is random, made when it is shared and
+kept when the AI app writes the page again, so the address keeps showing the page as it is now;
+stopping sharing drops it, and sharing again makes a new one, so an address handed out before
+stops working. It is served as :func:`view_page` serves it — :data:`PUBLIC_CSP`: sandboxed, no
+network, and framed by nobody — and asks search engines not to list it. ``audience`` is one of
+:data:`AUDIENCES`: only ``"public"`` for now (friends and colleagues to come).
+
+**On a domain of their own** (2026-11-25, the person's call): with ``share_url`` set
+(``WYSEBEE_SHARE_URL``, e.g. ``https://wysebee.io``) the public address is there, never on this
+site, and :func:`share_host_gate` makes that domain answer with shared pages only — ``/s/<key>``,
+a ``robots.txt`` that lists nothing, and its root sent on to this site; everything else there
+is a 404, so Wysebee's app, API and sign-in are never served under it. What people make then
+runs apart from Wysebee's origin and cookies even if its sandbox failed, and a page reported as
+phishing gets that domain flagged, not Wysebee's.
 """
 
 import hmac
@@ -41,9 +60,10 @@ import logging
 import secrets
 import uuid
 from typing import Any
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,6 +76,8 @@ from apps.cloud.workspace_storage import WorkspaceStore
 logger = logging.getLogger("wysebee.cloud.workspace_pages")
 
 router = APIRouter(prefix="/v1", tags=["Workspaces"])
+# A shared page's public address, at the site's root (apps/cloud/main.py, before the SPA's catch-all).
+share_router = APIRouter(include_in_schema=False)
 
 FOLDER = ".pages"
 MAX_BYTES = 2_000_000
@@ -76,6 +98,9 @@ VIEW_CSP = "; ".join([
     "base-uri 'none'",
     "frame-ancestors 'self'",
 ])
+# A page shared publicly, opened on its own at its public address: as above, framed by nobody.
+PUBLIC_CSP = VIEW_CSP.replace("frame-ancestors 'self'", "frame-ancestors 'none'")
+AUDIENCES = ("public",)
 
 
 THEMES = ("dark", "light")
@@ -159,16 +184,107 @@ async def _mine(session: AsyncSession, user: User, page_id: str) -> WorkspacePag
     return page
 
 
+def _host(request: Request) -> str:
+    """The host the request was made to (as :func:`apps.cloud.relay.public_base` reads it)."""
+    host = request.headers.get("x-forwarded-host", "").split(",")[0].strip() or request.headers.get("host") or request.url.netloc
+    return host.lower()
+
+
+def _share_host(request: Request) -> str | None:
+    """``share_url``'s host, when shared pages have a domain of their own."""
+    url = request.app.state.settings.share_url
+    return urlsplit(url).netloc if url else None
+
+
+SHARE_ROBOTS = "User-agent: *\nDisallow: /\n"
+
+
+async def share_host_gate(request: Request, call_next: Any) -> Response:
+    """On the shared pages' own domain, those pages only (module docstring): the app's own
+    routes never answer there."""
+    host = _share_host(request)
+    if host is None or _host(request) != host:
+        return await call_next(request)
+    path = request.url.path
+    if path.startswith("/s/"):
+        return await call_next(request)
+    if path == "/robots.txt":
+        return Response(SHARE_ROBOTS, media_type="text/plain")
+    public_url = request.app.state.settings.public_url
+    if path == "/" and public_url:
+        return RedirectResponse(public_url, status_code=308)
+    return Response("Not Found", status_code=404, media_type="text/plain")
+
+
+def share_of(request: Request, page: WorkspacePage) -> dict[str, Any] | None:
+    """Who the page is shared with, and its address there: ``{audience, url, shared_at}``, or
+    None when only its owner sees it. On ``share_url`` when it is set, else on this site."""
+    from apps.cloud.relay import public_base
+
+    if not page.share_audience or not page.share_key:
+        return None
+    base = request.app.state.settings.share_url or public_base(request)
+    return {"audience": page.share_audience, "url": f"{base}/s/{page.share_key}", "shared_at": page.shared_at}
+
+
 @router.get("/pages/{page_id}", dependencies=[Depends(require_access)])
 async def get_page(page_id: str, request: Request, user: User = Depends(current_user), session: AsyncSession = Depends(get_session)) -> dict[str, Any]:
-    from apps.cloud.workspaces import _sub
-
     page = await _mine(session, user, page_id)
     workspace = await session.get_one(UserWorkspace, page.workspace_id)
     return {
         "id": page.page_id, "workspace_id": page.workspace_id, "workspace_name": workspace.name, "source_path": page.source_path,
         "title": page.title, "view_url": f"/api/v1/page-view/{page.page_id}/{page.view_key}", "updated_at": page.updated_at,
+        "share": share_of(request, page),
     }
+
+
+@router.put("/pages/{page_id}/share", dependencies=[Depends(require_access)])
+async def share_page(page_id: str, request: Request, user: User = Depends(current_user), session: AsyncSession = Depends(get_session)) -> dict[str, Any]:
+    """Share the page with ``audience`` (:data:`AUDIENCES`). Already shared: its address kept."""
+    try:
+        body = await request.json()
+    except ValueError:
+        body = None
+    audience = body.get("audience") if isinstance(body, dict) else None
+    if audience not in AUDIENCES:
+        raise HTTPException(status_code=422, detail="Say who to share it with: 'audience' is \"public\".")
+    page = await _mine(session, user, page_id)
+    if page.share_key is None:
+        page.share_key, page.shared_at = secrets.token_urlsafe(24), func.now()
+    page.share_audience = audience
+    await session.commit()
+    await session.refresh(page)
+    logger.info("page_shared audience=%s", audience)
+    return share_of(request, page) or {}
+
+
+@router.delete("/pages/{page_id}/share", status_code=204, dependencies=[Depends(require_access)])
+async def unshare_page(page_id: str, user: User = Depends(current_user), session: AsyncSession = Depends(get_session)) -> Response:
+    """Only its owner sees it again: its public address stops working."""
+    page = await _mine(session, user, page_id)
+    page.share_audience = page.share_key = page.shared_at = None
+    await session.commit()
+    return Response(status_code=204)
+
+
+@share_router.get("/s/{share_key}")
+async def shared_page(share_key: str, request: Request, session: AsyncSession = Depends(get_session)) -> Response:
+    """A page shared publicly, for anyone, signed in or not: under :data:`PUBLIC_CSP`, as written
+    (it follows the browser's look), and not for search engines to list."""
+    from apps.cloud.asset_storage import user_folder
+
+    # With a domain of their own, never here (:func:`share_host_gate` lets them through there).
+    elsewhere = _share_host(request) not in (None, _host(request))
+    page = None if elsewhere or not 0 < len(share_key) <= 64 else await session.scalar(select(WorkspacePage).where(WorkspacePage.share_key == share_key))
+    if page is None or page.share_audience != "public":
+        raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
+    data = await _store(request).read(user_folder(page.user_id), key(page.workspace_id, page.page_id))
+    if data is None:
+        raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
+    return HTMLResponse(data, headers={
+        "Content-Security-Policy": PUBLIC_CSP, "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer",
+        "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow",
+    })
 
 
 @router.get("/page-view/{page_id}/{view_key}", include_in_schema=False)

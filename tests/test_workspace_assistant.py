@@ -50,7 +50,7 @@ def client(ui_dist: Path, migrated_db_url: str, tmp_path: Path) -> Iterator[Test
         skill_file_dir=tmp_path / "skill-files",
         workspace_file_max_bytes=MAX_BYTES,
         auth_issuer=ISSUER,
-        public_url="https://wysebee.ai",
+        public_url="https://app.wysebee.com",
         workspace_assistant_wait_seconds=2,
     ) as c:
         c.app.dependency_overrides[current_user] = _fake_user
@@ -117,7 +117,7 @@ def test_tools_say_off_until_switched_on(client, users):
     assert workspace_assistant.TOOL_NAMES <= {t["name"] for t in tools}
     # Not switched on: nothing to poll, nothing to edit.
     pid = workspace(client, me)
-    assert poll(client, me, pid) == {"on": False, "url": "https://wysebee.ai/assistant/mcp"}
+    assert poll(client, me, pid) == {"on": False, "url": "https://app.wysebee.com/assistant/mcp"}
     r = client.put(base(pid), json={"path": "README.md", "content": "x", "revision": 1}, headers=h(me))
     assert r.status_code == 409 and r.json()["detail"]["on"] is False
 
@@ -127,7 +127,7 @@ def test_ai_writes_show_in_the_editor(client, users):
     me, other = users
     pid = workspace(client, me)
     state = turn_on(client, me, pid, content="# Docs\nIntro.\n")
-    assert state["on"] and state["revision"] == 1 and state["url"] == "https://wysebee.ai/assistant/mcp"
+    assert state["on"] and state["revision"] == 1 and state["url"] == "https://app.wysebee.com/assistant/mcp"
     assert state["content"] == "# Docs\nIntro.\n" and state["ai_client"] is None
 
     # The AI app connects: the editor learns its name.
@@ -432,7 +432,7 @@ def test_the_ai_app_makes_a_skill_and_the_editor_goes_to_it(client, users, monke
     assert not err and said.startswith("Made the skill report;")
     made = next(s for s in client.get("/api/v1/skills", headers=h(me)).json()["skills"] if s["name"] == "report")
     # The workspace's editor is told where to go; the skill's file is the open page.
-    assert poll(client, me, pid) == {"on": False, "url": "https://wysebee.ai/assistant/mcp", "opened": {"skill_id": made["id"], "path": "SKILL.md"}}
+    assert poll(client, me, pid) == {"on": False, "url": "https://app.wysebee.com/assistant/mcp", "opened": {"skill_id": made["id"], "path": "SKILL.md"}}
     text_, err = call(client, me, "read_document")
     assert not err and 'description: "Weekly report."' in text_ and "Run scripts/report.py." in text_
     # Refused: no description, a taken name, a bad name, a full library.
@@ -601,6 +601,100 @@ def test_the_ai_app_writes_a_page_for_the_open_document(client, users):
     second = call(client, me, "write_page", {"html": "<p>n</p>"})[0].rsplit("/", 1)[-1]
     assert client.delete(f"/api/v1/pages/{second}", headers=h(me)).status_code == 204
     assert client.get(f"/api/v1/workspaces/{pid}/page?path=notes.md", headers=h(me)).json() == {"page": None}
+
+
+@needs_db
+def test_a_page_is_shared_with_everyone_and_no_longer(client, users):
+    me, other = users
+    pid = workspace(client, me)
+    turn_on(client, me, pid)
+    html = "<!doctype html><html><head><title>Docs</title></head><body><h1>Docs</h1></body></html>"
+    page_id = call(client, me, "write_page", {"html": html})[0].rsplit("/", 1)[-1]
+    base = f"/api/v1/pages/{page_id}"
+    # Only its owner sees it at first.
+    assert client.get(base, headers=h(me)).json()["share"] is None
+    # Shared with everyone: an address anyone opens, signed in or not.
+    share = client.put(f"{base}/share", json={"audience": "public"}, headers=h(me)).json()
+    assert share["audience"] == "public" and share["url"].startswith("https://app.wysebee.com/s/") and share["shared_at"]
+    assert client.get(base, headers=h(me)).json()["share"] == share
+    path = share["url"].removeprefix("https://app.wysebee.com")
+    shown = client.get(path)
+    assert shown.status_code == 200 and shown.text == html
+    csp = shown.headers["content-security-policy"]
+    assert "sandbox allow-scripts" in csp and "connect-src 'none'" in csp and "frame-ancestors 'none'" in csp
+    assert shown.headers["x-robots-tag"] == "noindex, nofollow" and shown.headers["referrer-policy"] == "no-referrer"
+    # Shared again: the same address. Written again: the same address, the page as it is now.
+    assert client.put(f"{base}/share", json={"audience": "public"}, headers=h(me)).json() == share
+    call(client, me, "write_page", {"html": "<p>v2</p>"})
+    assert client.get(path).text == "<p>v2</p>"
+    # Only its owner shares it, and only with an audience Wysebee knows.
+    assert client.put(f"{base}/share", json={"audience": "public"}, headers=h(other)).status_code == 404
+    assert client.delete(f"{base}/share", headers=h(other)).status_code == 404
+    for bad in ({"audience": "friends"}, {}, [], None):
+        assert client.put(f"{base}/share", json=bad, headers=h(me)).status_code == 422
+    assert client.get(base, headers=h(me)).json()["share"] == share
+    # No longer shared: its address stops working; shared again, a new one.
+    assert client.delete(f"{base}/share", headers=h(me)).status_code == 204
+    assert client.get(base, headers=h(me)).json()["share"] is None
+    assert client.get(path).status_code == 404
+    again = client.put(f"{base}/share", json={"audience": "public"}, headers=h(me)).json()["url"]
+    assert again != share["url"] and client.get(again.removeprefix("https://app.wysebee.com")).status_code == 200
+    assert client.get("/s/nope").status_code == 404
+    assert client.get("/s/" + "x" * 65).status_code == 404
+    # The page deleted: its address with it.
+    assert client.delete(base, headers=h(me)).status_code == 204
+    assert client.get(again.removeprefix("https://app.wysebee.com")).status_code == 404
+
+
+@pytest.fixture
+def share_client(ui_dist: Path, migrated_db_url: str, tmp_path: Path) -> Iterator[TestClient]:
+    """As :func:`client`, with shared pages on a domain of their own."""
+    with make_client(
+        ui_dist, database_url=migrated_db_url, workspace_dir=tmp_path / "user-workspaces", skill_file_dir=tmp_path / "skill-files",
+        auth_issuer=ISSUER, public_url="https://app.wysebee.com", share_url="https://WYSEBEE.io/", workspace_assistant_wait_seconds=2,
+    ) as c:
+        c.app.dependency_overrides[current_user] = _fake_user
+        yield c
+
+
+@needs_db
+def test_shared_pages_live_on_a_domain_of_their_own(share_client, users):
+    client, me = share_client, users[0]
+    pid = workspace(client, me)
+    turn_on(client, me, pid)
+    page_id = call(client, me, "write_page", {"html": "<p>hi</p>"})[0].rsplit("/", 1)[-1]
+    url = client.put(f"/api/v1/pages/{page_id}/share", json={"audience": "public"}, headers=h(me)).json()["url"]
+    # Its address is on the share domain, and answers there only.
+    assert url.startswith("https://wysebee.io/s/")
+    path = url.removeprefix("https://wysebee.io")
+    shown = client.get(url)
+    assert shown.status_code == 200 and shown.text == "<p>hi</p>" and "sandbox allow-scripts" in shown.headers["content-security-policy"]
+    assert client.get(path).status_code == 404
+    assert client.get("https://app.wysebee.com" + path).status_code == 404
+    # Behind a proxy that names the host it was asked for.
+    assert client.get(path, headers={"X-Forwarded-Host": "wysebee.io"}).status_code == 200
+    # Nothing else of Wysebee's answers there: not its API, its app, nor its sign-in.
+    for other in ("/api/v1/me", f"/api/v1/pages/{page_id}", "/api/health", "/app/", "/assistant/mcp", "/favicon.ico", "/x"):
+        assert client.get("https://wysebee.io" + other, headers=h(me)).status_code == 404, other
+    assert client.put(f"https://wysebee.io/api/v1/pages/{page_id}/share", json={"audience": "public"}, headers=h(me)).status_code == 404
+    robots = client.get("https://wysebee.io/robots.txt")
+    assert robots.text == "User-agent: *\nDisallow: /\n"
+    root = client.get("https://wysebee.io/", follow_redirects=False)
+    assert (root.status_code, root.headers["location"]) == (308, "https://app.wysebee.com")
+    # This site still answers as before.
+    assert client.get("/api/v1/pages/" + page_id, headers=h(me)).status_code == 200
+
+
+def test_the_share_domain_is_an_origin_of_its_own():
+    from pydantic import ValidationError
+
+    assert Settings(share_url=" ").share_url is None
+    assert Settings(share_url="https://Wysebee.io/").share_url == "https://wysebee.io"
+    for bad in ("wysebee.io", "ftp://wysebee.io", "https://wysebee.io/s", "https://wysebee.io?x=1"):
+        with pytest.raises(ValidationError):
+            Settings(share_url=bad)
+    with pytest.raises(ValidationError, match="host of its own"):
+        Settings(share_url="https://app.wysebee.com", public_url="https://APP.wysebee.com/")
 
 
 @needs_db

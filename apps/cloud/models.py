@@ -197,6 +197,11 @@ class WorkspacePage(Base):
     view_key: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # Shared (migration 0084): with whom — "public", or None for only its owner — and the secret
+    # of its public address (``/s/<key>``), kept across rewrites, gone when sharing stops.
+    share_audience: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    share_key: Mapped[str | None] = mapped_column(String(64), nullable=True, unique=True, index=True)
+    shared_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 class WorkspaceAssistant(Base):
     """Wysebee Assistant on the page open in a person's editor (apps/cloud/workspace_assistant.py):

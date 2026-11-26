@@ -112,4 +112,43 @@ describe("a page the AI app made", () => {
     refuse(new Error("gone"));
     await new Promise((r) => setTimeout(r, 0));
   });
+
+  it("is shared with anyone with the link, and no longer, from the editor's Page view", async () => {
+    vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "", updated_at: "" } });
+    vi.spyOn(api, "fetchPage").mockResolvedValue({ ...PAGE, share: null });
+    const SHARE: api.PageShare = { audience: "public", url: "https://wysebee.io/s/abc", shared_at: "" };
+    const share = vi.spyOn(api, "sharePage").mockRejectedValueOnce(new Error("HTTP 503: Wysebee Cloud is busy.")).mockResolvedValue(SHARE);
+    const unshare = vi.spyOn(api, "unsharePage").mockResolvedValue();
+    render(<DocumentPage workspaceId="w" path="guide/plan.md" />);
+    await userEvent.click(await screen.findByRole("button", { name: "Share" }));
+    const dialog = screen.getByRole("dialog", { name: "Share page" });
+    const only = screen.getByRole("radio", { name: /Only you/ }) as HTMLInputElement;
+    const anyone = screen.getByRole("radio", { name: /Anyone with the link/ }) as HTMLInputElement;
+    expect(only.checked).toBe(true);
+    // Refused: said, and still private.
+    await userEvent.click(anyone);
+    expect(await screen.findByText("Wysebee Cloud is busy.")).toBeTruthy();
+    expect(only.checked).toBe(true);
+    // Shared: its link, to copy and open.
+    await userEvent.click(anyone);
+    await waitFor(() => expect(anyone.checked).toBe(true));
+    expect(share).toHaveBeenLastCalledWith("pg1", "public");
+    expect(screen.queryByText("Wysebee Cloud is busy.")).toBeNull();
+    expect(dialog.textContent).toContain("https://wysebee.io/s/abc");
+    const open = screen.getByRole("link", { name: "Open link" });
+    expect(open.getAttribute("href")).toBe("https://wysebee.io/s/abc");
+    expect(open.getAttribute("target")).toBe("_blank");
+    // Closed: the toolbar says it is public.
+    await userEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Public" }));
+    // No longer shared: no link.
+    await userEvent.click(screen.getByRole("radio", { name: /Only you/ }));
+    await waitFor(() => expect(unshare).toHaveBeenCalledWith("pg1"));
+    await waitFor(() => expect(screen.queryByRole("link", { name: "Open link" })).toBeNull());
+    // Escape closes it.
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByRole("button", { name: "Share" })).toBeTruthy();
+  });
 });

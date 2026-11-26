@@ -74,9 +74,9 @@ MCP = "/assistant/mcp"
 
 
 def test_wysebee_assistant_has_protected_resource_metadata_naming_the_tenant(ui_dist: Path):
-    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://wysebee.ai/") as c:
+    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://app.wysebee.com/") as c:
         body = c.get(f"/.well-known/oauth-protected-resource{MCP}").json()
-        assert body["resource"] == "https://wysebee.ai/assistant/mcp" and body["authorization_servers"] == [ISSUER]
+        assert body["resource"] == "https://app.wysebee.com/assistant/mcp" and body["authorization_servers"] == [ISSUER]
         assert body["resource_name"] == "Wysebee Assistant" and "offline_access" in body["scopes_supported"]
         # One connector: no agent has an address of its own any more.
         for gone in ("/mcp", "/mcp/wysebee", "/mcp/scout"):
@@ -103,10 +103,10 @@ def test_a_server_whose_sign_in_is_off_answers_503(ui_dist: Path):
 
 
 def test_without_a_token_the_app_is_pointed_at_the_assistants_metadata(ui_dist: Path):
-    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://wysebee.ai") as c:
+    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://app.wysebee.com") as c:
         r = c.post(MCP, json=rpc("initialize"))
         assert r.status_code == 401
-        assert r.headers["www-authenticate"] == 'Bearer resource_metadata="https://wysebee.ai/.well-known/oauth-protected-resource/assistant/mcp"'
+        assert r.headers["www-authenticate"] == 'Bearer resource_metadata="https://app.wysebee.com/.well-known/oauth-protected-resource/assistant/mcp"'
         bad = c.post(MCP, json=rpc("initialize"), headers={"Authorization": "Bearer nonsense"})
         assert bad.status_code == 401 and 'error="invalid_token"' in bad.headers["www-authenticate"]
         down = c.post(MCP, json=rpc("initialize"), headers={"Authorization": "Bearer keys-down"})
@@ -115,9 +115,9 @@ def test_without_a_token_the_app_is_pointed_at_the_assistants_metadata(ui_dist: 
 
 def test_a_token_for_the_assistants_own_address_is_accepted(ui_dist: Path):
     FakeVerifier.audiences.clear()
-    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://wysebee.ai/") as c:
+    with make_client(ui_dist, auth_issuer=ISSUER, public_url="https://app.wysebee.com/") as c:
         assert c.post(MCP, json=rpc("ping"), headers=bearer("u")).status_code == 200
-    assert FakeVerifier.audiences[-1] == ["https://wysebee.ai/api", "https://wysebee.ai/assistant/mcp"]
+    assert FakeVerifier.audiences[-1] == ["https://wysebee.ai/api", "https://app.wysebee.com/assistant/mcp"]
 
 
 def test_malformed_unknown_and_other_requests(ui_dist: Path):

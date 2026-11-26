@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ExternalLink, Moon, RefreshCw, ShieldCheck, Sun } from "lucide-react";
+import { ExternalLink, Globe, Moon, RefreshCw, Share2, ShieldCheck, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { btn, cn, errorBanner, loading, muted } from "@shared/cn";
 import { fetchDocumentPage, fetchPage, type WorkspacePage } from "../api";
 import { setTheme, useTheme } from "../theme";
 import { reasonOf } from "../workspaces";
+import { PageShareDialog } from "./PageShareDialog";
 
 /**
  * A page the person's AI app wrote (Wysebee Assistant's write_page), shown as it was made but
@@ -90,6 +91,7 @@ export function DocumentPage({ workspaceId, path }: { workspaceId: string; path:
   const { t } = useTranslation();
   const [page, setPage] = useState<WorkspacePage | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
   const load = useCallback(async () => {
     setError(null);
     try {
@@ -125,8 +127,14 @@ export function DocumentPage({ workspaceId, path }: { workspaceId: string; path:
         <a className={cn(btn, "text-xs")} href={`#/pages/${encodeURIComponent(page.id)}`} target="_blank" rel="noopener">
           <ExternalLink size={13} aria-hidden /> {t("pages.open")}
         </a>
+        <button type="button" className={cn(btn, "text-xs")} onClick={() => setSharing(true)} title={t(page.share ? "pages.share.sharedPublic" : "pages.share.title")}>
+          {page.share ? <Globe size={13} aria-hidden /> : <Share2 size={13} aria-hidden />} {t(page.share ? "pages.share.shared" : "pages.share.button")}
+        </button>
       </div>
       <PageFrame src={page.view_url} title={page.title || path} className="min-h-[60vh] flex-1" />
+      {sharing && (
+        <PageShareDialog pageId={page.id} share={page.share ?? null} onChange={(share) => setPage((p) => p && { ...p, share })} onClose={() => setSharing(false)} />
+      )}
     </div>
   );
 }

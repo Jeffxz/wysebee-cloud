@@ -6,6 +6,21 @@
     "howTo": "請讓連接了 Wysebee Assistant 的 AI 應用程式根據此文件產生一個（它使用 write_page）。頁面會顯示在這裡，也有自己的網址。",
     "refresh": "重新整理",
     "open": "單獨開啟",
-    "sandboxed": "由你的 AI 應用程式產生。在沙箱中顯示：指令碼可以執行，但無法存取 Wysebee 或網際網路。"
+    "sandboxed": "由你的 AI 應用程式產生。在沙箱中顯示：指令碼可以執行，但無法存取 Wysebee 或網際網路。",
+    "share": {
+      "button": "分享",
+      "shared": "公開",
+      "sharedPublic": "已分享：任何擁有連結的人都能查看",
+      "title": "分享頁面",
+      "who": "誰可以查看",
+      "private": "僅限自己",
+      "privateHint": "僅限登入 Wysebee 的你本人。",
+      "public": "任何擁有連結的人",
+      "publicHint": "無需登入：擁有連結的人都能開啟，也能轉傳給他人。",
+      "link": "連結",
+      "live": "連結一律顯示頁面的最新內容：AI 應用程式重寫後，大家看到的是新版本。選擇「僅限自己」後連結即失效。",
+      "openLink": "開啟連結",
+      "done": "完成"
+    }
   }
 }
