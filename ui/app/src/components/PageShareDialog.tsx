@@ -36,8 +36,8 @@ export function PageShareDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // Only an unchecked radio fires, and none while a choice is saving (they are disabled).
   const choose = async (choice: Choice) => {
-    if (busy || choice === now) return;
     setBusy(true);
     setProblem(null);
     try {

@@ -641,6 +641,12 @@ def test_a_page_is_shared_with_everyone_and_no_longer(client, users):
     assert again != share["url"] and client.get(again.removeprefix("https://app.wysebee.com")).status_code == 200
     assert client.get("/s/nope").status_code == 404
     assert client.get("/s/" + "x" * 65).status_code == 404
+    # Its file gone from the store: not there, as for a page that is none.
+    from apps.cloud.asset_storage import user_folder
+    from apps.cloud.workspace_pages import key
+
+    asyncio.run(client.app.state.workspace_store.delete(user_folder(me), key(pid, page_id)))
+    assert client.get(again.removeprefix("https://wysebee.ai")).json()["detail"] == "There is no such page, or it is no longer shared."
     # The page deleted: its address with it.
     assert client.delete(base, headers=h(me)).status_code == 204
     assert client.get(again.removeprefix("https://app.wysebee.com")).status_code == 404
