@@ -5,6 +5,9 @@
  * Mixpanel; the page now loads nothing of Mixpanel's. Off — every call a no-op — until
  * `initAnalytics` is told this deployment sends them (`analytics.enabled` in
  * /api/v1/web/config), and while the browser asks not to be tracked (Do Not Track), as before.
+ * Nor in a browser driven by a program (`navigator.webdriver`: Puppeteer, Playwright, Selenium),
+ * which would otherwise log "Sign In Started" on every load; wysebee-cloud also drops events
+ * from crawlers' and headless browsers' user agents.
  *
  * **Who someone is**: before sign-in, a random id this browser keeps (`anonymous_id`, in
  * localStorage), and nothing else; once signed in, their access token (`identify`), from
@@ -46,7 +49,7 @@ function browserId(): string {
 
 export function initAnalytics(on: boolean | null | undefined): void {
   if (!on || enabled) return;
-  if (typeof navigator !== "undefined" && navigator.doNotTrack === "1") return;
+  if (typeof navigator !== "undefined" && (navigator.doNotTrack === "1" || navigator.webdriver)) return;
   anonymousId = browserId();
   sessionId = randomId();
   enabled = true;
