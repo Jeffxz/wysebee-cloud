@@ -27,11 +27,19 @@ gave it).
 minute for each person or, before sign-in, each address (429). Kept ``events_retention_days``
 (13 months) by when they happened (:func:`purge_often`), and deleted with the account.
 ``WYSEBEE_EVENTS_ENABLED=false`` turns it all off (404; the pages then send nothing).
+
+**Bots** (2026-11-27): a batch whose ``User-Agent`` is a crawler's, a link previewer's, a
+headless browser's, a script's or missing (:func:`is_bot`) is answered 204 and neither kept nor
+forwarded. The landing page logs ``Sign In Started`` on load, before any click, so every crawler
+that runs its script looked like someone who began to sign in. Mixpanel's ``/track`` does not
+read the user agent itself, so each forwarded event names the browser and system it came from
+(``$browser``, ``$os``, :func:`browser_and_os`); the agent string itself is not kept.
 """
 
 import asyncio
 import json
 import logging
+import re
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
@@ -67,6 +75,51 @@ FUTURE = timedelta(hours=1)
 MIXPANEL_HOST = "https://api.mixpanel.com"
 
 _bearer = HTTPBearer(auto_error=False)
+
+# Crawlers, link previewers, monitors, headless browsers and scripts. ``(?<!cu)bot``: not the
+# Cubot phones' own Android browser.
+BOT_AGENT = re.compile(
+    r"(?<!cu)bot|crawl|spider|slurp|headless|phantomjs|puppeteer|playwright|selenium|lighthouse"
+    r"|preview|facebookexternalhit|embedly|bitlyfetcher|scrapy|python-|curl/|wget|go-http-client"
+    r"|okhttp|axios|node-fetch|undici|java/|libwww|httpclient|pingdom|uptime|monitor|scanner",
+    re.IGNORECASE,
+)
+
+
+def is_bot(agent: str | None) -> bool:
+    """Whether a ``User-Agent`` is a program's, not a person's browser (no agent at all counts)."""
+    return not agent or not agent.strip() or bool(BOT_AGENT.search(agent))
+
+
+# First match wins: Edge, Opera and Samsung Internet also say "Chrome", Chrome also says "Safari".
+_BROWSERS = (
+    ("Edg", "Microsoft Edge"), ("OPR/", "Opera"), ("SamsungBrowser/", "Samsung Internet"),
+    ("FxiOS/", "Firefox iOS"), ("CriOS/", "Chrome iOS"), ("Firefox/", "Firefox"), ("Chrome/", "Chrome"),
+)
+_SYSTEMS = (
+    ("iPhone", "iOS"), ("iPad", "iOS"), ("Android", "Android"), ("CrOS", "Chrome OS"),
+    ("Windows", "Windows"), ("Mac OS X", "Mac OS X"), ("Macintosh", "Mac OS X"), ("Linux", "Linux"),
+)
+
+
+def browser_and_os(agent: str | None) -> dict[str, str]:
+    """Mixpanel's ``$browser`` and ``$os`` for a ``User-Agent``, as its own library names them;
+    whichever is not recognised is left out."""
+    if not agent:
+        return {}
+    found: dict[str, str] = {}
+    for mark, name in _SYSTEMS:
+        if mark in agent:
+            found["$os"] = name
+            break
+    for mark, name in _BROWSERS:
+        if mark in agent:
+            found["$browser"] = name
+            break
+    else:
+        if "Safari/" in agent:
+            found["$browser"] = "Mobile Safari" if found.get("$os") == "iOS" else "Safari"
+    return found
 
 
 class EventIn(BaseModel):
@@ -111,10 +164,12 @@ def occurred(ms: int | None, now: datetime) -> datetime:
     return when if now - PAST <= when <= now + FUTURE else now
 
 
-def to_mixpanel(row: UsageEvent, token: str, address: str) -> dict[str, Any]:
-    """One stored event as Mixpanel's /track takes it, with the properties the pages used to send."""
+def to_mixpanel(row: UsageEvent, token: str, address: str, client: dict[str, str] | None = None) -> dict[str, Any]:
+    """One stored event as Mixpanel's /track takes it, with the properties the pages used to send
+    and ``client``: the browser and system it came from (:func:`browser_and_os`)."""
     props: dict[str, Any] = {
         **row.properties,
+        **(client or {}),
         "token": token,
         "time": int(row.occurred_at.timestamp() * 1000),
         "$insert_id": row.insert_id,
@@ -163,6 +218,10 @@ async def post_events(
     settings: Settings = request.app.state.settings
     if not settings.events_enabled:
         raise HTTPException(status_code=404, detail="Usage events are off here.")
+    agent = request.headers.get("user-agent")
+    if is_bot(agent):
+        # Answered as if kept, so a crawler has nothing to retry.
+        return Response(status_code=204)
     if user is None and not batch.anonymous_id:
         raise HTTPException(status_code=422, detail="Sign in, or give an anonymous_id.")
     address = _client_address(request)
@@ -181,7 +240,8 @@ async def post_events(
     session.add_all(rows)
     await session.commit()
     if settings.mixpanel_token:
-        events = [to_mixpanel(row, settings.mixpanel_token, address) for row in rows]
+        client = browser_and_os(agent)
+        events = [to_mixpanel(row, settings.mixpanel_token, address, client) for row in rows]
         # After answering, so a slow Mixpanel never holds up the page.
         background.add_task(forward, request.app.state.events_http, settings, events)
     return Response(status_code=204)

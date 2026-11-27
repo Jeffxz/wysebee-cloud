@@ -38,6 +38,13 @@ describe("the front page's usage events", () => {
     expect(sent).toEqual([]);
   });
 
+  it("sends nothing from a browser driven by a program", () => {
+    vi.stubGlobal("navigator", { webdriver: true, language: "en" });
+    initAnalytics(true);
+    track("Sign In Started", { intent: "sign_in", automatic: true });
+    expect(sent).toEqual([]);
+  });
+
   it("posts each event at once to wysebee-cloud, by this browser's random id, then with the person's token", () => {
     initAnalytics(true);
     // Started once only.

@@ -268,7 +268,14 @@ the rows are kept all the same. Without a Mixpanel token, events are only kept.
 **The landing page's events**: `Page Viewed` (`path` only, never the query string),
 `Sign Up Clicked`, `Sign In Clicked`, `Sign In Started`, `Signed Up`, `Signed In`,
 `Sign In Failed` (`cancelled`); each with `app: wysebee-cloud-web`, posted one at a time with
-`keepalive` (most are sent just before the page leaves). Do Not Track is honoured.
+`keepalive` (most are sent just before the page leaves). Do Not Track is honoured. `Sign In
+Started` (`automatic: true`) is sent on load, before any click, so it is not a funnel's first
+step: nothing is sent from a browser a program drives (`navigator.webdriver`).
+
+**Bots** (2026-11-27): `POST /api/v1/events` answers 204 but neither keeps nor forwards a batch
+whose `User-Agent` is a crawler's, link previewer's, monitor's, headless browser's or script's,
+or is missing (`is_bot` in `apps/cloud/usage_events.py`). Mixpanel gets `$browser` and `$os`
+read from the user agent; the agent string itself is not kept.
 
 **The web app's events** (`ui/app/src/telemetry.ts`, since 2026-10-28), **only if the person
 allows it**: their "Send usage analytics" (`telemetry_enabled`, the setting that follows them;
