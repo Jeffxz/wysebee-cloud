@@ -10,7 +10,8 @@ What an extension may give:
   theirs but their account (:func:`require_access`, on the routers in apps/cloud/main.py),
   Wysebee Assistant's tools (apps/cloud/agent_mcp.py), a scheduled task's run
   (apps/cloud/task_runner.py), pairing a device and each call to one
-  (apps/cloud/browser_links.py), and their storage quota (apps/cloud/storage.py). A refusal is
+  (apps/cloud/browser_links.py), sharing a page publicly (apps/cloud/workspace_pages.py) and
+  their storage quota (apps/cloud/storage.py). A refusal is
   a :class:`Refusal` — status, code and sentence — that the person or their AI app is told as
   it is. The last extension with a policy decides; the default (:class:`Policy` itself)
   refuses nothing.
@@ -52,7 +53,8 @@ from apps.cloud.deps import get_session
 
 # The version of this interface. Bump it when a Policy method or an Extension field changes.
 # 2 (2026-11-21): Extension.agent_types, the agent type packs (apps/cloud/agent_packs.py).
-API = 2
+# 3 (2026-11-27): Policy.may_share, sharing a page publicly (apps/cloud/workspace_pages.py).
+API = 3
 
 
 @dataclass(frozen=True)
@@ -95,6 +97,11 @@ class Policy:
 
     async def may_call(self, session: AsyncSession, user_id: str, link_id: str, now: datetime) -> Refusal | None:
         """Send one call to that device (paired, online and switched on: already checked)."""
+        return None
+
+    async def may_share(self, session: AsyncSession, user_id: str) -> Refusal | None:
+        """Share a page publicly — asked when they share one, and each time a shared one of
+        theirs is opened, so one shared before stops showing once they may no longer."""
         return None
 
     async def storage_quota(self, session: AsyncSession, user_id: str) -> int | None:

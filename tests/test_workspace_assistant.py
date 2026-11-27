@@ -633,6 +633,25 @@ def test_a_page_is_shared_with_everyone_and_no_longer(client, users):
     for bad in ({"audience": "friends"}, {}, [], None):
         assert client.put(f"{base}/share", json=bad, headers=h(me)).status_code == 422
     assert client.get(base, headers=h(me)).json()["share"] == share
+    assert client.get(base, headers=h(me)).json()["share_refusal"] is None
+    # The policy says they may not share (the hosted service's Free plan): sharing is refused
+    # with its sentence, the page says why, and its address stops working — until they may again.
+    from apps.cloud.extensions import Policy, Refusal
+
+    class NoSharing(Policy):
+        async def may_share(self, session, user_id):
+            return Refusal(402, "plan_feature", "Sharing needs a bigger plan.", {"billing_url": "/billing"})
+
+    allowed, client.app.state.policy = client.app.state.policy, NoSharing()
+    try:
+        refused = client.put(f"{base}/share", json={"audience": "public"}, headers=h(me))
+        assert (refused.status_code, refused.json()) == (402, {"detail": "Sharing needs a bigger plan.", "code": "plan_feature", "billing_url": "/billing"})
+        got = client.get(base, headers=h(me)).json()
+        assert got["share"] == share and got["share_refusal"] == {"detail": "Sharing needs a bigger plan.", "code": "plan_feature", "billing_url": "/billing"}
+        assert client.get(path).status_code == 404
+    finally:
+        client.app.state.policy = allowed
+    assert client.get(path).status_code == 200
     # No longer shared: its address stops working; shared again, a new one.
     assert client.delete(f"{base}/share", headers=h(me)).status_code == 204
     assert client.get(base, headers=h(me)).json()["share"] is None

@@ -817,7 +817,8 @@ export interface PlanLimits {
   storage: number;
 }
 
-/** A plan: its name as the server gives it, its monthly price in the currency's smallest unit,
+/** A plan: its name as the server gives it, its monthly price in the currency's smallest unit
+ * (0: free, with no payment link),
  * what it gives, the person's own payment link for it (null for a plan not set up, and for
  * every plan while they are subscribed — they switch in the portal), and the free trial that
  * link starts with: its days, and whether it asks for a card (null or absent: none). */
@@ -828,6 +829,9 @@ export interface Plan extends PlanLimits {
   currency: string;
   buy_url: string | null;
   trial?: { days: number; card: boolean } | null;
+  /** Whether it lets the person share a page publicly (2026-11-27: not on Free); absent when
+   * the server does not say. */
+  public_pages?: boolean;
 }
 
 /** What the Billing tab shows: the plans, the one the person is on (null: none), the payment
@@ -1222,6 +1226,9 @@ export interface WorkspacePage {
   updated_at: string;
   /** Who else sees it, and where (2026-11-25): none when only its owner does. */
   share?: PageShare | null;
+  /** Why its owner may not share it publicly — e.g. the hosted service's Free plan
+   * (2026-11-27): the server's sentence; null or absent when they may. */
+  share_refusal?: { detail: string; code: string; billing_url?: string } | null;
 }
 
 /** Who a page is shared with: everyone, for now (friends and colleagues to come). */
