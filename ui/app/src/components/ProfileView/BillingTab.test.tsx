@@ -55,6 +55,21 @@ describe("BillingTab", () => {
     expect(screen.getByText("No payments yet.")).toBeTruthy();
   });
 
+  it("shows a free plan as Free, with no Subscribe, and says which plans share pages publicly", async () => {
+    const free = { id: "free", name: "Free", amount: 0, currency: "usd", buy_url: null, devices: 2, online: 1, relay_bytes: GB, storage: GB, public_pages: false };
+    const listed = [free, ...plans().map((p) => ({ ...p, public_pages: true }))];
+    mockFetch({ [PLAN]: { ...small, plan: "free", paid: false }, [STORAGE]: storage, [BILLING]: { ...none, plans: listed, current: "free" } });
+    render(<BillingTab />);
+    const card = await screen.findByTestId("plan-free");
+    expect(within(card).getAllByText("Free")).toHaveLength(2);
+    expect(within(card).getByText("Current plan")).toBeTruthy();
+    expect(within(card).getByText("Pages stay private (no public sharing)")).toBeTruthy();
+    expect(within(card).queryByRole("link")).toBeNull();
+    expect(within(screen.getByTestId("plan-small")).getByText("Share pages publicly")).toBeTruthy();
+    expect(within(screen.getByTestId("plan-small")).getByRole("link", { name: "Subscribe" })).toBeTruthy();
+    expect(card.parentElement?.className).toContain("sm:grid-cols-3");
+  });
+
   it("marks the plan subscribed to, shows its usage, offers Manage subscription, and lists the payments", async () => {
     mockFetch({ [PLAN]: small, [STORAGE]: storage, [BILLING]: { ...onSmall(), purchases: [payment("in_1", "paid"), payment("in_2", "failed")] } });
     render(<BillingTab />);

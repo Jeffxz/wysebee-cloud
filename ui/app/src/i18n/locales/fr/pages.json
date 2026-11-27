@@ -20,6 +20,7 @@
       "link": "le lien",
       "live": "Le lien montre toujours la page telle qu'elle est : quand votre application IA la réécrit, on voit la nouvelle version. Choisissez Vous seul et le lien cesse de fonctionner.",
       "openLink": "Ouvrir le lien",
+      "seePlans": "Voir les forfaits",
       "done": "Terminé"
     }
   }

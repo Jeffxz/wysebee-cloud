@@ -133,7 +133,13 @@ export function DocumentPage({ workspaceId, path }: { workspaceId: string; path:
       </div>
       <PageFrame src={page.view_url} title={page.title || path} className="min-h-[60vh] flex-1" />
       {sharing && (
-        <PageShareDialog pageId={page.id} share={page.share ?? null} onChange={(share) => setPage((p) => p && { ...p, share })} onClose={() => setSharing(false)} />
+        <PageShareDialog
+          pageId={page.id}
+          share={page.share ?? null}
+          refusal={page.share_refusal ?? null}
+          onChange={(share) => setPage((p) => p && { ...p, share })}
+          onClose={() => setSharing(false)}
+        />
       )}
     </div>
   );

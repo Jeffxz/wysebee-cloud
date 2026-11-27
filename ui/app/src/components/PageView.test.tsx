@@ -151,4 +151,30 @@ describe("a page the AI app made", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(screen.getByRole("button", { name: "Share" })).toBeTruthy();
   });
+
+  it("says why the person may not share publicly, links to Billing, and still lets a page shared before go private", async () => {
+    vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "", updated_at: "" } });
+    const refusal = { detail: "Sharing a page publicly needs the Starter or Pro plan.", code: "plan_feature", billing_url: "/app/#/account/billing" };
+    vi.spyOn(api, "fetchPage").mockResolvedValue({ ...PAGE, share: null, share_refusal: refusal });
+    const share = vi.spyOn(api, "sharePage");
+    const first = render(<DocumentPage workspaceId="w" path="guide/plan.md" />);
+    await userEvent.click(await screen.findByRole("button", { name: "Share" }));
+    expect(screen.getByText(/Sharing a page publicly needs the Starter or Pro plan\./)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "See plans" }).getAttribute("href")).toBe("#/account/billing");
+    const anyone = screen.getByRole("radio", { name: /Anyone with the link/ }) as HTMLInputElement;
+    expect(anyone.disabled).toBe(true);
+    await userEvent.click(anyone);
+    expect(share).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("link", { name: "See plans" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    first.unmount();
+    // Shared before (their plan since changed): shown as shared, and Only you still works.
+    vi.mocked(api.fetchPage).mockResolvedValue({ ...PAGE, share: { audience: "public", url: "https://wysebee.io/s/abc", shared_at: "" }, share_refusal: refusal });
+    const unshare = vi.spyOn(api, "unsharePage").mockResolvedValue();
+    render(<DocumentPage workspaceId="w" path="guide/plan.md" />);
+    await userEvent.click(await screen.findByRole("button", { name: "Public" }));
+    expect((screen.getByRole("radio", { name: /Anyone with the link/ }) as HTMLInputElement).disabled).toBe(false);
+    await userEvent.click(screen.getByRole("radio", { name: /Only you/ }));
+    await waitFor(() => expect(unshare).toHaveBeenCalledWith("pg1"));
+  });
 });

@@ -105,7 +105,7 @@ export function BillingTab() {
       {billing && (
         <section aria-label={t("profile.billing.plans")}>
           <h2 className="mb-4 text-base font-semibold">{t("profile.billing.plans")}</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className={cn("grid gap-3", billing.plans.length > 2 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
             {billing.plans.map((plan) => (
               <PlanCard key={plan.id} plan={plan} current={billing.current === plan.id} />
             ))}
@@ -154,7 +154,8 @@ export function BillingTab() {
   );
 }
 
-/** One plan: its name, price, devices, relay traffic and file storage; "Current plan" on the
+/** One plan: its name, price ("Free" for none), devices, relay traffic, file storage and
+ * whether it shares pages publicly (when the server says); "Current plan" on the
  * one the person is on, else Subscribe when it can be chosen — Start free trial, and how long
  * the trial is, when its link starts with one. */
 function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
@@ -171,7 +172,9 @@ function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
       data-testid={`plan-${plan.id}`}
     >
       <div className="font-semibold">{plan.name}</div>
-      <div className="text-lg font-semibold">{t("profile.billing.perMonth", { price: money(plan.amount, plan.currency, i18n.language) })}</div>
+      <div className="text-lg font-semibold">
+        {plan.amount === 0 ? t("profile.billing.free") : t("profile.billing.perMonth", { price: money(plan.amount, plan.currency, i18n.language) })}
+      </div>
       {trial && (
         <div className="text-xs font-medium text-primary-700 dark:text-primary-300">
           {t(trial.card ? "profile.billing.trial" : "profile.billing.trialNoCard", { days: number(trial.days) })}
@@ -181,6 +184,7 @@ function PlanCard({ plan, current }: { plan: Plan; current: boolean }) {
         <li>{t("profile.billing.planDevices", { devices: number(plan.devices), online: number(plan.online) })}</li>
         <li>{t("profile.billing.planRelay", { size: size(plan.relay_bytes) })}</li>
         {!!plan.storage && <li>{t("profile.billing.planStorage", { size: size(plan.storage) })}</li>}
+        {plan.public_pages !== undefined && <li>{t(plan.public_pages ? "profile.billing.planPublicPages" : "profile.billing.planPrivatePages")}</li>}
       </ul>
       {current ? (
         <span className="inline-flex items-center gap-1 text-xs font-medium text-primary-700 dark:text-primary-300">

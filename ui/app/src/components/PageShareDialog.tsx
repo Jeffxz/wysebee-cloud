@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { ExternalLink, Globe, Lock } from "lucide-react";
 import { btn, btnPrimary, cn, errorBanner, muted, surface } from "@shared/cn";
-import { sharePage, unsharePage, type PageShare } from "../api";
+import { sharePage, unsharePage, type PageShare, type WorkspacePage } from "../api";
+import { BILLING_HASH } from "./PlanGate";
 import { reasonOf } from "../workspaces";
 import { Copyable } from "./common/Copyable";
 
@@ -12,16 +13,21 @@ type Choice = "private" | "public";
 /**
  * Who sees a page the AI app made (2026-11-25, the person's call): only its owner, or anyone
  * with its link — no sign-in (apps/cloud/workspace_pages.py, `/s/<key>`). Friends and
- * colleagues are to come. A choice is saved as soon as it is made.
+ * colleagues are to come. A choice is saved as soon as it is made. When the person may not share
+ * publicly (`refusal`: the hosted service's Free plan, 2026-11-27) the dialog says why, with a
+ * link to Billing, and Anyone with the link cannot be chosen; a page shared before stays
+ * shown as shared, so they can make it theirs alone again.
  */
 export function PageShareDialog({
   pageId,
   share,
+  refusal = null,
   onChange,
   onClose,
 }: {
   pageId: string;
   share: PageShare | null;
+  refusal?: WorkspacePage["share_refusal"];
   onChange: (share: PageShare | null) => void;
   onClose: () => void;
 }) {
@@ -83,7 +89,7 @@ export function PageShareDialog({
                 name="page-share"
                 className="mt-1"
                 checked={now === value}
-                disabled={busy}
+                disabled={busy || (!!refusal && value === "public" && now !== "public")}
                 onChange={() => void choose(value)}
               />
               <Icon size={16} aria-hidden className="mt-0.5 shrink-0" />
@@ -94,6 +100,14 @@ export function PageShareDialog({
             </label>
           ))}
         </div>
+        {refusal && (
+          <p className="text-xs text-amber-700 dark:text-amber-400" role="note">
+            {refusal.detail}{" "}
+            <a className="font-medium underline" href={BILLING_HASH} onClick={onClose}>
+              {t("pages.share.seePlans")}
+            </a>
+          </p>
+        )}
         {problem && <div className={errorBanner}>{problem}</div>}
         {share && (
           <div className="flex flex-col gap-2">

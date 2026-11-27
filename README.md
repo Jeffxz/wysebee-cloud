@@ -882,9 +882,15 @@ to come (`audience` takes `"public"` only for now).
 It is served as the in-app view is — sandboxed, no network, no forms — and framed by nobody,
 with `X-Robots-Tag: noindex`.
 
+**Who may share** is the policy's `may_share` (2026-11-27; see Extensions — on the hosted
+service, not the Free plan). Refused, `PUT …/share` answers the refusal (e.g. 402 with its
+sentence and `billing_url`), `GET /api/v1/pages/{id}` carries it as `share_refusal` — the dialog
+says why, links to Billing and offers **Only you** alone — and a page shared before is a 404 at
+its address until the person may share again. With no extension, everyone may.
+
 | Route | |
 |---|---|
-| `PUT /api/v1/pages/{id}/share` | `{"audience": "public"}` → `{audience, url, shared_at}`; already shared, the same address |
+| `PUT /api/v1/pages/{id}/share` | `{"audience": "public"}` → `{audience, url, shared_at}`; already shared, the same address; the policy's refusal when it says no |
 | `DELETE /api/v1/pages/{id}/share` | 204: only its owner sees it again |
 | `GET /s/{key}` | The page, for anyone — on the share domain only, when there is one |
 
@@ -968,7 +974,8 @@ An extension may give:
   `may_use` (every route of theirs but their account and usage — `require_access` on the
   routers in `apps/cloud/main.py` — Wysebee Assistant's tools, a scheduled task's run),
   `may_pair` (pairing a device; the code stays good after a refusal), `may_call` (each call to
-  a device) and `storage_quota`. A refusal is a `Refusal(status, code, detail, more)`, answered
+  a device), `may_share` (sharing a page publicly, and opening one shared; API 3, 2026-11-27)
+  and `storage_quota`. A refusal is a `Refusal(status, code, detail, more)`, answered
   `{"detail", "code", ...more}` (to an AI app: the sentence). The last extension with a policy
   decides; the default refuses nothing.
 - **routes**, served under `/api`;

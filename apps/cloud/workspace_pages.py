@@ -28,7 +28,9 @@ the window that frames it (``postMessage({wysebeeTheme})``) without reloading. W
 page is served as written and follows the browser.
 
 - ``GET /pages/{page_id}`` — ``{id, workspace_id, workspace_name, source_path, title,
-  view_url, updated_at}``: the page's own address, ``#/pages/<id>`` on the website.
+  view_url, updated_at, share, share_refusal}``: the page's own address, ``#/pages/<id>`` on
+  the website; ``share_refusal`` is ``{detail, code, ...}`` when the person may not share it
+  publicly (below), else null.
 - ``GET /workspaces/{workspace_id}/page?path=`` — ``{page: {id, title, updated_at} | null}``:
   the document's page, if it has one (the editor's Page view).
 - ``DELETE /pages/{page_id}`` — 204.
@@ -42,7 +44,10 @@ page publicly — anyone with its public address, ``/s/<share key>`` at the site
 (:data:`share_router`), sees it with no sign-in. The key is random, made when it is shared and
 kept when the AI app writes the page again, so the address keeps showing the page as it is now;
 stopping sharing drops it, and sharing again makes a new one, so an address handed out before
-stops working. It is served as :func:`view_page` serves it — :data:`PUBLIC_CSP`: sandboxed, no
+stops working. **Whether the person may** is the policy's ``may_share``
+(apps/cloud/extensions.py; on the hosted service, not on the Free plan): refused, sharing is
+answered with the refusal, and a page shared before is a 404 at its address until they may again.
+It is served as :func:`view_page` serves it — :data:`PUBLIC_CSP`: sandboxed, no
 network, and framed by nobody — and asks search engines not to list it. ``audience`` is one of
 :data:`AUDIENCES`: only ``"public"`` for now (friends and colleagues to come).
 
@@ -67,7 +72,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apps.cloud.extensions import require_access
+from apps.cloud.extensions import Denied, Refusal, require_access
 from apps.cloud.auth import User, current_user
 from apps.cloud.deps import get_session
 from apps.cloud.models import UserWorkspace, WorkspacePage
@@ -227,6 +232,11 @@ def share_of(request: Request, page: WorkspacePage) -> dict[str, Any] | None:
     return {"audience": page.share_audience, "url": f"{base}/s/{page.share_key}", "shared_at": page.shared_at}
 
 
+async def _share_refusal(request: Request, session: AsyncSession, user_id: str) -> Refusal | None:
+    """Why ``user_id`` may not share a page publicly (the policy's ``may_share``), or None."""
+    return await request.app.state.policy.may_share(session, user_id)
+
+
 @router.get("/pages/{page_id}", dependencies=[Depends(require_access)])
 async def get_page(page_id: str, request: Request, user: User = Depends(current_user), session: AsyncSession = Depends(get_session)) -> dict[str, Any]:
     page = await _mine(session, user, page_id)
@@ -235,6 +245,7 @@ async def get_page(page_id: str, request: Request, user: User = Depends(current_
         "id": page.page_id, "workspace_id": page.workspace_id, "workspace_name": workspace.name, "source_path": page.source_path,
         "title": page.title, "view_url": f"/api/v1/page-view/{page.page_id}/{page.view_key}", "updated_at": page.updated_at,
         "share": share_of(request, page),
+        "share_refusal": None if (r := await _share_refusal(request, session, user.sub)) is None else {"detail": r.detail, "code": r.code, **r.more},
     }
 
 
@@ -249,6 +260,9 @@ async def share_page(page_id: str, request: Request, user: User = Depends(curren
     if audience not in AUDIENCES:
         raise HTTPException(status_code=422, detail="Say who to share it with: 'audience' is \"public\".")
     page = await _mine(session, user, page_id)
+    refusal = await _share_refusal(request, session, user.sub)
+    if refusal is not None:
+        raise Denied(refusal)
     if page.share_key is None:
         page.share_key, page.shared_at = secrets.token_urlsafe(24), func.now()
     page.share_audience = audience
@@ -276,7 +290,7 @@ async def shared_page(share_key: str, request: Request, session: AsyncSession = 
     # With a domain of their own, never here (:func:`share_host_gate` lets them through there).
     elsewhere = _share_host(request) not in (None, _host(request))
     page = None if elsewhere or not 0 < len(share_key) <= 64 else await session.scalar(select(WorkspacePage).where(WorkspacePage.share_key == share_key))
-    if page is None or page.share_audience != "public":
+    if page is None or page.share_audience != "public" or await _share_refusal(request, session, page.user_id) is not None:
         raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
     data = await _store(request).read(user_folder(page.user_id), key(page.workspace_id, page.page_id))
     if data is None:

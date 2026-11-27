@@ -20,6 +20,7 @@
       "link": "the link",
       "live": "The link always shows the page as it is now: when your AI app writes it again, people see the new version. Choose Only you and the link stops working.",
       "openLink": "Open link",
+      "seePlans": "See plans",
       "done": "Done"
     }
   }

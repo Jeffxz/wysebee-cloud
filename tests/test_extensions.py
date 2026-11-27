@@ -34,7 +34,7 @@ def test_the_settings_name_the_extensions_and_each_must_match_the_interface() ->
     assert extensions.names(Settings(extensions=f" {FAKE} , ,tests.old_extension")) == [FAKE, "tests.old_extension"]
     [ext] = extensions.load(Settings(extensions=FAKE))
     assert ext.name == FAKE and ext.web_features == {"billing": True}
-    with pytest.raises(RuntimeError, match="extension API 2"):
+    with pytest.raises(RuntimeError, match="extension API 3"):
         extensions.load(Settings(extensions="tests.old_extension"))
     with pytest.raises(ModuleNotFoundError):
         extensions.load(Settings(extensions="tests.no_such_extension"))
@@ -47,8 +47,8 @@ def test_the_last_policy_decides_and_the_default_refuses_nothing() -> None:
     assert extensions.web_features([Extension("a", API, web_features={"billing": True, "x": True}), Extension("b", API, web_features={"x": False})]) == {"billing": True, "x": False}
     default = Policy()
     now = datetime.now(UTC)
-    said = [asyncio.run(c) for c in (default.may_use(None, "u"), default.may_pair(None, "u"), default.may_call(None, "u", "l", now), default.storage_quota(None, "u"))]
-    assert said == [None, None, None, None]
+    said = [asyncio.run(c) for c in (default.may_use(None, "u"), default.may_pair(None, "u"), default.may_call(None, "u", "l", now), default.may_share(None, "u"), default.storage_quota(None, "u"))]
+    assert said == [None, None, None, None, None]
 
 
 def test_without_an_extension_the_pages_get_no_billing(ui_dist: Path) -> None:
