@@ -7,6 +7,8 @@
     "refresh": "刷新",
     "open": "单独打开",
     "sandboxed": "由你的 AI 应用生成。在沙盒中显示：脚本可以运行，但无法访问 Wysebee 或互联网。",
+    "sandboxedFile": "在沙盒中显示：其脚本可以运行，但无法访问 Wysebee 或互联网。",
+    "unsaved": "显示的是上次保存的版本。保存后即可在此看到更改。",
     "share": {
       "button": "共享",
       "shared": "公开",

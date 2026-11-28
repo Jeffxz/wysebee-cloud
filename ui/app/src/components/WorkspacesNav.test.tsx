@@ -14,7 +14,7 @@ import { dialogs } from "./common/confirm";
 const workspace = (id: string, name: string) => ({ id, name, resource_url: `https://acct/user-workspaces/me/${name}/` });
 const tree = {
   ...workspace("p1", "Docs"),
-  files: [{ path: "README.md", size: 9 }, { path: "guide/setup.md", size: 5 }],
+  files: [{ path: "README.md", size: 9 }, { path: "guide/setup.md", size: 5 }, { path: "sales.html", size: 5 }],
   folders: ["guide"],
 };
 
@@ -76,6 +76,10 @@ describe("WorkspacesNav", () => {
     // Folders first, then files.
     const folder = await screen.findByRole("button", { name: "guide" });
     expect(screen.getByRole("button", { name: "README.md" })).toBeTruthy();
+    // A page (.html) by its name alone.
+    await userEvent.click(screen.getByRole("button", { name: "sales" }));
+    expect(onSelect).toHaveBeenCalledWith("p1", "sales.html");
+    expect(screen.queryByText("sales.html")).toBeNull();
     expect(screen.queryByRole("button", { name: "setup.md" })).toBeNull();
     await userEvent.click(folder);
     await userEvent.click(screen.getByRole("button", { name: "setup.md" }));
@@ -220,6 +224,7 @@ describe("WorkspacesNav", () => {
     let folders = 0;
     const { f, onSelect } = setup("p1", "README.md", {
       "PUT /api/v1/workspaces/p1/files/guide/intro.md": { path: "guide/intro.md", size: 8 },
+      "PUT /api/v1/workspaces/p1/files/guide/home.html": { path: "guide/home.html", size: 9 },
       "POST /api/v1/workspaces/p1/folders/guide/drafts": () => (++folders === 1 ? reply(500, { detail: "No room." }) : reply(201, { path: "guide/drafts" })),
     });
     await screen.findByRole("button", { name: "guide" });
@@ -235,18 +240,25 @@ describe("WorkspacesNav", () => {
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("menu")).toBeNull();
     await userEvent.click(plus);
-    fireEvent.mouseDown(screen.getByRole("menuitem", { name: "New page" }));
+    fireEvent.mouseDown(screen.getByRole("menuitem", { name: "New document" }));
     expect(screen.getByRole("menu")).toBeTruthy();
     fireEvent.mouseDown(document.body);
     expect(screen.queryByRole("menu")).toBeNull();
 
     // A page: named under the folder, made with its title, and opened.
     await userEvent.click(plus);
-    await userEvent.click(screen.getByRole("menuitem", { name: "New page" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "New document" }));
     expect(screen.queryByRole("menu")).toBeNull();
-    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "intro{Enter}");
+    await userEvent.type(screen.getByRole("textbox", { name: "Document name" }), "intro{Enter}");
     await waitFor(() => expect(onSelect).toHaveBeenCalledWith("p1", "guide/intro.md"));
     expect(f.calls.find((c) => c.method === "PUT")!.body).toEqual({ content: "# intro\n" });
+
+    // A page made directly: a .html file under the folder, from a starter, and opened.
+    await userEvent.click(screen.getByRole("button", { name: "Add to guide" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "New page" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "home{Enter}");
+    await waitFor(() => expect(onSelect).toHaveBeenCalledWith("p1", "guide/home.html"));
+    expect((f.calls.filter((c) => c.method === "PUT").pop()!.body as { content: string }).content).toContain("<title>home</title>");
 
     // A folder: a refusal is said and the name kept; then it is made.
     await userEvent.click(screen.getByRole("button", { name: "Add to guide" }));
@@ -262,11 +274,11 @@ describe("WorkspacesNav", () => {
     // Nothing named: Enter, Escape or leaving the box puts it away.
     for (const leave of ["{Enter}", "{Escape}", "blur"]) {
       await userEvent.click(screen.getByRole("button", { name: "Add to guide" }));
-      await userEvent.click(screen.getByRole("menuitem", { name: "New page" }));
-      const box = screen.getByRole("textbox", { name: "Page name" });
+      await userEvent.click(screen.getByRole("menuitem", { name: "New document" }));
+      const box = screen.getByRole("textbox", { name: "Document name" });
       if (leave === "blur") fireEvent.blur(box);
       else await userEvent.type(box, leave === "{Escape}" ? "x{Escape}" : leave);
-      expect(screen.queryByRole("textbox", { name: "Page name" })).toBeNull();
+      expect(screen.queryByRole("textbox", { name: "Document name" })).toBeNull();
     }
     // A name typed is kept when the box loses focus.
     await userEvent.click(screen.getByRole("button", { name: "Add to guide" }));

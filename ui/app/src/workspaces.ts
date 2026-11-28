@@ -166,9 +166,50 @@ export function buildTree(detail: Pick<WorkspaceDetail, "files" | "folders">): T
   return sort(root.children);
 }
 
-/** What a new page is called: ".md" added when the name has no extension. */
-export function pagePath(folder: string, name: string): string {
+/** What a new document is called: `ext` (".md") added when the name has no extension. */
+export function pagePath(folder: string, name: string, ext = ".md"): string {
   const clean = name.trim().replace(/^\/+|\/+$/g, "");
-  const withExt = /\.[A-Za-z0-9]+$/.test(clean) ? clean : `${clean}.md`;
+  const withExt = /\.[A-Za-z0-9]+$/.test(clean) ? clean : `${clean}${ext}`;
   return folder ? `${folder}/${withExt}` : withExt;
+}
+
+/** A page made directly (2026-11-27): a `.html` file, shown as a page (apps/cloud/workspace_pages.py). */
+export function isHtmlPage(path: string): boolean {
+  return /\.html$/i.test(path);
+}
+
+/** Where a new page (`.html`) goes: ".html" added when the name has none. */
+export function htmlPagePath(folder: string, name: string): string {
+  const clean = name.trim().replace(/^\/+|\/+$/g, "");
+  return pagePath(folder, /\.html$/i.test(clean) ? clean : `${clean.replace(/\.$/, "")}.html`);
+}
+
+const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** A new page's first HTML: its title, a heading, and colors for light and dark (the page
+ * follows Wysebee's look, apps/cloud/workspace_pages.py `THEME_SCRIPT`). */
+export function starterPage(title: string): string {
+  const t = escapeHtml(title);
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${t}</title>
+<style>
+  :root { --bg: #ffffff; --fg: #1c1917; --muted: #78716c; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1c1917; --fg: #f5f5f4; --muted: #a8a29e; } }
+  body { margin: 0; padding: 32px 16px; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; }
+  p { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>${t}</h1>
+  <p>Write this page's HTML in Source, or ask your AI app to.</p>
+</main>
+</body>
+</html>
+`;
 }

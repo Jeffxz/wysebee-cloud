@@ -7,6 +7,8 @@
     "refresh": "重新整理",
     "open": "單獨開啟",
     "sandboxed": "由你的 AI 應用程式產生。在沙箱中顯示：指令碼可以執行，但無法存取 Wysebee 或網際網路。",
+    "sandboxedFile": "在沙盒中顯示：其指令碼可以執行，但無法存取 Wysebee 或網際網路。",
+    "unsaved": "顯示的是上次儲存的版本。儲存後即可在此看到變更。",
     "share": {
       "button": "分享",
       "shared": "公開",

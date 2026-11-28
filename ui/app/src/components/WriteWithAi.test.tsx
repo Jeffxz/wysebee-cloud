@@ -83,6 +83,8 @@ describe("Write with AI", () => {
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
     const copy = screen.getByRole("button", { name: "Copy the address" });
     const before = copy.innerHTML;
+    // The tick shows long enough to be seen (waitFor looks every 50 ms), then goes.
+    timing.copiedMs = 400;
     await userEvent.click(copy);
     expect(writeText).toHaveBeenCalledWith(URL_);
     await waitFor(() => expect(copy.innerHTML).not.toBe(before));

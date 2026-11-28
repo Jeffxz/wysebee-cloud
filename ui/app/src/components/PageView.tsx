@@ -73,21 +73,22 @@ function ThemeSwitch() {
 }
 
 /** Whose work it is, and what it cannot do. */
-function MadeByAi() {
+function MadeByAi({ direct = false }: { direct?: boolean }) {
   const { t } = useTranslation();
   return (
     <p className={cn(muted, "flex items-center gap-1.5 text-xs")}>
-      <ShieldCheck size={14} aria-hidden /> {t("pages.sandboxed")}
+      <ShieldCheck size={14} aria-hidden /> {t(direct ? "pages.sandboxedFile" : "pages.sandboxed")}
     </p>
   );
 }
 
 /**
- * The editor's Page view: the page the AI app made from this document, read when shown and
+ * The editor's Page view: the page the AI app made from this document — or, `direct`, the
+ * `.html` file that is a page itself (2026-11-27) — read when shown and
  * again with Refresh (the AI app may write it meanwhile), with a link to its own address —
  * or how to get one.
  */
-export function DocumentPage({ workspaceId, path }: { workspaceId: string; path: string }) {
+export function DocumentPage({ workspaceId, path, direct = false }: { workspaceId: string; path: string; direct?: boolean }) {
   const { t } = useTranslation();
   const [page, setPage] = useState<WorkspacePage | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
@@ -119,7 +120,7 @@ export function DocumentPage({ workspaceId, path }: { workspaceId: string; path:
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
-        <MadeByAi />
+        <MadeByAi direct={direct} />
         <span className="flex-1" />
         <button type="button" className={cn(btn, "text-xs")} onClick={() => void load()}>
           <RefreshCw size={13} aria-hidden /> {t("pages.refresh")}

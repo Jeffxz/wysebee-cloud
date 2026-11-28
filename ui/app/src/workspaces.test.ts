@@ -10,6 +10,9 @@ import {
   loadWorkspaces,
   loadTree,
   pagePath,
+  htmlPagePath,
+  isHtmlPage,
+  starterPage,
   reasonOf,
   removeFile,
   removeFolder,
@@ -126,6 +129,16 @@ describe("the tree and names", () => {
   it("names a new page, adding .md when it has no extension", () => {
     expect(pagePath("", " guide/start ")).toBe("guide/start.md");
     expect(pagePath("guide", "/notes.txt/")).toBe("guide/notes.txt");
+  });
+
+  it("names a new page made directly, adding .html, and starts it with its title escaped", () => {
+    expect(htmlPagePath("", " reports/sales ")).toBe("reports/sales.html");
+    expect(htmlPagePath("site", "Home.HTML")).toBe("site/Home.HTML");
+    expect(htmlPagePath("", "notes.")).toBe("notes.html");
+    expect(isHtmlPage("a/b.html") && isHtmlPage("B.HTML") && !isHtmlPage("b.md") && !isHtmlPage("b.htm")).toBe(true);
+    const page = starterPage("A <b> & c");
+    expect(page).toContain("<title>A &lt;b&gt; &amp; c</title>");
+    expect(page).toContain("<h1>A &lt;b&gt; &amp; c</h1>");
   });
 
   it("says an error's reason without its status, and encodes paths a segment at a time", () => {

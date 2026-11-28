@@ -104,8 +104,8 @@ describe("WorkspacesView", () => {
     expect(screen.queryByText(/Kept in Wysebee Cloud/)).toBeNull();
     expect(await screen.findByText(/1 files in 1 folders/)).toBeTruthy();
 
-    await userEvent.click(screen.getByRole("button", { name: "New page" }));
-    const page = screen.getByRole("textbox", { name: "Page name" });
+    await userEvent.click(screen.getByRole("button", { name: "New document" }));
+    const page = screen.getByRole("textbox", { name: "Document name" });
     fireEvent.submit(page.closest("form")!);
     await userEvent.type(page, "guide/start");
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
@@ -125,9 +125,9 @@ describe("WorkspacesView", () => {
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    await userEvent.click(screen.getByRole("button", { name: "New page" }));
-    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "{Escape}");
-    expect(screen.queryByRole("textbox", { name: "Page name" })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "New document" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Document name" }), "{Escape}");
+    expect(screen.queryByRole("textbox", { name: "Document name" })).toBeNull();
   });
 
   it("deletes a workspace when confirmed", async () => {
@@ -245,6 +245,53 @@ describe("WorkspacesView", () => {
     await userEvent.click(screen.getByRole("button", { name: "Delete this file" }));
     await waitFor(() => expect(onOpen).toHaveBeenCalledWith("p1"));
     expect(hasUnsavedWorkspaceEdits()).toBe(false);
+  });
+
+  it("makes a page directly: a .html file from a starter, opened on its Page", async () => {
+    const { onOpen, f } = setup({ workspace: "p1" }, { "PUT /api/v1/workspaces/p1/files/reports/sales.html": { path: "reports/sales.html", size: 9 } });
+    await screen.findByRole("heading", { name: "Docs" });
+    await userEvent.click(screen.getByRole("button", { name: "New page" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "reports/sales");
+    await userEvent.click(screen.getByRole("button", { name: "Create" }));
+    await waitFor(() => expect(onOpen).toHaveBeenCalledWith("p1", "reports/sales.html"));
+    const written = (f.to("PUT /api/v1/workspaces/p1/files/reports/sales.html")[0].body as { content: string }).content;
+    expect(written).toContain("<title>sales</title>");
+    expect(written).toContain("prefers-color-scheme: dark");
+    // Escape puts the form away.
+    await userEvent.click(screen.getByRole("button", { name: "New page" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "{Escape}");
+    expect(screen.queryByRole("textbox", { name: "Page name" })).toBeNull();
+  });
+
+  it("shows a .html file as its page, with Source to edit it, and reads the page again when saved", async () => {
+    const html = "<!doctype html><title>Sales</title><p>1</p>";
+    const found = vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "Sales", updated_at: "" } });
+    vi.spyOn(api, "fetchPage").mockResolvedValue({
+      id: "pg1", workspace_id: "p1", workspace_name: "Docs", source_path: "sales.html", kind: "file", title: "Sales", view_url: "/api/v1/page-view/pg1/k", updated_at: "",
+    });
+    const { f } = setup({ workspace: "p1", file: "sales.html" }, {
+      "GET /api/v1/workspaces/p1/files/sales.html": { path: "sales.html", content: html, size: html.length },
+      "PUT /api/v1/workspaces/p1/files/sales.html": { path: "sales.html", size: 1 },
+    });
+    // On its Page first, said to be sandboxed; no markdown Edit or Preview.
+    expect(await screen.findByTitle("Sales")).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Page" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByText(/Shown sandboxed/)).toBeTruthy();
+    expect(screen.queryByRole("tab", { name: "Preview" })).toBeNull();
+    expect(found).toHaveBeenCalledTimes(1);
+    // Source: its HTML, edited; the Page says it shows what is saved until it is.
+    await userEvent.click(screen.getByRole("tab", { name: "Source (HTML)" }));
+    const box = screen.getByRole("textbox", { name: "The text of sales.html" });
+    expect((box as HTMLTextAreaElement).value).toBe(html);
+    fireEvent.change(box, { target: { value: "<p>2</p>" } });
+    await userEvent.click(screen.getByRole("tab", { name: "Page" }));
+    expect(screen.getByText(/Save to see your changes here/)).toBeTruthy();
+    await screen.findByTitle("Sales");
+    const before = found.mock.calls.length;
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(f.to("PUT /api/v1/workspaces/p1/files/sales.html")).toHaveLength(1));
+    await waitFor(() => expect(found).toHaveBeenCalledTimes(before + 1));
+    expect(screen.queryByText(/Save to see your changes here/)).toBeNull();
   });
 
   it("says why a file could not be deleted", async () => {

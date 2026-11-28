@@ -728,3 +728,105 @@ def test_a_page_is_made_from_a_workspace_document_only(client, users):
     sid = skill(client, me)["id"]
     client.post(skill_base(sid), json={"path": "SKILL.md", "content": ""}, headers=h(me))
     assert call(client, me, "write_page", {"html": "<p>x</p>"})[0].startswith("A page is made from a workspace document")
+
+
+@needs_db
+def test_a_html_file_is_a_page_made_directly(client, users):
+    me, other = users
+    pid = workspace(client, me)
+    html = "<!doctype html><title>Sales &amp; costs</title><p>1</p>"
+    assert client.put(f"/api/v1/workspaces/{pid}/files/reports/sales.html", json={"content": html}, headers=h(me)).status_code == 200
+    # Among the workspace's files, as written, and its page.
+    assert "reports/sales.html" in [f["path"] for f in client.get(f"/api/v1/workspaces/{pid}", headers=h(me)).json()["files"]]
+    found = client.get(f"/api/v1/workspaces/{pid}/page?path=reports/sales.html", headers=h(me)).json()["page"]
+    page = client.get(f"/api/v1/pages/{found['id']}", headers=h(me)).json()
+    assert (page["kind"], page["title"], page["source_path"]) == ("file", "Sales & costs", "reports/sales.html")
+    shown = client.get(page["view_url"])
+    assert shown.status_code == 200 and shown.text == html and shown.headers["content-security-policy"].startswith("sandbox allow-scripts;")
+    assert 'var t="dark"' in client.get(page["view_url"] + "?theme=dark").text
+    # Saved again: the same page, its new text at a new address; no <title>: its file name.
+    assert client.put(f"/api/v1/workspaces/{pid}/files/reports/sales.html", json={"content": "<p>2</p>"}, headers=h(me)).status_code == 200
+    again = client.get(f"/api/v1/pages/{found['id']}", headers=h(me)).json()
+    assert again["title"] == "sales" and again["view_url"] != page["view_url"]
+    assert client.get(again["view_url"]).text == "<p>2</p>" and client.get(page["view_url"]).status_code == 404
+    # The AI app writes it as a document, not with write_page.
+    turn_on(client, me, pid, path="reports/sales.html", content="<p>2</p>")
+    said, err = call(client, me, "write_page", {"html": "<p>x</p>"})
+    assert err and "write_document" in said
+    # Deleted only with its file; another person's is not there.
+    assert client.delete(f"/api/v1/pages/{found['id']}", headers=h(me)).status_code == 409
+    assert client.get(f"/api/v1/pages/{found['id']}", headers=h(other)).status_code == 404
+    assert client.delete(f"/api/v1/workspaces/{pid}/files/reports/sales.html", headers=h(me)).status_code == 204
+    assert client.get(f"/api/v1/pages/{found['id']}", headers=h(me)).status_code == 404
+    assert client.get(again["view_url"]).status_code == 404
+
+
+@needs_db
+def test_a_page_made_directly_is_shared_as_its_file_is_now(client, users):
+    me = users[0]
+    pid = workspace(client, me)
+    client.put(f"/api/v1/workspaces/{pid}/files/home.html", json={"content": "<p>a</p>"}, headers=h(me))
+    page_id = client.get(f"/api/v1/workspaces/{pid}/page?path=home.html", headers=h(me)).json()["page"]["id"]
+    shared = client.put(f"/api/v1/pages/{page_id}/share", json={"audience": "public"}, headers=h(me))
+    if shared.status_code != 200:
+        pytest.skip(f"sharing refused by this policy: {shared.text}")
+    address = "/s/" + shared.json()["url"].rsplit("/s/", 1)[1]
+    assert client.get(address).text == "<p>a</p>"
+    # Saved again: its public address kept, showing it as it is now.
+    client.put(f"/api/v1/workspaces/{pid}/files/home.html", json={"content": "<p>b</p>"}, headers=h(me))
+    assert client.get(address).text == "<p>b</p>"
+
+
+@needs_db
+def test_a_folder_deleted_takes_its_pages(client, users):
+    me = users[0]
+    pid = workspace(client, me)
+    client.put(f"/api/v1/workspaces/{pid}/files/site/a.html", json={"content": "<p>a</p>"}, headers=h(me))
+    client.put(f"/api/v1/workspaces/{pid}/files/site_b.html", json={"content": "<p>b</p>"}, headers=h(me))
+    turn_on(client, me, pid, path="site/notes.md", content="n")
+    client.put(f"/api/v1/workspaces/{pid}/files/site/notes.md", json={"content": "n"}, headers=h(me))
+    view = call(client, me, "write_page", {"html": "<p>n</p>"})[0].rsplit("/", 1)[-1]
+    direct = client.get(f"/api/v1/workspaces/{pid}/page?path=site/a.html", headers=h(me)).json()["page"]["id"]
+    assert client.delete(f"/api/v1/workspaces/{pid}/folders/site", headers=h(me)).status_code == 204
+    assert client.get(f"/api/v1/pages/{view}", headers=h(me)).status_code == 404
+    assert client.get(f"/api/v1/pages/{direct}", headers=h(me)).status_code == 404
+    # Not one beside it whose name only starts the same ("_" is no wildcard).
+    assert client.get(f"/api/v1/workspaces/{pid}/page?path=site_b.html", headers=h(me)).json()["page"] is not None
+
+
+@needs_db
+def test_a_page_the_ai_app_kept_for_a_html_file_becomes_the_file_itself(client, users, migrated_db_url):
+    from apps.cloud.asset_storage import user_folder
+    from apps.cloud.workspace_pages import key
+
+    me = users[0]
+    pid = workspace(client, me)
+    # A page kept in .pages for a document named .html (as write_page could before it refused one).
+    turn_on(client, me, pid)
+    page_id = call(client, me, "write_page", {"html": "<p>view</p>"})[0].rsplit("/", 1)[-1]
+    engine = create_engine(migrated_db_url)
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE workspace_pages SET source_path = 'old.html' WHERE page_id = :p"), {"p": page_id})
+    engine.dispose()
+    store = client.app.state.workspace_store
+    assert asyncio.run(store.read(user_folder(me), key(pid, page_id))) == b"<p>view</p>"
+    # The file written: the same page, now the file itself, its .pages copy gone.
+    assert client.put(f"/api/v1/workspaces/{pid}/files/old.html", json={"content": "<p>file</p>"}, headers=h(me)).status_code == 200
+    page = client.get(f"/api/v1/pages/{page_id}", headers=h(me)).json()
+    assert page["kind"] == "file" and page["title"] == "old"
+    assert client.get(page["view_url"]).text == "<p>file</p>"
+    assert asyncio.run(store.read(user_folder(me), key(pid, page_id))) is None
+
+
+@needs_db
+def test_a_html_file_from_before_gets_its_page_when_asked_for(client, users, migrated_db_url):
+    me = users[0]
+    pid = workspace(client, me)
+    client.put(f"/api/v1/workspaces/{pid}/files/old.html", json={"content": "<title>Old</title>"}, headers=h(me))
+    engine = create_engine(migrated_db_url)
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM workspace_pages WHERE workspace_id = :w"), {"w": pid})
+    engine.dispose()
+    found = client.get(f"/api/v1/workspaces/{pid}/page?path=old.html", headers=h(me)).json()["page"]
+    assert found["title"] == "Old"
+    assert client.get(f"/api/v1/workspaces/{pid}/page?path=missing.html", headers=h(me)).json() == {"page": None}

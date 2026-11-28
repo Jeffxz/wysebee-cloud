@@ -869,6 +869,17 @@ tunnel's address, run `./scripts/ngrok.sh`, and add `<tunnel>/assistant/mcp` to 
 with no authentication: `/assistant/mcp` then answers without sign-in, as that person. The
 setting is refused at start without mock sign-in, so Dev and Prod always sign in with Auth0.
 
+### Making a page directly
+
+**Added 2026-11-27** (`apps/cloud/workspace_pages.py`, migration 0085). A page need not be made
+from a document: **New page** (the workspace's overview, or a folder's + in the menu) makes a
+`.html` file from a small starter, and **New document** makes markdown as before. A `.html` file
+opens on its **Page** — shown as an AI-made page is, sandboxed with no network — with **Source**
+beside it to edit its HTML; Wysebee Assistant writes it with `write_document` (`write_page`
+refuses a `.html` file). Each save keeps its page (`workspace_pages.kind = "file"`, its title the
+file's `<title>`), with a new view address and its public address, if shared, kept. Deleting the
+file, or its folder, deletes the page; `DELETE /api/v1/pages/{id}` answers 409 for one.
+
 ### Sharing a page with everyone
 
 **Added 2026-11-25** (`apps/cloud/workspace_pages.py`, `ui/app/src/components/PageShareDialog.tsx`,
