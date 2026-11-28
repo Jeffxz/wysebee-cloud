@@ -224,6 +224,22 @@ describe("WorkspacesNav", () => {
     await waitFor(() => expect(onSelect).toHaveBeenCalledWith("p1"));
   });
 
+  it("leaves a folder shown when it or a folder it is in is deleted, and only then", async () => {
+    const { f, onSelect } = setup("p1", null, {
+      "GET /api/v1/workspaces/p1": { ...tree, folders: ["guide", "guide/deep", "other"] },
+      "DELETE /api/v1/workspaces/p1/folders/other": reply(204),
+    });
+    vi.spyOn(dialogs, "confirm").mockResolvedValue(true);
+    await userEvent.click(await screen.findByRole("button", { name: "guide" }));
+    await userEvent.click(await screen.findByRole("button", { name: "deep" }));
+    expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "guide/deep");
+    await userEvent.click(screen.getByRole("button", { name: "Delete the folder other" }));
+    await waitFor(() => expect(f.to("DELETE /api/v1/workspaces/p1/folders/other")).toHaveLength(1));
+    expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "guide/deep");
+    await userEvent.click(screen.getByRole("button", { name: "Delete the folder guide" }));
+    await waitFor(() => expect(onSelect).toHaveBeenLastCalledWith("p1"));
+  });
+
   it("deletes a folder another file is open beside without leaving it", async () => {
     const { onSelect } = setup("p1", "README.md");
     await screen.findByRole("button", { name: "guide" });

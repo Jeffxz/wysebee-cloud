@@ -165,6 +165,27 @@ describe("WorkspacesView", () => {
     await waitFor(() => expect(onOpen).toHaveBeenLastCalledWith("p1", undefined, "guide"));
   });
 
+  it("deletes a folder at the top from its page, when confirmed, going back to the workspace", async () => {
+    const { onOpen, f } = setup({ workspace: "p1", folder: "guide" }, {
+      "DELETE /api/v1/workspaces/p1/folders/guide": (() => {
+        let n = 0;
+        return () => (++n === 1 ? reply(500, { detail: "Boom." }) : reply(204));
+      })(),
+    });
+    expect(await screen.findByRole("heading", { name: "guide" })).toBeTruthy();
+    const confirm = vi.spyOn(dialogs, "confirm").mockResolvedValue(false);
+    const del = screen.getByRole("button", { name: "Delete folder" });
+    await userEvent.click(del);
+    expect(f.to("DELETE /api/v1/workspaces/p1/folders/guide")).toHaveLength(0);
+    confirm.mockResolvedValue(true);
+    const toastError = vi.spyOn(toast, "error");
+    await userEvent.click(del);
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith("Boom."));
+    expect(onOpen).not.toHaveBeenCalled();
+    await userEvent.click(del);
+    await waitFor(() => expect(onOpen).toHaveBeenCalledWith("p1", undefined, undefined));
+  });
+
   it("says when the folder asked for is not there", async () => {
     setup({ workspace: "p1", folder: "gone" });
     expect(await screen.findByText("This folder is not there any more.")).toBeTruthy();
