@@ -22,12 +22,15 @@ export function PageShareDialog({
   pageId,
   share,
   refusal = null,
+  usesTools = false,
   onChange,
   onClose,
 }: {
   pageId: string;
   share: PageShare | null;
   refusal?: WorkspacePage["share_refusal"];
+  /** It runs the person's tools (apps/cloud/page_tools.py): not for people who open its link. */
+  usesTools?: boolean;
   onChange: (share: PageShare | null) => void;
   onClose: () => void;
 }) {
@@ -106,6 +109,11 @@ export function PageShareDialog({
             <a className="font-medium underline" href={BILLING_HASH} onClick={onClose}>
               {t("pages.share.seePlans")}
             </a>
+          </p>
+        )}
+        {usesTools && (
+          <p className={cn(muted, "text-xs")} role="note">
+            {t("pages.share.noTools")}
           </p>
         )}
         {problem && <div className={errorBanner}>{problem}</div>}

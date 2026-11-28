@@ -31,6 +31,8 @@ const CALLS: [string, () => Promise<unknown>, string, Kind][] = [
   ["fetchDocumentPage", () => api.fetchDocumentPage("w1", "a b.md"), "GET /api/v1/workspaces/w1/page?path=a%20b.md", "get"],
   ["sharePage", () => api.sharePage("p 1", "public"), "PUT /api/v1/pages/p%201/share", "put"],
   ["unsharePage", () => api.unsharePage("p 1"), "DELETE /api/v1/pages/p%201/share", "delete"],
+  ["fetchPageToolGrants", () => api.fetchPageToolGrants("p 1"), "GET /api/v1/pages/p%201/tool-grants", "get"],
+  ["revokePageToolGrant", () => api.revokePageToolGrant("p 1", "db", "q/x"), "DELETE /api/v1/pages/p%201/tool-grants/db/q%2Fx", "delete"],
   ["deleteTool", () => api.deleteTool("t 1"), "DELETE /api/v1/tools/t%201", "delete"],
   ["validateSql", () => api.validateSql({ kind: "sql", name: "a", description: "b", config: {} }), "POST /api/v1/tools/validate-sql", "post"],
   ["updateTask", () => api.updateTask("t1", {}), "PUT /api/v1/tasks/t1", "put"],
@@ -165,5 +167,30 @@ describe("permission helpers", () => {
 describe("constants", () => {
   it("names the change event", () => {
     expect(api.APP_CHANGED).toBe("wysebee:app-changed");
+  });
+});
+
+
+describe("a page's tool call", () => {
+  const call = { agent: "db", tool: "q", arguments: { a: 1 }, view_key: "k" };
+
+  it("answers the tool's result", async () => {
+    const f = mockFetch({ "POST /api/v1/pages/p%201/tool-calls": { text: "t", images: [], is_error: false } });
+    expect(await api.runPageTool("p 1", { ...call, allow: "once" })).toEqual({ result: { text: "t", images: [], is_error: false } });
+    expect(f.calls[0].body).toEqual({ ...call, allow: "once" });
+  });
+
+  it("answers what to ask the person when the tool is not allowed yet", async () => {
+    mockFetch({ "POST /api/v1/pages/p1/tool-calls": reply(403, { code: "needs_approval", agent: "db", tool: "q", reads: 1 }) });
+    expect(await api.runPageTool("p1", call)).toEqual({ ask: { agent: "db", tool: "q", reads: true } });
+  });
+
+  it("turns any other refusal or failure into an Error with the status", async () => {
+    mockFetch({ "POST /api/v1/pages/p1/tool-calls": reply(403, { detail: "no" }) });
+    await expect(api.runPageTool("p1", call)).rejects.toThrow("HTTP 403: no");
+    mockFetch({ "POST /api/v1/pages/p1/tool-calls": replyText(403, "not json") });
+    await expect(api.runPageTool("p1", call)).rejects.toThrow("HTTP 403: not json");
+    mockFetch({ "POST /api/v1/pages/p1/tool-calls": reply(429, { detail: "slow down" }) });
+    await expect(api.runPageTool("p1", call)).rejects.toThrow("HTTP 429: slow down");
   });
 });

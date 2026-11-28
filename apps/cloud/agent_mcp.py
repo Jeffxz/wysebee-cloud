@@ -489,6 +489,39 @@ def _stream(request: Request, user_id: str, served: Served, rid: Any, tool: str,
     )
 
 
+async def find_tool(request: Request, user_id: str, agent: str, tool: str) -> Served | str:
+    """``agent``'s ``tool`` as the person has it, as ``call_agent_*`` find it: the agent on for AI
+    apps and the tool offered; else why not (apps/cloud/page_tools.py runs a page's this way)."""
+    served = await _agent(request, user_id, {"agent": agent})
+    if isinstance(served, str):
+        return served
+    if tool not in served.box.offered:
+        return UNKNOWN_TOOL.format(name=served.name, tool=tool)
+    return served
+
+
+async def run_tool(request: Request, user_id: str, served: Served, tool: str, args: dict[str, Any], read_only: bool) -> tools.Output:
+    """Run one of ``served``'s tools to its end, as a ``tools/call`` does but answered at once:
+    stopped after ``mcp_call_wait_seconds``, too-long arguments or a too-big result refused, and
+    one credit when it answered."""
+    settings: Settings = request.app.state.settings
+    if len(json.dumps(args)) > settings.mcp_arguments_max_chars:
+        return tools.Output(f"The arguments are too long: at most {settings.mcp_arguments_max_chars} characters.", True)
+    call = {"id": None, "name": tool, "arguments": args, "read_only": read_only}
+    try:
+        out = await asyncio.wait_for(served.box.run(call), timeout=settings.mcp_call_wait_seconds)
+    except TimeoutError:
+        return tools.Output(TIMED_OUT.format(seconds=settings.mcp_call_wait_seconds), True)
+    except Exception as exc:  # noqa: BLE001 — answered, whatever happened
+        logger.exception("page_tool_failed")
+        return tools.Output(failed(f"@{served.name}'s tool {tool}", exc), True)
+    if len(out.text) + sum(len(i.get("data", "")) for i in out.images if isinstance(i, dict)) > settings.mcp_result_max_bytes:
+        return tools.Output(TOO_BIG, True)
+    if not out.is_error:
+        await tool_calls.count_one(request.app.state, user_id)
+    return out
+
+
 async def _agent_call(request: Request, user_id: str, rid: Any, tool: str, args: dict[str, Any]) -> Response:
     """``list_agents``, ``list_agent_tools``, ``call_agent_read_tool`` and ``call_agent_tool``:
     each of the last two runs only its own kind of tool, so no one tool both reads and writes."""

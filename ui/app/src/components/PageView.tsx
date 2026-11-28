@@ -7,6 +7,7 @@ import { fetchDocumentPage, fetchPage, type WorkspacePage } from "../api";
 import { setTheme, useTheme } from "../theme";
 import { reasonOf } from "../workspaces";
 import { PageShareDialog } from "./PageShareDialog";
+import { PageToolGrants, usePageToolBridge } from "./PageTools";
 
 /**
  * A page the person's AI app wrote (Wysebee Assistant's write_page), shown as it was made but
@@ -15,8 +16,23 @@ import { PageShareDialog } from "./PageShareDialog";
  * origin of its own here too (`allow-scripts`, never `allow-same-origin`) — so its scripts run
  * but cannot reach Wysebee, its sign-in or the person's data, nor send what it shows anywhere.
  * (Not `srcdoc`: that would take this page's own policy, which refuses inline scripts.)
+ *
+ * With `pageId` (its owner's own view), its `wysebee.callTool` runs their tools, as they allow
+ * (PageTools.tsx, 2026-11-28); `onToolAllowed` is told when they allow one.
  */
-export function PageFrame({ src, title, className }: { src: string; title: string; className?: string }) {
+export function PageFrame({
+  src,
+  title,
+  className,
+  pageId,
+  onToolAllowed,
+}: {
+  src: string;
+  title: string;
+  className?: string;
+  pageId?: string;
+  onToolAllowed?: () => void;
+}) {
   // In Wysebee's look (2026-11-19): asked for in it when loaded, and told when it changes, so it
   // switches without reloading (apps/cloud/workspace_pages.py `THEME_SCRIPT`). Its address
   // changes only with a new page, not with the look.
@@ -28,7 +44,9 @@ export function PageFrame({ src, title, className }: { src: string; title: strin
   // Its origin is none (sandboxed), so the message goes to "*": it says only the look.
   const tell = useCallback(() => frame.current?.contentWindow?.postMessage({ wysebeeTheme: themeNow.current }, "*"), []);
   useEffect(tell, [theme, tell]);
+  const asking = usePageToolBridge(frame, pageId, src, title, onToolAllowed);
   return (
+    <>
     <iframe
       ref={frame}
       title={title}
@@ -38,6 +56,8 @@ export function PageFrame({ src, title, className }: { src: string; title: strin
       referrerPolicy="no-referrer"
       className={cn("w-full rounded-lg border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900", className)}
     />
+    {asking}
+    </>
   );
 }
 
@@ -128,16 +148,24 @@ export function DocumentPage({ workspaceId, path, direct = false }: { workspaceI
         <a className={cn(btn, "text-xs")} href={`#/pages/${encodeURIComponent(page.id)}`} target="_blank" rel="noopener">
           <ExternalLink size={13} aria-hidden /> {t("pages.open")}
         </a>
+        <PageToolGrants pageId={page.id} count={page.tool_grants ?? 0} onChange={(n) => setPage((p) => p && { ...p, tool_grants: n })} />
         <button type="button" className={cn(btn, "text-xs")} onClick={() => setSharing(true)} title={t(page.share ? "pages.share.sharedPublic" : "pages.share.title")}>
           {page.share ? <Globe size={13} aria-hidden /> : <Share2 size={13} aria-hidden />} {t(page.share ? "pages.share.shared" : "pages.share.button")}
         </button>
       </div>
-      <PageFrame src={page.view_url} title={page.title || path} className="min-h-[60vh] flex-1" />
+      <PageFrame
+        src={page.view_url}
+        title={page.title || path}
+        className="min-h-[60vh] flex-1"
+        pageId={page.id}
+        onToolAllowed={() => void fetchPage(page.id).then((p) => setPage((now) => now && { ...now, tool_grants: p.tool_grants }), () => undefined)}
+      />
       {sharing && (
         <PageShareDialog
           pageId={page.id}
           share={page.share ?? null}
           refusal={page.share_refusal ?? null}
+          usesTools={(page.tool_grants ?? 0) > 0}
           onChange={(share) => setPage((p) => p && { ...p, share })}
           onClose={() => setSharing(false)}
         />
@@ -192,7 +220,7 @@ export function PageView({ pageId }: { pageId: string }) {
     );
   return (
     <main aria-label={title} className="fixed inset-0 bg-white dark:bg-stone-900" data-track-private>
-      <PageFrame src={page.view_url} title={title} className="block h-full rounded-none border-0" />
+      <PageFrame src={page.view_url} title={title} className="block h-full rounded-none border-0" pageId={page.id} />
       <ThemeSwitch />
     </main>
   );

@@ -206,6 +206,21 @@ class WorkspacePage(Base):
     # ``source_path`` itself, "view" when it is kept in ``.pages`` for that document.
     kind: Mapped[str] = mapped_column(String(10), server_default=text("'view'"))
 
+
+class PageToolGrant(Base):
+    """A tool a page may run without asking its owner again (apps/cloud/page_tools.py,
+    migration 0086): ``reads`` when it only reads; one that can change something keeps the
+    page's ``view_key`` it was allowed for, and holds only while the page is unchanged."""
+
+    __tablename__ = "page_tool_grants"
+
+    page_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("workspace_pages.page_id", ondelete="CASCADE"), primary_key=True)
+    agent: Mapped[str] = mapped_column(String(100), primary_key=True)
+    tool: Mapped[str] = mapped_column(String(200), primary_key=True)
+    reads: Mapped[bool] = mapped_column(Boolean)
+    view_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
 class WorkspaceAssistant(Base):
     """Wysebee Assistant on the page open in a person's editor (apps/cloud/workspace_assistant.py):
     one at a time per person — the page open, its text as the editor holds it (saved or not)
