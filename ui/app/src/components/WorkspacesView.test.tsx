@@ -257,6 +257,10 @@ describe("WorkspacesView", () => {
     const written = (f.to("PUT /api/v1/workspaces/p1/files/reports/sales.html")[0].body as { content: string }).content;
     expect(written).toContain("<title>sales</title>");
     expect(written).toContain("prefers-color-scheme: dark");
+    // Escape puts the form away.
+    await userEvent.click(screen.getByRole("button", { name: "New page" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Page name" }), "{Escape}");
+    expect(screen.queryByRole("textbox", { name: "Page name" })).toBeNull();
   });
 
   it("shows a .html file as its page, with Source to edit it, and reads the page again when saved", async () => {

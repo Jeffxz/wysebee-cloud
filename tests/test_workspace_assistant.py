@@ -795,6 +795,30 @@ def test_a_folder_deleted_takes_its_pages(client, users):
 
 
 @needs_db
+def test_a_page_the_ai_app_kept_for_a_html_file_becomes_the_file_itself(client, users, migrated_db_url):
+    from apps.cloud.asset_storage import user_folder
+    from apps.cloud.workspace_pages import key
+
+    me = users[0]
+    pid = workspace(client, me)
+    # A page kept in .pages for a document named .html (as write_page could before it refused one).
+    turn_on(client, me, pid)
+    page_id = call(client, me, "write_page", {"html": "<p>view</p>"})[0].rsplit("/", 1)[-1]
+    engine = create_engine(migrated_db_url)
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE workspace_pages SET source_path = 'old.html' WHERE page_id = :p"), {"p": page_id})
+    engine.dispose()
+    store = client.app.state.workspace_store
+    assert asyncio.run(store.read(user_folder(me), key(pid, page_id))) == b"<p>view</p>"
+    # The file written: the same page, now the file itself, its .pages copy gone.
+    assert client.put(f"/api/v1/workspaces/{pid}/files/old.html", json={"content": "<p>file</p>"}, headers=h(me)).status_code == 200
+    page = client.get(f"/api/v1/pages/{page_id}", headers=h(me)).json()
+    assert page["kind"] == "file" and page["title"] == "old"
+    assert client.get(page["view_url"]).text == "<p>file</p>"
+    assert asyncio.run(store.read(user_folder(me), key(pid, page_id))) is None
+
+
+@needs_db
 def test_a_html_file_from_before_gets_its_page_when_asked_for(client, users, migrated_db_url):
     me = users[0]
     pid = workspace(client, me)
