@@ -297,6 +297,13 @@ describe("WorkspacesNav", () => {
       "DELETE /api/v1/workspaces/p1/files/README.md": reply(204),
     });
     const sales = await screen.findByRole("button", { name: "Delete sales.html" });
+    // Each row is a hover group of its own: hovering a row inside a folder shows only that
+    // row's buttons, not the folder's (which would hold every row in it).
+    const guideRow = screen.getByRole("button", { name: "guide" }).parentElement!;
+    expect(guideRow.className).toContain("group/folder");
+    expect(guideRow.closest("li")!.className).not.toContain("group/");
+    expect(within(guideRow).getByRole("button", { name: "Delete the folder guide" })).toBeTruthy();
+    expect(within(guideRow).queryByRole("button", { name: "Delete guide/setup.md" })).toBeNull();
     expect(sales.getAttribute("title")).toBe("Delete sales.html");
     // Asked first; kept when not.
     const confirm = vi.spyOn(dialogs, "confirm").mockResolvedValue(false);

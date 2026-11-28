@@ -316,8 +316,11 @@ export function WorkspacesNav({
       const renamingThis = renamingFolder === key;
       const childIndent = { paddingLeft: `${0.5 + (depth + 1) * 0.85}rem` };
       return (
-        <li key={key} className="group/folder relative">
-          <div className="relative">
+        <li key={key} className="relative">
+          {/* The hover group is the folder's own row, not its <li>: what it holds is inside the
+              <li>, and hovering that must not show this folder's buttons (nor a folder's
+              inside it). */}
+          <div className="group/folder relative">
             {renamingThis ? (
               <form
                 className="flex items-center gap-1.5 py-0.5 pr-2"
