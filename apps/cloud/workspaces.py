@@ -26,6 +26,9 @@ file, ``README.md``, so the folder exists from the start; an empty folder holds 
   ``WYSEBEE_WORKSPACE_MAX_FILES`` is a 409.
 - ``DELETE /workspaces/{id}/files/{path}`` — 204.
 - ``POST /workspaces/{id}/folders/{path}`` — 201 ``{path}``; ``DELETE`` — 204, with all it holds.
+- ``PATCH /workspaces/{id}/folders/{path}`` ``{name}`` — renames it where it is (2026-11-28):
+  everything in it moves to ``{path}`` with the new last segment, its pages with their
+  documents; ``{path}`` the new one. A name taken there (a file or a folder) is a 409.
 
 Pages the person's AI app made from its documents are kept in its hidden ``.pages`` folder
 (apps/cloud/workspace_pages.py): never among its files, and deleted with their document (or
@@ -74,6 +77,10 @@ WorkspaceId = Annotated[str, Path(pattern=r"^[0-9a-fA-F-]{32,36}$")]
 
 
 class NewWorkspace(BaseModel):
+    name: str
+
+
+class NewName(BaseModel):
     name: str
 
 
@@ -389,3 +396,56 @@ async def delete_folder(
     await _touch(session, workspace, user)
     return Response(status_code=204)
 
+
+async def _move(store: WorkspaceStore, sub: str, folder: str, src: str, dst: str, paths: list[str]) -> list[str]:
+    """Copy each of ``paths`` (all under ``src``) to the same place under ``dst``, then drop
+    ``src``; the paths where they are now."""
+    for old in paths:
+        data = await store.read(sub, f"{folder}/{old}")
+        if data is not None:
+            to = dst + old[len(src) :]
+            await store.write(sub, f"{folder}/{to}", data, content_type(to))
+    await store.delete_prefix(sub, f"{folder}/{src}")
+    return [dst + p[len(src) :] for p in paths]
+
+
+@router.patch("/workspaces/{workspace_id}/folders/{folder_path:path}")
+async def rename_folder(
+    workspace_id: WorkspaceId,
+    folder_path: str,
+    body: NewName,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_session),
+    store: WorkspaceStore = Depends(get_workspace_store),
+) -> dict[str, Any]:
+    """Rename a folder where it is: what it holds moves under the new name, pages and all."""
+    workspace = await _workspace(session, user, workspace_id)
+    path = valid_path(folder_path)
+    name = body.name.strip()
+    if "/" in name:
+        raise HTTPException(status_code=422, detail="A folder's name has no '/' in it.")
+    parent = path.rsplit("/", 1)[0] if "/" in path else ""
+    new = valid_path(f"{parent}/{name}" if parent else name)
+    sub = _sub(user)
+    folder = workspace.workspace_id
+    present = [f for f in await store.list(sub, folder) if not workspace_pages.is_page_path(f.path)]
+    inside = [f.path for f in present if f.path.startswith(path + "/")]
+    if not inside:
+        raise _not_found("Folder")
+    if new == path:
+        return {"path": path}
+    # Taken whatever its case: a store that ignores case would make the two one folder.
+    taken = new.lower()
+    if any(f.path.lower() == taken or f.path.lower().startswith(taken + "/") for f in present if not f.path.startswith(path + "/")):
+        raise HTTPException(status_code=409, detail=f"{new!r} is already there.")
+    # A change of case alone names the same folder on a store that ignores case (a Mac's
+    # disk): it goes by a name of its own first, so the new name is a folder of its own.
+    src = path
+    if new.lower() == path.lower():
+        step = f"{path}.renaming-{uuid.uuid4().hex[:8]}"
+        inside = await _move(store, sub, folder, path, step, inside)
+        src = step
+    await _move(store, sub, folder, src, new, inside)
+    await workspace_pages.move_under(session, folder, path, new)
+    await _touch(session, workspace, user)
+    return {"path": new}

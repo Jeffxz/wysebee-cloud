@@ -229,14 +229,25 @@ async def forget(session: AsyncSession, store: WorkspaceStore, sub: str, workspa
         await session.delete(page)
 
 
+async def _pages_under(session: AsyncSession, workspace_id: str, folder: str) -> list[WorkspacePage]:
+    under = folder.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "/%"
+    return list((await session.scalars(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace_id, WorkspacePage.source_path.like(under, escape="\\")))).all())
+
+
 async def forget_under(session: AsyncSession, store: WorkspaceStore, sub: str, workspace_id: str, folder: str) -> None:
     """A folder deleted: the pages of every document in it go too (the caller commits)."""
-    under = folder.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "/%"
-    pages = (await session.scalars(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace_id, WorkspacePage.source_path.like(under, escape="\\")))).all()
-    for page in pages:
+    for page in await _pages_under(session, workspace_id, folder):
         if page.kind != "file":
             await store.delete(sub, key(workspace_id, page.page_id))
         await session.delete(page)
+
+
+async def move_under(session: AsyncSession, workspace_id: str, folder: str, to: str) -> None:
+    """A folder renamed: the pages of its documents follow them, keeping their ids and
+    addresses (the caller commits). A page made directly moved with its file; one in ``.pages``
+    is named by its id, so only the row changes."""
+    for page in await _pages_under(session, workspace_id, folder):
+        page.source_path = to + page.source_path[len(folder) :]
 
 
 async def _mine(session: AsyncSession, user: User, page_id: str) -> WorkspacePage:

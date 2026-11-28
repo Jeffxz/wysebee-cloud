@@ -20,6 +20,7 @@
       "pageName": "Page name",
       "folderName": "Folder name",
       "rename": "Rename {{name}}",
+      "renameHint": "Double-click to rename",
       "all": "All workspaces"
     },
     "start": {

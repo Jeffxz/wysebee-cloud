@@ -169,3 +169,42 @@ def test_a_workspace_is_renamed_and_its_files_stay(client, users, workspace_dir)
     # The id is taken with or without its dashes; anything else is not one.
     assert client.get(f"/api/v1/workspaces/{pid.replace('-', '')}", headers=h(a)).json()["name"] == "GUIDES"
     assert client.get(f"/api/v1/workspaces/{'-' * 36}", headers=h(a)).status_code == 404
+
+
+@needs_db
+def test_a_folder_is_renamed_where_it_is_with_all_it_holds(client, users, workspace_dir):
+    a, b = users
+    base = f"/api/v1/workspaces/{create(client, a).json()['id']}"
+    for path in ("guide/setup.md", "guide/deep/more.md", "other/x.md"):
+        assert client.put(f"{base}/files/{path}", json={"content": path}, headers=h(a)).status_code == 200
+    assert client.post(f"{base}/folders/guide/empty", headers=h(a)).status_code == 201
+    rename = lambda path, name, who=a: client.patch(f"{base}/folders/{path}", json={"name": name}, headers=h(who))  # noqa: E731
+
+    r = rename("guide", "  Handbook ")
+    assert (r.status_code, r.json()) == (200, {"path": "Handbook"})
+    tree = client.get(base, headers=h(a)).json()
+    assert [f["path"] for f in tree["files"]] == ["Handbook/deep/more.md", "Handbook/setup.md", "README.md", "other/x.md"]
+    assert tree["folders"] == ["Handbook", "Handbook/deep", "Handbook/empty", "other"]
+    assert client.get(f"{base}/files/Handbook/deep/more.md", headers=h(a)).json()["content"] == "guide/deep/more.md"
+    # A folder inside one, renamed where it is.
+    assert rename("Handbook/deep", "Deeper").json() == {"path": "Handbook/Deeper"}
+    # Its case alone.
+    assert rename("other", "Other").json() == {"path": "Other"}
+    assert client.get(f"{base}/files/Other/x.md", headers=h(a)).json()["content"] == "other/x.md"
+    assert "other" not in client.get(base, headers=h(a)).json()["folders"]
+    # Its own name: nothing moves.
+    assert rename("Other", "Other").json() == {"path": "Other"}
+    # Taken there, by a folder or a file: refused, nothing moved.
+    assert rename("Other", "Handbook").status_code == 409
+    assert rename("Other", "handbook").status_code == 409
+    assert rename("Other", "README.md").status_code == 409
+    assert rename("Handbook/Deeper", "setup.md").status_code == 409
+    assert "Other/x.md" in [f["path"] for f in client.get(base, headers=h(a)).json()["files"]]
+    # Not a name; not there; another person's.
+    assert rename("Other", "a/b").status_code == 422
+    assert rename("Other", ".hidden").status_code == 422
+    assert rename("Other", " ").status_code == 422
+    assert rename("nope", "x").status_code == 404
+    assert rename("README.md", "x").status_code == 404
+    assert rename("Other", "x", who=b).status_code == 404
+

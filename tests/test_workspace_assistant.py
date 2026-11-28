@@ -769,6 +769,29 @@ def test_a_html_file_is_a_page_made_directly(client, users):
 
 
 @needs_db
+def test_pages_follow_their_documents_when_their_folder_is_renamed(client, users):
+    me, _ = users
+    pid = workspace(client, me)
+    assert client.put(f"/api/v1/workspaces/{pid}/files/reports/sales.html", json={"content": "<p>s</p>"}, headers=h(me)).status_code == 200
+    direct = client.get(f"/api/v1/workspaces/{pid}/page?path=reports/sales.html", headers=h(me)).json()["page"]["id"]
+    turn_on(client, me, pid, path="reports/notes.md", content="n")
+    made = call(client, me, "write_page", {"html": "<p>n</p>"})[0].rsplit("/", 1)[-1]
+    # Not a folder this page is in, though its name begins the same.
+    turn_on(client, me, pid, path="reports_old.md", content="o")
+    beside = call(client, me, "write_page", {"html": "<p>o</p>"})[0].rsplit("/", 1)[-1]
+
+    r = client.patch(f"/api/v1/workspaces/{pid}/folders/reports", json={"name": "sales"}, headers=h(me))
+    assert r.status_code == 200, r.text
+    for page_id, path, text in ((direct, "sales/sales.html", "<p>s</p>"), (made, "sales/notes.md", "<p>n</p>")):
+        page = client.get(f"/api/v1/pages/{page_id}", headers=h(me)).json()
+        assert page["source_path"] == path
+        assert client.get(f"/api/v1/workspaces/{pid}/page?path={path}", headers=h(me)).json()["page"]["id"] == page_id
+        assert bare(client.get(page["view_url"]).text) == text
+    assert client.get(f"/api/v1/pages/{beside}", headers=h(me)).json()["source_path"] == "reports_old.md"
+    assert client.get(f"/api/v1/workspaces/{pid}/page?path=reports/notes.md", headers=h(me)).json() == {"page": None}
+
+
+@needs_db
 def test_a_page_made_directly_is_shared_as_its_file_is_now(client, users):
     me = users[0]
     pid = workspace(client, me)

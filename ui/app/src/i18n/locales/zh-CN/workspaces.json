@@ -20,6 +20,7 @@
       "pageName": "页面名称",
       "folderName": "文件夹名称",
       "rename": "重命名 {{name}}",
+      "renameHint": "双击以重命名",
       "all": "所有工作区"
     },
     "start": {

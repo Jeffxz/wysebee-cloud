@@ -240,6 +240,53 @@ describe("WorkspacesNav", () => {
     await waitFor(() => expect(onSelect).toHaveBeenLastCalledWith("p1"));
   });
 
+  it("renames a folder in place when its name is double-clicked, keeping what was open", async () => {
+    let renames = 0;
+    const { f, onSelect } = setup("p1", null, {
+      "GET /api/v1/workspaces/p1": () =>
+        renames === 0
+          ? { ...tree, folders: ["guide", "guide/deep", "other"] }
+          : { ...tree, files: [{ path: "README.md", size: 9 }, { path: "Handbook/setup.md", size: 5 }], folders: ["Handbook", "Handbook/deep", "other"] },
+      "PATCH /api/v1/workspaces/p1/folders/guide": (r: FakeRequest) => {
+        const name = (r.body as { name: string }).name;
+        if (name === "Taken") return reply(409, { detail: "'Taken' is already there." });
+        renames++;
+        return { path: name };
+      },
+    });
+    const toastError = vi.spyOn(toast, "error");
+    await userEvent.click(await screen.findByRole("button", { name: "other" }));
+    await userEvent.click(screen.getByRole("button", { name: "guide" }));
+    await userEvent.click(await screen.findByRole("button", { name: "deep" }));
+    // Double-clicked: its first click shows it, the second renames it.
+    await userEvent.dblClick(screen.getByRole("button", { name: "guide" }));
+    expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "guide");
+    const field = () => screen.getByRole("textbox", { name: "Rename guide" });
+    expect((field() as HTMLInputElement).value).toBe("guide");
+    // Escape keeps it; its own name or none, nothing is asked.
+    await userEvent.type(field(), "{Escape}");
+    expect(screen.queryByRole("textbox", { name: "Rename guide" })).toBeNull();
+    await userEvent.dblClick(screen.getByRole("button", { name: "guide" }));
+    fireEvent.submit(field().closest("form")!);
+    await userEvent.dblClick(screen.getByRole("button", { name: "guide" }));
+    await userEvent.clear(field());
+    fireEvent.blur(field());
+    expect(f.to("PATCH /api/v1/workspaces/p1/folders/guide")).toHaveLength(0);
+    // A name taken: said, the field stays.
+    await userEvent.dblClick(screen.getByRole("button", { name: "guide" }));
+    await userEvent.clear(field());
+    await userEvent.type(field(), "Taken{Enter}");
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith("'Taken' is already there."));
+    // Renamed: shown under its new path, it and what was open in it still unfolded.
+    await userEvent.clear(field());
+    await userEvent.type(field(), "Handbook{Enter}");
+    await waitFor(() => expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "Handbook"));
+    expect(f.to("PATCH /api/v1/workspaces/p1/folders/guide").map((r) => r.body)).toEqual([{ name: "Taken" }, { name: "Handbook" }]);
+    expect(await screen.findByRole("button", { name: "setup.md" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "deep" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Handbook" }).getAttribute("title")).toBe("Double-click to rename");
+  });
+
   it("deletes a folder another file is open beside without leaving it", async () => {
     const { onSelect } = setup("p1", "README.md");
     await screen.findByRole("button", { name: "guide" });
