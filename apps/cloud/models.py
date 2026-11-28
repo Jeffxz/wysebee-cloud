@@ -202,6 +202,9 @@ class WorkspacePage(Base):
     share_audience: Mapped[str | None] = mapped_column(String(20), nullable=True)
     share_key: Mapped[str | None] = mapped_column(String(64), nullable=True, unique=True, index=True)
     shared_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Made directly (migration 0085): "file" when the page is the ``.html`` file at
+    # ``source_path`` itself, "view" when it is kept in ``.pages`` for that document.
+    kind: Mapped[str] = mapped_column(String(10), server_default=text("'view'"))
 
 class WorkspaceAssistant(Base):
     """Wysebee Assistant on the page open in a person's editor (apps/cloud/workspace_assistant.py):

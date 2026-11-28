@@ -28,7 +28,9 @@ file, ``README.md``, so the folder exists from the start; an empty folder holds 
 - ``POST /workspaces/{id}/folders/{path}`` — 201 ``{path}``; ``DELETE`` — 204, with all it holds.
 
 Pages the person's AI app made from its documents are kept in its hidden ``.pages`` folder
-(apps/cloud/workspace_pages.py): never among its files, and deleted with their document.
+(apps/cloud/workspace_pages.py): never among its files, and deleted with their document (or
+its folder). A ``.html`` file is a page made directly (2026-11-27): written, it is shown as a
+page, sandboxed, at its own address.
 
 A path is up to ten segments of the same characters as a name (no hidden, ``.`` or ``..``),
 400 characters at most; anything else is a 422. Another person's workspace is a 404.
@@ -316,6 +318,9 @@ async def write_file(
         raise HTTPException(status_code=409, detail=f"{path!r} is a folder.")
     _no_file_above(path, files)
     await store.write(sub, f"{folder}/{path}", data, content_type(path))
+    if workspace_pages.is_html(path):
+        # A page made directly: its page row says how it is shown (apps/cloud/workspace_pages.py).
+        await workspace_pages.keep_file(session, store, sub, user.sub, folder, path, data)
     await _touch(session, workspace, user)
     return {"path": path, "size": len(data)}
 
@@ -380,6 +385,7 @@ async def delete_folder(
     if not await store.list(sub, f"{folder}/{path}"):
         raise _not_found("Folder")
     await store.delete_prefix(sub, f"{folder}/{path}")
+    await workspace_pages.forget_under(session, store, sub, folder, path)
     await _touch(session, workspace, user)
     return Response(status_code=204)
 

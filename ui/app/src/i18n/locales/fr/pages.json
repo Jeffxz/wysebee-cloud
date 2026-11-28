@@ -7,6 +7,8 @@
     "refresh": "Actualiser",
     "open": "Ouvrir seule",
     "sandboxed": "Créée par votre application IA. Affichée isolée : ses scripts s'exécutent, mais elle ne peut atteindre ni Wysebee ni Internet.",
+    "sandboxedFile": "Affichée en bac à sable : ses scripts s’exécutent, mais elle ne peut accéder ni à Wysebee ni à Internet.",
+    "unsaved": "Dernière version enregistrée affichée. Enregistrez pour voir vos modifications ici.",
     "share": {
       "button": "Partager",
       "shared": "Public",

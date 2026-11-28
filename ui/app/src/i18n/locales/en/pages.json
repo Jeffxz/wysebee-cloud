@@ -7,6 +7,8 @@
     "refresh": "Refresh",
     "open": "Open on its own",
     "sandboxed": "Made by your AI app. Shown sandboxed: its scripts run, but it cannot reach Wysebee or the internet.",
+    "sandboxedFile": "Shown sandboxed: its scripts run, but it cannot reach Wysebee or the internet.",
+    "unsaved": "Showing the last saved version. Save to see your changes here.",
     "share": {
       "button": "Share",
       "shared": "Public",

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Eye, FilePlus2, FolderKanban, FolderPlus, Globe, Pencil, Plus, Save, Trash2 } from "lucide-react";
+import { Code, Eye, FilePlus2, FolderKanban, FolderPlus, Globe, LayoutTemplate, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { DocumentPage } from "./PageView";
 import { Tip } from "./common/Tip";
 import { btn, btnPrimary, cn, errorBanner, inputBase, loading, muted } from "@shared/cn";
@@ -9,12 +9,15 @@ import { fetchWorkspaceFile } from "../api";
 import {
   addFolder,
   addWorkspace,
+  htmlPagePath,
+  isHtmlPage,
   loadWorkspaces,
   loadTree,
   pagePath,
   reasonOf,
   removeFile,
   removeWorkspace,
+  starterPage,
   useWorkspaces,
   writeFile,
 } from "../workspaces";
@@ -219,7 +222,7 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
   const { items, trees } = useWorkspaces();
   const workspace = items?.find((p) => p.id === workspaceId);
   const tree = trees[workspaceId];
-  const [adding, setAdding] = useState<"page" | "folder" | null>(null);
+  const [adding, setAdding] = useState<"document" | "page" | "folder" | null>(null);
 
   useEffect(() => {
     if (!tree) loadTree(workspaceId).catch((e) => toast.error(reasonOf(e)));
@@ -252,22 +255,38 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
         {tree ? t("workspaces.overview.counts", { files: tree.files.length, folders: tree.folders.length }) : t("workspaces.loading")}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
+        <button type="button" className={btn} onClick={() => setAdding("document")} data-track="Workspaces new document">
+          <FilePlus2 size={14} aria-hidden /> {t("workspaces.overview.newDocument")}
+        </button>
         <button type="button" className={btn} onClick={() => setAdding("page")} data-track="Workspaces new page">
-          <FilePlus2 size={14} aria-hidden /> {t("workspaces.overview.newPage")}
+          <LayoutTemplate size={14} aria-hidden /> {t("workspaces.overview.newPage")}
         </button>
         <button type="button" className={btn} onClick={() => setAdding("folder")} data-track="Workspaces new folder">
           <FolderPlus size={14} aria-hidden /> {t("workspaces.overview.newFolder")}
         </button>
       </div>
+      {adding === "document" && (
+        <NameForm
+          label={t("workspaces.overview.documentName")}
+          placeholder={t("workspaces.overview.documentPlaceholder")}
+          onCancel={() => setAdding(null)}
+          onSubmit={async (value) => {
+            const path = pagePath("", value);
+            const title = path.split("/").pop()!.replace(/\.[^.]+$/, "");
+            await writeFile(workspaceId, path, `# ${title}\n`);
+            setAdding(null);
+            onOpen(workspaceId, path);
+          }}
+        />
+      )}
       {adding === "page" && (
         <NameForm
           label={t("workspaces.overview.pageName")}
           placeholder={t("workspaces.overview.pagePlaceholder")}
           onCancel={() => setAdding(null)}
           onSubmit={async (value) => {
-            const path = pagePath("", value);
-            const title = path.split("/").pop()!.replace(/\.[^.]+$/, "");
-            await writeFile(workspaceId, path, `# ${title}\n`);
+            const path = htmlPagePath("", value);
+            await writeFile(workspaceId, path, starterPage(path.split("/").pop()!.replace(/\.html$/i, "")));
             setAdding(null);
             onOpen(workspaceId, path);
           }}
@@ -288,22 +307,26 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
   );
 }
 
-/** One file: its text, edited or previewed as markdown, saved to Wysebee Cloud. */
+/** One file: its text, edited or previewed as markdown, saved to Wysebee Cloud. A `.html` file
+ * is a page made directly (2026-11-27): it opens on its Page, with Source to edit its HTML. */
 function Editor({ workspaceId, path, onOpen, onOpenSkill }: { workspaceId: string; path: string; onOpen: (workspace: string | null, file?: string) => void; onOpenSkill?: (skill: string, file: string) => void }) {
   const { t } = useTranslation();
   const [saved, setSaved] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   // Page: the rich HTML page the AI app made from this document (PageView.tsx).
-  const [mode, setMode] = useState<"edit" | "preview" | "page">("edit");
+  const html = isHtmlPage(path);
+  const [mode, setMode] = useState<"edit" | "preview" | "page">(html ? "page" : "edit");
   const [busy, setBusy] = useState(false);
+  // Each save of a page made directly gives it a new address: its Page reads it again.
+  const [savedCount, setSavedCount] = useState(0);
   const markdown = /\.(md|markdown)$/i.test(path);
 
   useEffect(() => {
     let live = true;
     setSaved(null);
     setError(null);
-    setMode("edit");
+    setMode(isHtmlPage(path) ? "page" : "edit");
     fetchWorkspaceFile(workspaceId, path)
       .then((f) => {
         if (!live) return;
@@ -332,6 +355,7 @@ function Editor({ workspaceId, path, onOpen, onOpenSkill }: { workspaceId: strin
     try {
       await writeFile(workspaceId, path, text);
       setSaved(text);
+      setSavedCount((n) => n + 1);
       toast.success(t("workspaces.editor.saved"));
     } catch (e) {
       toast.error(reasonOf(e));
@@ -361,6 +385,34 @@ function Editor({ workspaceId, path, onOpen, onOpenSkill }: { workspaceId: strin
           <h2 className="min-w-0 shrink truncate font-mono text-sm">{path}</h2>
           <AssistantStatus ai={ai} />
         </div>
+        {html && (
+          <div className="flex rounded-md border border-stone-300 dark:border-stone-600" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "page"}
+              className={cn("group relative flex items-center px-2 py-1.5", mode === "page" && "bg-stone-200 dark:bg-stone-700")}
+              aria-label={t("pages.tab")}
+              onClick={() => setMode("page")}
+              data-track="Workspaces page view"
+            >
+              <Globe size={14} aria-hidden />
+              <Tip text={t("pages.tab")} />
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "edit"}
+              className={cn("group relative flex items-center px-2 py-1.5", mode === "edit" && "bg-stone-200 dark:bg-stone-700")}
+              aria-label={t("workspaces.editor.source")}
+              onClick={() => setMode("edit")}
+              data-track="Workspaces page source"
+            >
+              <Code size={14} aria-hidden />
+              <Tip text={t("workspaces.editor.source")} />
+            </button>
+          </div>
+        )}
         {markdown && (
           <div className="flex rounded-md border border-stone-300 dark:border-stone-600" role="tablist">
             <button
@@ -409,14 +461,17 @@ function Editor({ workspaceId, path, onOpen, onOpenSkill }: { workspaceId: strin
         </button>
       </div>
       {mode === "page" ? (
-        <DocumentPage workspaceId={workspaceId} path={path} />
+        <>
+          {html && changed && <p className={cn(muted, "mb-2 text-xs")}>{t("pages.unsaved")}</p>}
+          <DocumentPage key={savedCount} workspaceId={workspaceId} path={path} direct={html} />
+        </>
       ) : mode === "preview" ? (
         <Preview text={text} />
       ) : (
         <textarea
           className={cn(inputBase, "min-h-[60vh] flex-1 resize-none font-mono text-sm leading-relaxed")}
           value={text}
-          spellCheck
+          spellCheck={!html}
           aria-label={t("workspaces.editor.label", { name: path })}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {

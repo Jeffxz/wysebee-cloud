@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ChevronRight, FilePlus2, FileText, Folder, FolderOpen, FolderKanban, FolderPlus, LayoutList, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, FilePlus2, FileText, Folder, FolderOpen, FolderKanban, FolderPlus, LayoutList, LayoutTemplate, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "@shared/cn";
 import {
   addFolder,
   addWorkspace,
   buildTree,
+  htmlPagePath,
+  isHtmlPage,
   loadWorkspaces,
   loadTree,
   pagePath,
   reasonOf,
   removeFolder,
   renameWorkspace,
+  starterPage,
   useWorkspaces,
   writeFile,
   type TreeNode,
@@ -32,7 +35,7 @@ const menuItem = "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left t
 interface AddingIn {
   workspace: string;
   folder: string;
-  kind: "page" | "folder";
+  kind: "document" | "page" | "folder";
 }
 
 /**
@@ -41,7 +44,7 @@ interface AddingIn {
  * menus), then each of the person's workspaces. A workspace opens into its **folder structure, as
  * Wysebee Cloud's `user-workspaces` container holds it** — its folders, then its files —
  * and a file opens in the page's editor. On hover, a folder's + adds a page or a folder
- * inside it (named in the menu, 2026-11-14), and its trash deletes it and all it holds. A
+ * inside it (named in the menu, 2026-11-14) — a document (markdown) or a page (`.html`, 2026-11-27), and its trash deletes it and all it holds. A
  * workspace's pencil, on hover, renames it in place (2026-11-16): its files stay where they are.
  */
 export function WorkspacesNav({
@@ -161,10 +164,15 @@ export function WorkspacesNav({
     const { workspace, folder, kind } = addingIn;
     setBusy(true);
     try {
-      if (kind === "page") {
+      if (kind === "document") {
         const path = pagePath(folder, value);
         const title = path.split("/").pop()!.replace(/\.[^.]+$/, "");
         await writeFile(workspace, path, `# ${title}\n`);
+        setAddingIn(null);
+        onSelect(workspace, path);
+      } else if (kind === "page") {
+        const path = htmlPagePath(folder, value);
+        await writeFile(workspace, path, starterPage(path.split("/").pop()!.replace(/\.html$/i, "")));
         setAddingIn(null);
         onSelect(workspace, path);
       } else {
@@ -204,7 +212,11 @@ export function WorkspacesNav({
               onClick={() => onSelect(workspace, node.path)}
               aria-current={active ? "page" : undefined}
             >
-              <FileText size={14} className="shrink-0 opacity-70" aria-hidden />
+              {isHtmlPage(node.path) ? (
+                <LayoutTemplate size={14} className="shrink-0 opacity-70" aria-hidden />
+              ) : (
+                <FileText size={14} className="shrink-0 opacity-70" aria-hidden />
+              )}
               <span className="truncate">{node.name}</span>
             </button>
           </li>
@@ -250,13 +262,16 @@ export function WorkspacesNav({
                 role="menu"
                 data-folder-menu
                 aria-label={t("workspaces.nav.addIn", { name: node.path })}
-                className="absolute right-1 top-full z-20 mt-1 w-40 rounded-md border border-stone-200 bg-white p-1 shadow-lg dark:border-stone-700 dark:bg-stone-800"
+                className="absolute right-1 top-full z-20 mt-1 w-48 rounded-md border border-stone-200 bg-white p-1 shadow-lg dark:border-stone-700 dark:bg-stone-800"
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setMenuFor(null);
                 }}
               >
-                <button type="button" role="menuitem" className={menuItem} autoFocus onClick={() => startAdding(workspace, node.path, "page")} data-track="Workspaces new page in folder">
-                  <FilePlus2 size={14} aria-hidden /> {t("workspaces.nav.newPage")}
+                <button type="button" role="menuitem" className={menuItem} autoFocus onClick={() => startAdding(workspace, node.path, "document")} data-track="Workspaces new document in folder">
+                  <FilePlus2 size={14} aria-hidden /> {t("workspaces.nav.newDocument")}
+                </button>
+                <button type="button" role="menuitem" className={menuItem} onClick={() => startAdding(workspace, node.path, "page")} data-track="Workspaces new page in folder">
+                  <LayoutTemplate size={14} aria-hidden /> {t("workspaces.nav.newPage")}
                 </button>
                 <button type="button" role="menuitem" className={menuItem} onClick={() => startAdding(workspace, node.path, "folder")} data-track="Workspaces new folder in folder">
                   <FolderPlus size={14} aria-hidden /> {t("workspaces.nav.newFolder")}
@@ -276,8 +291,10 @@ export function WorkspacesNav({
                       void addInFolder();
                     }}
                   >
-                    {naming.kind === "page" ? (
+                    {naming.kind === "document" ? (
                       <FileText size={14} className="shrink-0 text-white/70" aria-hidden />
+                    ) : naming.kind === "page" ? (
+                      <LayoutTemplate size={14} className="shrink-0 text-white/70" aria-hidden />
                     ) : (
                       <Folder size={14} className="shrink-0 text-white/70" aria-hidden />
                     )}
@@ -286,8 +303,8 @@ export function WorkspacesNav({
                       autoFocus
                       value={childName}
                       maxLength={120}
-                      placeholder={t(naming.kind === "page" ? "workspaces.nav.pageName" : "workspaces.nav.folderName")}
-                      aria-label={t(naming.kind === "page" ? "workspaces.nav.pageName" : "workspaces.nav.folderName")}
+                      placeholder={t(`workspaces.nav.${naming.kind}Name`)}
+                      aria-label={t(`workspaces.nav.${naming.kind}Name`)}
                       disabled={busy}
                       onChange={(e) => setChildName(e.target.value)}
                       onKeyDown={(e) => {

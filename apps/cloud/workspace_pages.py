@@ -19,6 +19,13 @@ frames — so it cannot send what it shows anywhere. (Shown in ``srcdoc`` instea
 the web app's own policy, which refuses inline scripts.) The website frames it with
 ``sandbox="allow-scripts"`` too.
 
+**Made directly** (2026-11-27, the person's call; migration 0085): a ``.html`` file in the
+workspace is a page of its own — ``kind="file"``, its bytes the file itself, kept by
+:func:`keep_file` each time the file is written (by the person, or by the AI app's
+``write_document`` once they save it), its title the file's ``<title>``. ``write_page`` refuses
+such a file: it is written as any document is. A page made from a document is ``kind="view"``.
+Either is shown, themed and shared the same way.
+
 **Its look follows Wysebee's** (2026-11-19, the person's call): asked for with ``?theme=dark`` or
 ``?theme=light``, the page is served with :data:`THEME_SCRIPT` added before ``</head>`` — the
 stored page is not changed. A framed page's ``prefers-color-scheme`` is the browser's, not its
@@ -61,7 +68,9 @@ phishing gets that domain flagged, not Wysebee's.
 """
 
 import hmac
+import html
 import logging
+import re
 import secrets
 import uuid
 from typing import Any
@@ -137,6 +146,44 @@ def key(workspace_id: str, page_id: str) -> str:
     return f"{workspace_id}/{FOLDER}/{page_id}.html"
 
 
+def is_html(path: str) -> bool:
+    """A workspace file that is a page made directly (``kind="file"``)."""
+    return path.lower().endswith(".html")
+
+
+def _where(page: WorkspacePage) -> str:
+    """Where the page's bytes are in the workspace store: the ``.html`` file itself, or ``.pages``."""
+    return f"{page.workspace_id}/{page.source_path}" if page.kind == "file" else key(page.workspace_id, page.page_id)
+
+
+_TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
+
+def title_of(data: bytes, path: str) -> str:
+    """A page file's ``<title>``, else its file name without ``.html``."""
+    found = _TITLE_RE.search(data[:65536])
+    title = html.unescape(found.group(1).decode("utf-8", "replace")) if found else ""
+    title = " ".join(title.split())[:MAX_TITLE]
+    return title or path.rsplit("/", 1)[-1][: -len(".html")]
+
+
+async def keep_file(session: AsyncSession, store: WorkspaceStore, sub: str, user_id: str, workspace_id: str, path: str, data: bytes) -> WorkspacePage:
+    """A ``.html`` file written: its page made, or its title and address renewed (its id, and a
+    public address, kept). A page the AI app kept for it in ``.pages`` before becomes the file
+    itself. The caller commits."""
+    page = await session.scalar(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace_id, WorkspacePage.source_path == path))
+    title, key_now = title_of(data, path), secrets.token_urlsafe(24)
+    if page is None:
+        page = WorkspacePage(page_id=str(uuid.uuid4()), user_id=user_id, workspace_id=workspace_id, source_path=path, title=title, view_key=key_now, kind="file")
+        session.add(page)
+        await session.flush()
+        return page
+    if page.kind != "file":
+        await store.delete(sub, key(workspace_id, page.page_id))
+    page.kind, page.title, page.view_key, page.updated_at = "file", title, key_now, func.now()
+    return page
+
+
 def is_page_path(path: str) -> bool:
     """A path in the workspace store that is a page, not one of the workspace's files."""
     return path == FOLDER or path.startswith(FOLDER + "/")
@@ -149,6 +196,8 @@ def _store(request: Request) -> WorkspaceStore:
 async def save(session: AsyncSession, store: WorkspaceStore, sub: str, user_id: str, workspace: UserWorkspace, source_path: str, html: str, title: str) -> WorkspacePage:
     """The document's page, made or written again (its id kept): :class:`ValueError` saying
     what is wrong with it. Commits."""
+    if is_html(source_path):
+        raise ValueError(f"{source_path} is a page itself: write its HTML with write_document, for the person to review and save.")
     data = html.encode("utf-8")
     if not html.strip():
         raise ValueError("Give the page's whole HTML as 'html'.")
@@ -174,7 +223,18 @@ async def forget(session: AsyncSession, store: WorkspaceStore, sub: str, workspa
     """A document deleted: its page goes too (the caller commits)."""
     page = await session.scalar(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace_id, WorkspacePage.source_path == source_path))
     if page is not None:
-        await store.delete(sub, key(workspace_id, page.page_id))
+        if page.kind != "file":
+            await store.delete(sub, key(workspace_id, page.page_id))
+        await session.delete(page)
+
+
+async def forget_under(session: AsyncSession, store: WorkspaceStore, sub: str, workspace_id: str, folder: str) -> None:
+    """A folder deleted: the pages of every document in it go too (the caller commits)."""
+    under = folder.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "/%"
+    pages = (await session.scalars(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace_id, WorkspacePage.source_path.like(under, escape="\\")))).all()
+    for page in pages:
+        if page.kind != "file":
+            await store.delete(sub, key(workspace_id, page.page_id))
         await session.delete(page)
 
 
@@ -243,7 +303,7 @@ async def get_page(page_id: str, request: Request, user: User = Depends(current_
     workspace = await session.get_one(UserWorkspace, page.workspace_id)
     return {
         "id": page.page_id, "workspace_id": page.workspace_id, "workspace_name": workspace.name, "source_path": page.source_path,
-        "title": page.title, "view_url": f"/api/v1/page-view/{page.page_id}/{page.view_key}", "updated_at": page.updated_at,
+        "kind": page.kind, "title": page.title, "view_url": f"/api/v1/page-view/{page.page_id}/{page.view_key}", "updated_at": page.updated_at,
         "share": share_of(request, page),
         "share_refusal": None if (r := await _share_refusal(request, session, user.sub)) is None else {"detail": r.detail, "code": r.code, **r.more},
     }
@@ -292,7 +352,7 @@ async def shared_page(share_key: str, request: Request, session: AsyncSession = 
     page = None if elsewhere or not 0 < len(share_key) <= 64 else await session.scalar(select(WorkspacePage).where(WorkspacePage.share_key == share_key))
     if page is None or page.share_audience != "public" or await _share_refusal(request, session, page.user_id) is not None:
         raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
-    data = await _store(request).read(user_folder(page.user_id), key(page.workspace_id, page.page_id))
+    data = await _store(request).read(user_folder(page.user_id), _where(page))
     if data is None:
         raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
     return HTMLResponse(data, headers={
@@ -316,9 +376,10 @@ async def view_page(
     page = await session.get(WorkspacePage, pid) if pid else None
     if page is None or not hmac.compare_digest(page.view_key.encode(), view_key.encode()):
         raise HTTPException(status_code=404, detail="There is no such page.")
-    data = await _store(request).read(user_folder(page.user_id), key(page.workspace_id, page.page_id))
+    data = await _store(request).read(user_folder(page.user_id), _where(page))
     if data is None:
-        raise HTTPException(status_code=404, detail="The page's file is gone: ask your AI app to write it again.")
+        gone = "The page's file is gone from the workspace." if page.kind == "file" else "The page's file is gone: ask your AI app to write it again."
+        raise HTTPException(status_code=404, detail=gone)
     if theme in THEMES:
         data = themed(data, theme)
     return HTMLResponse(data, headers={
@@ -327,11 +388,23 @@ async def view_page(
 
 
 @router.get("/workspaces/{workspace_id}/page", dependencies=[Depends(require_access)])
-async def document_page(workspace_id: str, path: str = Query(...), user: User = Depends(current_user), session: AsyncSession = Depends(get_session)) -> dict[str, Any]:
-    from apps.cloud.workspaces import _workspace, valid_path
+async def document_page(
+    workspace_id: str, request: Request, path: str = Query(...), user: User = Depends(current_user), session: AsyncSession = Depends(get_session)
+) -> dict[str, Any]:
+    """The document's page; a ``.html`` file written before pages could be made directly gets
+    its page now."""
+    from apps.cloud.workspaces import _sub, _workspace, valid_path
 
     workspace = await _workspace(session, user, workspace_id)
-    page = await session.scalar(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace.workspace_id, WorkspacePage.source_path == valid_path(path)))
+    path = valid_path(path)
+    page = await session.scalar(select(WorkspacePage).where(WorkspacePage.workspace_id == workspace.workspace_id, WorkspacePage.source_path == path))
+    if page is None and is_html(path):
+        store, sub = _store(request), _sub(user)
+        data = await store.read(sub, f"{workspace.workspace_id}/{path}")
+        if data is not None:
+            page = await keep_file(session, store, sub, user.sub, workspace.workspace_id, path, data)
+            await session.commit()
+            await session.refresh(page)
     return {"page": None if page is None else {"id": page.page_id, "title": page.title, "updated_at": page.updated_at}}
 
 
@@ -340,6 +413,8 @@ async def delete_page(page_id: str, request: Request, user: User = Depends(curre
     from apps.cloud.workspaces import _sub
 
     page = await _mine(session, user, page_id)
+    if page.kind == "file":
+        raise HTTPException(status_code=409, detail=f"This page is the file {page.source_path}: delete the file instead.")
     await _store(request).delete(_sub(user), key(page.workspace_id, page.page_id))
     await session.delete(page)
     await session.commit()

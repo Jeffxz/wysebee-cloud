@@ -1220,6 +1220,8 @@ export interface WorkspacePage {
   workspace_id: string;
   workspace_name: string;
   source_path: string;
+  /** "file": a `.html` file that is a page itself (2026-11-27); "view": made by the AI app from a document. */
+  kind?: "file" | "view";
   title: string;
   /** Where it is shown from: its own address, the address its permission, sandboxed there. */
   view_url: string;
