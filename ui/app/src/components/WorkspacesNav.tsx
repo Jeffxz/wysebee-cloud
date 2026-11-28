@@ -217,7 +217,8 @@ export function WorkspacesNav({
               ) : (
                 <FileText size={14} className="shrink-0 opacity-70" aria-hidden />
               )}
-              <span className="truncate">{node.name}</span>
+              {/* A page shows by its name alone: "sales", not "sales.html". */}
+              <span className="truncate">{isHtmlPage(node.path) ? node.name.replace(/\.html$/i, "") : node.name}</span>
             </button>
           </li>
         );

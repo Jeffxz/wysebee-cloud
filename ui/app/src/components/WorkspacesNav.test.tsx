@@ -14,7 +14,7 @@ import { dialogs } from "./common/confirm";
 const workspace = (id: string, name: string) => ({ id, name, resource_url: `https://acct/user-workspaces/me/${name}/` });
 const tree = {
   ...workspace("p1", "Docs"),
-  files: [{ path: "README.md", size: 9 }, { path: "guide/setup.md", size: 5 }],
+  files: [{ path: "README.md", size: 9 }, { path: "guide/setup.md", size: 5 }, { path: "sales.html", size: 5 }],
   folders: ["guide"],
 };
 
@@ -76,6 +76,10 @@ describe("WorkspacesNav", () => {
     // Folders first, then files.
     const folder = await screen.findByRole("button", { name: "guide" });
     expect(screen.getByRole("button", { name: "README.md" })).toBeTruthy();
+    // A page (.html) by its name alone.
+    await userEvent.click(screen.getByRole("button", { name: "sales" }));
+    expect(onSelect).toHaveBeenCalledWith("p1", "sales.html");
+    expect(screen.queryByText("sales.html")).toBeNull();
     expect(screen.queryByRole("button", { name: "setup.md" })).toBeNull();
     await userEvent.click(folder);
     await userEvent.click(screen.getByRole("button", { name: "setup.md" }));
