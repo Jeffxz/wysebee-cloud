@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Code, Eye, FilePlus2, FolderKanban, FolderPlus, Globe, LayoutTemplate, Pencil, Plus, Save, Trash2 } from "lucide-react";
+import { Code, Eye, FilePlus2, FolderKanban, FolderOpen, FolderPlus, Globe, LayoutTemplate, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { DocumentPage } from "./PageView";
 import { Tip } from "./common/Tip";
 import { btn, btnPrimary, cn, errorBanner, inputBase, loading, muted } from "@shared/cn";
@@ -16,6 +16,7 @@ import {
   pagePath,
   reasonOf,
   removeFile,
+  removeFolder,
   removeWorkspace,
   starterPage,
   useWorkspaces,
@@ -216,19 +217,41 @@ function NameForm({ label, placeholder, onSubmit, onCancel }: { label: string; p
   );
 }
 
-/** A workspace with no file open: where it is kept, and what can be added to it. */
-function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (workspace: string | null, file?: string) => void; me: string }) {
+/**
+ * A workspace with no file open: where it is kept, and what can be added to it. With a `folder`
+ * (`?folder=`, picked in the menu): that folder — where it is, what it holds, and adding to it.
+ */
+function Overview({
+  workspaceId,
+  folder = "",
+  onOpen,
+  me,
+}: {
+  workspaceId: string;
+  folder?: string;
+  onOpen: (workspace: string | null, file?: string, folder?: string) => void;
+  me: string;
+}) {
   const { t } = useTranslation();
   const { items, trees } = useWorkspaces();
   const workspace = items?.find((p) => p.id === workspaceId);
   const tree = trees[workspaceId];
   const [adding, setAdding] = useState<"document" | "page" | "folder" | null>(null);
+  useEffect(() => setAdding(null), [folder]);
 
   useEffect(() => {
     if (!tree) loadTree(workspaceId).catch((e) => toast.error(reasonOf(e)));
   }, [workspaceId, tree]);
 
   if (!workspace) return <div className={loading}>{items === null ? t("workspaces.loading") : t("workspaces.notFound")}</div>;
+
+  // What the folder shown holds (all of it, however deep); the workspace's root holds everything.
+  const prefix = folder ? `${folder}/` : "";
+  const files = tree?.files.filter((f) => f.path.startsWith(prefix)) ?? [];
+  const folders = tree?.folders.filter((f) => f.startsWith(prefix)) ?? [];
+  const folderThere = !folder || !tree || tree.folders.includes(folder) || files.length > 0 || folders.length > 0;
+  const parts = folder ? folder.split("/") : [];
+  const parent = parts.slice(0, -1).join("/");
 
   const remove = async () => {
     if (!(await dialogs.confirm(t("workspaces.overview.deleteConfirm", { name: workspace.name }), { action: "delete" }))) return;
@@ -240,19 +263,55 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
     }
   };
 
+  const removeThisFolder = async () => {
+    if (!(await dialogs.confirm(t("workspaces.nav.deleteFolderConfirm", { name: folder }), { action: "delete" }))) return;
+    try {
+      await removeFolder(workspaceId, folder);
+      onOpen(workspaceId, undefined, parent || undefined);
+    } catch (e) {
+      toast.error(reasonOf(e));
+    }
+  };
+
+  if (!folderThere) return <div className={loading}>{t("workspaces.overview.folderNotFound")}</div>;
+
   return (
     <div data-track-private>
+      {folder && (
+        <nav aria-label={t("workspaces.overview.path")} className={cn("mb-1 flex flex-wrap items-center gap-1 text-xs", muted)}>
+          <button type="button" className="hover:underline" onClick={() => onOpen(workspaceId)}>
+            {workspace.name}
+          </button>
+          {parts.slice(0, -1).map((part, i) => (
+            <span key={i} className="flex items-center gap-1">
+              <span aria-hidden>/</span>
+              <button type="button" className="hover:underline" onClick={() => onOpen(workspaceId, undefined, parts.slice(0, i + 1).join("/"))}>
+                {part}
+              </button>
+            </span>
+          ))}
+        </nav>
+      )}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-xl font-semibold">{workspace.name}</h2>
-          <MadeBy made={workspace.created_by} changed={workspace.updated_by} me={me} className={cn("mt-1 text-xs", muted)} />
+          <h2 className="flex items-center gap-2 truncate text-xl font-semibold">
+            {folder && <FolderOpen size={18} className="shrink-0 opacity-70" aria-hidden />}
+            {folder ? parts[parts.length - 1] : workspace.name}
+          </h2>
+          {!folder && <MadeBy made={workspace.created_by} changed={workspace.updated_by} me={me} className={cn("mt-1 text-xs", muted)} />}
         </div>
-        <button type="button" className={cn(btn, "text-red-700 dark:text-red-300")} onClick={() => void remove()} data-track="Workspaces delete workspace">
-          <Trash2 size={14} aria-hidden /> {t("workspaces.overview.delete")}
-        </button>
+        {folder ? (
+          <button type="button" className={cn(btn, "text-red-700 dark:text-red-300")} onClick={() => void removeThisFolder()} data-track="Workspaces delete folder page">
+            <Trash2 size={14} aria-hidden /> {t("workspaces.overview.deleteFolder")}
+          </button>
+        ) : (
+          <button type="button" className={cn(btn, "text-red-700 dark:text-red-300")} onClick={() => void remove()} data-track="Workspaces delete workspace">
+            <Trash2 size={14} aria-hidden /> {t("workspaces.overview.delete")}
+          </button>
+        )}
       </div>
       <p className={cn("mt-4 text-sm", muted)}>
-        {tree ? t("workspaces.overview.counts", { files: tree.files.length, folders: tree.folders.length }) : t("workspaces.loading")}
+        {tree ? t("workspaces.overview.counts", { files: files.length, folders: folders.length }) : t("workspaces.loading")}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" className={btn} onClick={() => setAdding("document")} data-track="Workspaces new document">
@@ -271,7 +330,7 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
           placeholder={t("workspaces.overview.documentPlaceholder")}
           onCancel={() => setAdding(null)}
           onSubmit={async (value) => {
-            const path = pagePath("", value);
+            const path = pagePath(folder, value);
             const title = path.split("/").pop()!.replace(/\.[^.]+$/, "");
             await writeFile(workspaceId, path, `# ${title}\n`);
             setAdding(null);
@@ -285,7 +344,7 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
           placeholder={t("workspaces.overview.pagePlaceholder")}
           onCancel={() => setAdding(null)}
           onSubmit={async (value) => {
-            const path = htmlPagePath("", value);
+            const path = htmlPagePath(folder, value);
             await writeFile(workspaceId, path, starterPage(path.split("/").pop()!.replace(/\.html$/i, "")));
             setAdding(null);
             onOpen(workspaceId, path);
@@ -298,7 +357,7 @@ function Overview({ workspaceId, onOpen, me }: { workspaceId: string; onOpen: (w
           placeholder={t("workspaces.overview.folderPlaceholder")}
           onCancel={() => setAdding(null)}
           onSubmit={async (value) => {
-            await addFolder(workspaceId, value.replace(/^\/+|\/+$/g, ""));
+            await addFolder(workspaceId, prefix + value.replace(/^\/+|\/+$/g, ""));
             setAdding(null);
           }}
         />
@@ -495,6 +554,7 @@ function Editor({ workspaceId, path, onOpen, onOpenSkill }: { workspaceId: strin
 export function WorkspacesView({
   workspace,
   file,
+  folder = null,
   start = false,
   onOpen,
   onOpenSkill,
@@ -502,9 +562,11 @@ export function WorkspacesView({
 }: {
   workspace: string | null;
   file: string | null;
+  /** A folder of the workspace to show (`?folder=`), when no file is open. */
+  folder?: string | null;
   /** With none chosen: show the form that starts one (Home's +). */
   start?: boolean;
-  onOpen: (workspace: string | null, file?: string) => void;
+  onOpen: (workspace: string | null, file?: string, folder?: string) => void;
   /** Where to go when the AI app makes a skill while a page is open here. */
   onOpenSkill?: (skill: string, file: string) => void;
   /** The signed-in person's email: they are "you" in who made and changed a workspace. */
@@ -517,6 +579,6 @@ export function WorkspacesView({
 
   if (error && items === null) return <div className={errorBanner}>{error}</div>;
   if (!workspace) return <WorkspacesList onOpen={onOpen} start={start} me={currentUserEmail} />;
-  if (!file) return <Overview workspaceId={workspace} onOpen={onOpen} me={currentUserEmail} />;
+  if (!file) return <Overview workspaceId={workspace} folder={folder ?? ""} onOpen={onOpen} me={currentUserEmail} />;
   return <Editor key={`${workspace}/${file}`} workspaceId={workspace} path={file} onOpen={onOpen} onOpenSkill={onOpenSkill} />;
 }

@@ -147,6 +147,16 @@ describe("App", () => {
     h.workspaces = [{ id: "p 1", name: "Design Document" }];
     await go("#/workspaces/p%201?file=guide%2FMy%20Setup.md&again=1");
     await waitFor(() => expect(screen.getByRole("heading").textContent).toBe("Design Document"));
+    // A folder of it, by its route; a file named too wins.
+    await go("#/workspaces/p%201?folder=guide%2Fhow");
+    await waitFor(() => expect(h.props.WorkspacesView).toMatchObject({ workspace: "p 1", file: null, folder: "guide/how" }));
+    expect(h.props.WorkspacesNav).toMatchObject({ selectedFolder: "guide/how" });
+    await act(async () => {
+      await h.props.WorkspacesNav.onSelect("p 1", undefined, "notes");
+    });
+    await waitFor(() => expect(window.location.hash).toBe("#/workspaces/p%201?folder=notes"));
+    await go("#/workspaces/p%201?file=a.md&folder=notes");
+    await waitFor(() => expect(h.props.WorkspacesView).toMatchObject({ file: "a.md", folder: null }));
     // A workspace's own page keeps Workspaces (it shows the name itself).
     await go("#/workspaces/p%201");
     await waitFor(() => expect(screen.getByRole("heading").textContent).toBe("Workspaces"));

@@ -39,14 +39,15 @@ function setup(selectedWorkspace: string | null = null, selectedFile: string | n
   const onSelect = vi.fn();
   // The page's route follows what the menu picks, as App's does.
   function Harness() {
-    const [at, setAt] = useState<[string | null, string | null]>([selectedWorkspace, selectedFile]);
+    const [at, setAt] = useState<[string | null, string | null, string | null]>([selectedWorkspace, selectedFile, null]);
     return (
       <WorkspacesNav
         selectedWorkspace={at[0]}
         selectedFile={at[1]}
-        onSelect={(p, file) => {
-          onSelect(...(file === undefined ? [p] : [p, file]));
-          setAt([p, file ?? null]);
+        selectedFolder={at[2]}
+        onSelect={(p, file, folder) => {
+          onSelect(...(folder !== undefined ? [p, file, folder] : file === undefined ? [p] : [p, file]));
+          setAt([p, file ?? null, folder ?? null]);
         }}
       />
     );
@@ -81,9 +82,21 @@ describe("WorkspacesNav", () => {
     expect(onSelect).toHaveBeenCalledWith("p1", "sales.html");
     expect(screen.queryByText("sales.html")).toBeNull();
     expect(screen.queryByRole("button", { name: "setup.md" })).toBeNull();
+    // A folder opens onto its own page, unfolded and marked; shown already, it folds away.
+    await userEvent.click(folder);
+    expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "guide");
+    expect(folder.getAttribute("aria-current")).toBe("page");
+    expect(docs.getAttribute("aria-current")).toBeNull();
+    await userEvent.click(folder);
+    expect(screen.queryByRole("button", { name: "setup.md" })).toBeNull();
     await userEvent.click(folder);
     await userEvent.click(screen.getByRole("button", { name: "setup.md" }));
     expect(onSelect).toHaveBeenCalledWith("p1", "guide/setup.md");
+    expect(folder.getAttribute("aria-current")).toBeNull();
+    // With a file open, the folder's row opens the folder again, still unfolded.
+    await userEvent.click(folder);
+    expect(onSelect).toHaveBeenLastCalledWith("p1", undefined, "guide");
+    expect(screen.getByRole("button", { name: "setup.md" })).toBeTruthy();
     await userEvent.click(folder);
     expect(screen.queryByRole("button", { name: "setup.md" })).toBeNull();
     // With a file open, the workspace's row opens its overview, still unfolded.
@@ -102,8 +115,8 @@ describe("WorkspacesNav", () => {
     setup("p1", "guide/setup.md");
     const active = await screen.findByRole("button", { name: "README.md" });
     expect(active.getAttribute("aria-current")).toBeNull();
-    await userEvent.click(screen.getByRole("button", { name: "guide" }));
-    expect(screen.getByRole("button", { name: "setup.md" }).getAttribute("aria-current")).toBe("page");
+    // The folder the file is in is unfolded to show it.
+    expect((await screen.findByRole("button", { name: "setup.md" })).getAttribute("aria-current")).toBe("page");
     const toastError = vi.spyOn(toast, "error");
     const other = screen.getByRole("button", { name: "Other" });
     await userEvent.click(other);

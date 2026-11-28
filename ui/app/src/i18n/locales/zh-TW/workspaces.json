@@ -32,7 +32,10 @@
     },
     "overview": {
       "delete": "刪除工作區",
+      "deleteFolder": "刪除資料夾",
       "deleteConfirm": "刪除工作區「{{name}}」及其所有檔案？此操作無法復原。",
+      "folderNotFound": "此資料夾已不存在。",
+      "path": "此資料夾的位置",
       "counts": "{{folders}} 個資料夾中共 {{files}} 個檔案。在選單中選擇一個檔案即可撰寫。",
       "newDocument": "新增文件",
       "newPage": "新增頁面",

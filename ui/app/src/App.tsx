@@ -74,7 +74,8 @@ type Route =
   // The person's workspaces: one opened, and a file of it in the editor.
   // A rich HTML page the AI app made from a document (2026-11-17): `#/pages/<id>`, in Workspaces.
   // `#/workspaces?new=1`: all of them, with the form that starts one open (Home's +).
-  | { section: "workspaces"; workspace?: string; file?: string; page?: string; start?: boolean }
+  // `#/workspaces/<id>?folder=<path>`: a folder of one, what it holds and adding to it.
+  | { section: "workspaces"; workspace?: string; file?: string; folder?: string; page?: string; start?: boolean }
   // The person's skills: one opened, and a file of it in the editor (2026-11-17).
   | { section: "skills"; skill?: string; file?: string }
   // The person's tools and the kinds they can make, each given to an agent with its + (2026-11-15).
@@ -124,8 +125,9 @@ function parseRoute(hash: string): Route {
       return sub ? { section: "workspaces", page: decodeURIComponent(sub) } : defaultRoute("workspaces");
     case "workspaces": {
       const file = params.get("file");
+      const folder = params.get("folder");
       if (!sub) return params.get("new") ? { section: "workspaces", start: true } : { section: "workspaces" };
-      return { section: "workspaces", workspace: decodeURIComponent(sub), ...(file ? { file } : {}) };
+      return { section: "workspaces", workspace: decodeURIComponent(sub), ...(file ? { file } : folder ? { folder } : {}) };
     }
     case "settings":
       // Connections moved to the rail, as Devices: its old addresses open it.
@@ -155,7 +157,8 @@ function routeToHash(route: Route): string {
   if (route.section === "tools") return route.tab ? `/tools/${route.tab}` : "/tools";
   if (route.section === "workspaces")
     return route.workspace
-      ? `/workspaces/${encodeURIComponent(route.workspace)}` + (route.file ? `?file=${encodeURIComponent(route.file)}` : "")
+      ? `/workspaces/${encodeURIComponent(route.workspace)}` +
+        (route.file ? `?file=${encodeURIComponent(route.file)}` : route.folder ? `?folder=${encodeURIComponent(route.folder)}` : "")
       : route.start
         ? "/workspaces?new=1"
         : "/workspaces";
@@ -304,9 +307,9 @@ export default function App() {
 
   // Leaving a workspace file with edits not saved asks first.
   const leaveWorkspaceFile = async () => !hasUnsavedWorkspaceEdits() || (await dialogs.confirm(t("workspaces.editor.leaveConfirm"), { action: "leave" }));
-  const openWorkspace = async (workspace: string | null, file?: string) => {
+  const openWorkspace = async (workspace: string | null, file?: string, folder?: string) => {
     if (!(await leaveWorkspaceFile())) return;
-    navigate(workspace ? { section: "workspaces", workspace, ...(file ? { file } : {}) } : defaultRoute("workspaces"));
+    navigate(workspace ? { section: "workspaces", workspace, ...(file ? { file } : folder ? { folder } : {}) } : defaultRoute("workspaces"));
   };
 
   // Leaving a skill's file with edits not saved asks first.
@@ -376,7 +379,7 @@ export default function App() {
       {/* The Agents page's own menu: the agents. */}
       {/* The Workspaces menu: every workspace, and each one's folder structure. */}
       {route.section === "workspaces" && (
-        <WorkspacesNav selectedWorkspace={route.workspace ?? null} selectedFile={route.file ?? null} onSelect={openWorkspace} />
+        <WorkspacesNav selectedWorkspace={route.workspace ?? null} selectedFile={route.file ?? null} selectedFolder={route.folder ?? null} onSelect={openWorkspace} />
       )}
       {/* The Skills menu: every skill, and each one's files and folders. */}
       {route.section === "skills" && <SkillsNav selectedSkill={route.skill ?? null} selectedFile={route.file ?? null} onSelect={openSkill} />}
@@ -416,7 +419,7 @@ export default function App() {
         )}
 
         {route.section === "workspaces" && (
-          <WorkspacesView workspace={route.workspace ?? null} file={route.file ?? null} start={!!route.start} onOpen={openWorkspace} onOpenSkill={openSkillFromWorkspace} currentUserEmail={meEmail} />
+          <WorkspacesView workspace={route.workspace ?? null} file={route.file ?? null} folder={route.folder ?? null} start={!!route.start} onOpen={openWorkspace} onOpenSkill={openSkillFromWorkspace} currentUserEmail={meEmail} />
         )}
         {route.section === "skills" && <SkillsView skill={route.skill ?? null} file={route.file ?? null} onOpen={openSkill} currentUserEmail={meEmail} />}
         {route.section === "activity" && <ActivityView agent={route.agent ?? null} onItems={setActivityItems} />}

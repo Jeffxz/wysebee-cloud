@@ -32,7 +32,10 @@
     },
     "overview": {
       "delete": "ワークスペースを削除",
+      "deleteFolder": "フォルダを削除",
       "deleteConfirm": "ワークスペース「{{name}}」とそのすべてのファイルを削除しますか？元に戻せません。",
+      "folderNotFound": "このフォルダはもうありません。",
+      "path": "このフォルダの場所",
       "counts": "{{folders}} 個のフォルダーに {{files}} 個のファイル。メニューでファイルを選ぶと書き込めます。",
       "newDocument": "新しいドキュメント",
       "newPage": "新しいページ",
