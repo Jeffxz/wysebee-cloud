@@ -32,7 +32,10 @@
     },
     "overview": {
       "delete": "Delete workspace",
+      "deleteFolder": "Delete folder",
       "deleteConfirm": "Delete the workspace “{{name}}” and all its files? This cannot be undone.",
+      "folderNotFound": "This folder is not there any more.",
+      "path": "Where this folder is",
       "counts": "{{files}} files in {{folders}} folders. Pick a file in the menu to write in it.",
       "newDocument": "New document",
       "newPage": "New page",

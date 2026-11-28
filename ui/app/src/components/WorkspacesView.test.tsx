@@ -22,7 +22,7 @@ beforeEach(() => {
 // After the reset above, which would undo its spy.
 useFetchTransport();
 
-function setup(p: { workspace?: string | null; file?: string | null; start?: boolean } = {}, routes: Record<string, unknown> = {}) {
+function setup(p: { workspace?: string | null; file?: string | null; folder?: string | null; start?: boolean } = {}, routes: Record<string, unknown> = {}) {
   const f = mockFetch({
     "GET /api/v1/workspaces": { workspaces: [workspace("p1", "Docs")] },
     "GET /api/v1/workspaces/p1": tree,
@@ -37,7 +37,7 @@ function setup(p: { workspace?: string | null; file?: string | null; start?: boo
     ...routes,
   });
   const onOpen = vi.fn();
-  const props = { workspace: p.workspace ?? null, file: p.file ?? null, start: p.start, onOpen, currentUserEmail: "me@x" };
+  const props = { workspace: p.workspace ?? null, file: p.file ?? null, folder: p.folder ?? null, start: p.start, onOpen, currentUserEmail: "me@x" };
   const utils = render(<WorkspacesView {...props} />);
   return { f, onOpen, props, ...utils };
 }
@@ -128,6 +128,67 @@ describe("WorkspacesView", () => {
     await userEvent.click(screen.getByRole("button", { name: "New document" }));
     await userEvent.type(screen.getByRole("textbox", { name: "Document name" }), "{Escape}");
     expect(screen.queryByRole("textbox", { name: "Document name" })).toBeNull();
+  });
+
+  it("shows a folder picked in the menu: where it is, what it holds, and adds inside it", async () => {
+    const deep = { ...tree, files: [{ path: "README.md", size: 9 }, { path: "guide/a.md", size: 1 }, { path: "guide/how/b.md", size: 1 }], folders: ["guide", "guide/how"] };
+    const { onOpen, f } = setup({ workspace: "p1", folder: "guide/how" }, {
+      "GET /api/v1/workspaces/p1": deep,
+      "PUT /api/v1/workspaces/p1/files/guide/how/c.md": { path: "guide/how/c.md", size: 4 },
+      "POST /api/v1/workspaces/p1/folders/guide/how/more": reply(201, { path: "guide/how/more" }),
+      "DELETE /api/v1/workspaces/p1/folders/guide/how": reply(204),
+    });
+    expect(await screen.findByRole("heading", { name: "how" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Delete workspace" })).toBeNull();
+    expect(await screen.findByText(/1 files in 0 folders/)).toBeTruthy();
+    // Its path leads back up: the workspace, then each folder it is in.
+    const path = screen.getByRole("navigation", { name: "Where this folder is" });
+    await userEvent.click(within(path).getByRole("button", { name: "guide" }));
+    expect(onOpen).toHaveBeenLastCalledWith("p1", undefined, "guide");
+    await userEvent.click(within(path).getByRole("button", { name: "Docs" }));
+    expect(onOpen).toHaveBeenLastCalledWith("p1");
+
+    await userEvent.click(screen.getByRole("button", { name: "New document" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Document name" }), "c");
+    await userEvent.click(screen.getByRole("button", { name: "Create" }));
+    await waitFor(() => expect(onOpen).toHaveBeenLastCalledWith("p1", "guide/how/c.md"));
+    expect(f.to("PUT /api/v1/workspaces/p1/files/guide/how/c.md")).toHaveLength(1);
+
+    await userEvent.click(screen.getByRole("button", { name: "New folder" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Folder name" }), "more");
+    await userEvent.click(screen.getByRole("button", { name: "Create" }));
+    await waitFor(() => expect(f.to("POST /api/v1/workspaces/p1/folders/guide/how/more")).toHaveLength(1));
+
+    vi.spyOn(dialogs, "confirm").mockResolvedValue(true);
+    await userEvent.click(screen.getByRole("button", { name: "Delete folder" }));
+    await waitFor(() => expect(f.to("DELETE /api/v1/workspaces/p1/folders/guide/how")).toHaveLength(1));
+    await waitFor(() => expect(onOpen).toHaveBeenLastCalledWith("p1", undefined, "guide"));
+  });
+
+  it("deletes a folder at the top from its page, when confirmed, going back to the workspace", async () => {
+    const { onOpen, f } = setup({ workspace: "p1", folder: "guide" }, {
+      "DELETE /api/v1/workspaces/p1/folders/guide": (() => {
+        let n = 0;
+        return () => (++n === 1 ? reply(500, { detail: "Boom." }) : reply(204));
+      })(),
+    });
+    expect(await screen.findByRole("heading", { name: "guide" })).toBeTruthy();
+    const confirm = vi.spyOn(dialogs, "confirm").mockResolvedValue(false);
+    const del = screen.getByRole("button", { name: "Delete folder" });
+    await userEvent.click(del);
+    expect(f.to("DELETE /api/v1/workspaces/p1/folders/guide")).toHaveLength(0);
+    confirm.mockResolvedValue(true);
+    const toastError = vi.spyOn(toast, "error");
+    await userEvent.click(del);
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith("Boom."));
+    expect(onOpen).not.toHaveBeenCalled();
+    await userEvent.click(del);
+    await waitFor(() => expect(onOpen).toHaveBeenCalledWith("p1", undefined, undefined));
+  });
+
+  it("says when the folder asked for is not there", async () => {
+    setup({ workspace: "p1", folder: "gone" });
+    expect(await screen.findByText("This folder is not there any more.")).toBeTruthy();
   });
 
   it("deletes a workspace when confirmed", async () => {

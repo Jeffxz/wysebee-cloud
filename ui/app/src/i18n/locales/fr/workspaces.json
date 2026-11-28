@@ -32,7 +32,10 @@
     },
     "overview": {
       "delete": "Supprimer l’espace de travail",
+      "deleteFolder": "Supprimer le dossier",
       "deleteConfirm": "Supprimer l’espace de travail « {{name}} » et tous ses fichiers ? Cette action est irréversible.",
+      "folderNotFound": "Ce dossier n’existe plus.",
+      "path": "Emplacement de ce dossier",
       "counts": "{{files}} fichiers dans {{folders}} dossiers. Choisissez un fichier dans le menu pour y écrire.",
       "newDocument": "Nouveau document",
       "newPage": "Nouvelle page",

@@ -50,11 +50,14 @@ interface AddingIn {
 export function WorkspacesNav({
   selectedWorkspace,
   selectedFile,
+  selectedFolder = null,
   onSelect,
 }: {
   selectedWorkspace: string | null;
   selectedFile: string | null;
-  onSelect: (workspace: string | null, file?: string) => void;
+  /** The folder shown in the page (`?folder=`), when no file is open. */
+  selectedFolder?: string | null;
+  onSelect: (workspace: string | null, file?: string, folder?: string) => void;
 }) {
   const { t } = useTranslation();
   const { items, error, trees } = useWorkspaces();
@@ -93,6 +96,18 @@ export function WorkspacesNav({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWorkspace]);
 
+  // The folder shown is open in the menu, and every folder it (or the file shown) is in.
+  useEffect(() => {
+    const within = selectedFolder ?? (selectedFile?.includes("/") ? selectedFile.slice(0, selectedFile.lastIndexOf("/")) : null);
+    if (!selectedWorkspace || !within) return;
+    setOpen((prev) => {
+      const next = new Set(prev).add(selectedWorkspace);
+      const parts = within.split("/");
+      for (let i = 1; i <= parts.length; i++) next.add(`${selectedWorkspace}/${parts.slice(0, i).join("/")}`);
+      return next;
+    });
+  }, [selectedWorkspace, selectedFolder, selectedFile]);
+
   const toggle = (key: string) =>
     setOpen((prev) => {
       const next = new Set(prev);
@@ -103,13 +118,25 @@ export function WorkspacesNav({
   // A workspace not shown (or shown with a file open) is opened onto its overview; the one
   // already shown folds away or out.
   const openWorkspace = (id: string) => {
-    if (selectedWorkspace !== id || selectedFile) {
+    if (selectedWorkspace !== id || selectedFile || selectedFolder) {
       setOpen((prev) => new Set(prev).add(id));
       onSelect(id);
       return;
     }
     if (!open.has(id) && !trees[id]) loadTree(id).catch((e) => toast.error(reasonOf(e)));
     toggle(id);
+  };
+
+  // A folder not shown is opened onto its own page (what it holds, adding to it); the one
+  // already shown folds away or out, as a workspace does.
+  const openFolder = (workspace: string, path: string) => {
+    const key = `${workspace}/${path}`;
+    if (selectedWorkspace !== workspace || selectedFile || selectedFolder !== path) {
+      setOpen((prev) => new Set(prev).add(key));
+      onSelect(workspace, undefined, path);
+      return;
+    }
+    toggle(key);
   };
 
   const create = async () => {
@@ -191,7 +218,8 @@ export function WorkspacesNav({
     if (!(await dialogs.confirm(t("workspaces.nav.deleteFolderConfirm", { name: path }), { action: "delete" }))) return;
     try {
       await removeFolder(workspace, path);
-      if (selectedWorkspace === workspace && selectedFile?.startsWith(path + "/")) onSelect(workspace);
+      const inside = (p: string | null) => !!p && (p === path || p.startsWith(path + "/"));
+      if (selectedWorkspace === workspace && (selectedFile?.startsWith(path + "/") || inside(selectedFolder))) onSelect(workspace);
     } catch (e) {
       toast.error(reasonOf(e));
     }
@@ -226,11 +254,19 @@ export function WorkspacesNav({
       const expanded = open.has(key);
       const menuOpen = menuFor === key;
       const naming = addingIn?.workspace === workspace && addingIn.folder === node.path ? addingIn : null;
+      const shown = selectedWorkspace === workspace && !selectedFile && selectedFolder === node.path;
       const childIndent = { paddingLeft: `${0.5 + (depth + 1) * 0.85}rem` };
       return (
         <li key={key} className="group/folder relative">
           <div className="relative">
-            <button type="button" className={cn(row, "pr-14")} style={indent} onClick={() => toggle(key)} aria-expanded={expanded}>
+            <button
+              type="button"
+              className={cn(row, "pr-14", shown && activeRow)}
+              style={indent}
+              onClick={() => openFolder(workspace, node.path)}
+              aria-expanded={expanded}
+              aria-current={shown ? "page" : undefined}
+            >
               <ChevronRight size={14} className={cn("shrink-0 transition-transform", expanded && "rotate-90")} aria-hidden />
               {expanded ? <FolderOpen size={14} className="shrink-0 opacity-70" aria-hidden /> : <Folder size={14} className="shrink-0 opacity-70" aria-hidden />}
               <span className="truncate">{node.name}</span>
@@ -391,10 +427,10 @@ export function WorkspacesNav({
                 <div className="group/workspace relative">
                   <button
                     type="button"
-                    className={cn(row, "pr-8", selectedWorkspace === workspace.id && !selectedFile && activeRow)}
+                    className={cn(row, "pr-8", selectedWorkspace === workspace.id && !selectedFile && !selectedFolder && activeRow)}
                     onClick={() => openWorkspace(workspace.id)}
                     aria-expanded={expanded}
-                    aria-current={selectedWorkspace === workspace.id && !selectedFile ? "page" : undefined}
+                    aria-current={selectedWorkspace === workspace.id && !selectedFile && !selectedFolder ? "page" : undefined}
                   >
                     <ChevronRight size={14} className={cn("shrink-0 transition-transform", expanded && "rotate-90")} aria-hidden />
                     <FolderKanban size={15} className="shrink-0 opacity-80" aria-hidden />
