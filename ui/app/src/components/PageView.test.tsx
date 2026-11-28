@@ -113,6 +113,48 @@ describe("a page the AI app made", () => {
     await new Promise((r) => setTimeout(r, 0));
   });
 
+  it("shows the tools a page may run, counts one the person allows, and says sharing will not run them", async () => {
+    vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "The plan", updated_at: "" } });
+    const fetched = vi.spyOn(api, "fetchPage").mockResolvedValueOnce({ ...PAGE, tool_grants: 1 }).mockResolvedValue({ ...PAGE, tool_grants: 2 });
+    vi.spyOn(api, "runPageTool").mockImplementation(async (_p, c) => (c.allow ? { result: { text: "ok", images: [], is_error: false } } : { ask: { agent: "db", tool: "q", reads: true } }));
+    vi.spyOn(api, "fetchPageToolGrants").mockResolvedValue({ grants: [{ agent: "db", tool: "q", reads: true, current: true }] });
+    vi.spyOn(api, "revokePageToolGrant").mockResolvedValue();
+    render(<DocumentPage workspaceId="w 1" path="guide/plan.md" />);
+    const frame = (await screen.findByTitle("The plan")) as HTMLIFrameElement;
+    expect(screen.getByRole("button", { name: "Tools (1)" })).toBeTruthy();
+    // Sharing says its tools run only for its owner.
+    await userEvent.click(screen.getByRole("button", { name: "Share" }));
+    expect(screen.getByRole("note").textContent).toContain("don’t run for people who open its link");
+    await userEvent.click(screen.getByRole("button", { name: "Done" }));
+    // A tool the person allows always: counted again.
+    act(() => {
+      window.dispatchEvent(new MessageEvent("message", { data: { wysebee: "call", id: 1, agent: "db", tool: "q", arguments: {} }, source: frame.contentWindow }));
+    });
+    await userEvent.click(await screen.findByRole("button", { name: "Always allow on this page" }));
+    expect(await screen.findByRole("button", { name: "Tools (2)" })).toBeTruthy();
+    expect(fetched).toHaveBeenCalledTimes(2);
+    // Taken back from the list: counted down.
+    await userEvent.click(screen.getByRole("button", { name: "Tools (2)" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Stop allowing q" }));
+    expect(await screen.findByRole("button", { name: "Tools (0)" }).catch(() => null)).toBeNull();
+    await waitFor(() => expect(screen.queryByRole("button", { name: /^Tools/ })).toBeNull());
+  });
+
+  it("counts nothing when the page could not be read again after a tool was allowed", async () => {
+    vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "The plan", updated_at: "" } });
+    vi.spyOn(api, "fetchPage").mockResolvedValueOnce({ ...PAGE, tool_grants: 0 }).mockRejectedValue(new Error("HTTP 500: Down."));
+    vi.spyOn(api, "runPageTool").mockImplementation(async (_p, c) => (c.allow ? { result: { text: "ok", images: [], is_error: false } } : { ask: { agent: "db", tool: "q", reads: true } }));
+    render(<DocumentPage workspaceId="w 1" path="guide/plan.md" />);
+    const frame = (await screen.findByTitle("The plan")) as HTMLIFrameElement;
+    const post = vi.spyOn(frame.contentWindow!, "postMessage");
+    act(() => {
+      window.dispatchEvent(new MessageEvent("message", { data: { wysebee: "call", id: 1, agent: "db", tool: "q", arguments: {} }, source: frame.contentWindow }));
+    });
+    await userEvent.click(await screen.findByRole("button", { name: "Allow once" }));
+    await waitFor(() => expect(post).toHaveBeenCalledWith({ wysebee: "result", id: 1, text: "ok", images: [], isError: false }, "*"));
+    expect(screen.queryByRole("button", { name: /^Tools/ })).toBeNull();
+  });
+
   it("is shared with anyone with the link, and no longer, from the editor's Page view", async () => {
     vi.spyOn(api, "fetchDocumentPage").mockResolvedValue({ page: { id: "pg1", title: "", updated_at: "" } });
     vi.spyOn(api, "fetchPage").mockResolvedValue({ ...PAGE, share: null });

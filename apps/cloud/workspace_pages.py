@@ -84,7 +84,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from apps.cloud.extensions import Denied, Refusal, require_access
 from apps.cloud.auth import User, current_user
 from apps.cloud.deps import get_session
-from apps.cloud.models import UserWorkspace, WorkspacePage
+from apps.cloud.models import PageToolGrant, UserWorkspace, WorkspacePage
+from apps.cloud.page_tools import BRIDGE_SCRIPT, STUB_SCRIPT, with_script
 from apps.cloud.workspace_storage import WorkspaceStore
 
 logger = logging.getLogger("wysebee.cloud.workspace_pages")
@@ -305,6 +306,8 @@ async def get_page(page_id: str, request: Request, user: User = Depends(current_
         "id": page.page_id, "workspace_id": page.workspace_id, "workspace_name": workspace.name, "source_path": page.source_path,
         "kind": page.kind, "title": page.title, "view_url": f"/api/v1/page-view/{page.page_id}/{page.view_key}", "updated_at": page.updated_at,
         "share": share_of(request, page),
+        # Tools it may run without asking (apps/cloud/page_tools.py): sharing it says they will not run there.
+        "tool_grants": await session.scalar(select(func.count()).select_from(PageToolGrant).where(PageToolGrant.page_id == page.page_id)),
         "share_refusal": None if (r := await _share_refusal(request, session, user.sub)) is None else {"detail": r.detail, "code": r.code, **r.more},
     }
 
@@ -355,6 +358,8 @@ async def shared_page(share_key: str, request: Request, session: AsyncSession = 
     data = await _store(request).read(user_folder(page.user_id), _where(page))
     if data is None:
         raise HTTPException(status_code=404, detail="There is no such page, or it is no longer shared.")
+    # Nobody's tools run for a visitor: wysebee.callTool refuses (apps/cloud/page_tools.py).
+    data = with_script(data, STUB_SCRIPT)
     return HTMLResponse(data, headers={
         "Content-Security-Policy": PUBLIC_CSP, "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer",
         "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow",
@@ -382,6 +387,8 @@ async def view_page(
         raise HTTPException(status_code=404, detail=gone)
     if theme in THEMES:
         data = themed(data, theme)
+    # Shown to its owner in Wysebee: wysebee.callTool asks the web app framing it (apps/cloud/page_tools.py).
+    data = with_script(data, BRIDGE_SCRIPT)
     return HTMLResponse(data, headers={
         "Content-Security-Policy": VIEW_CSP, "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer", "Cache-Control": "no-store",
     })

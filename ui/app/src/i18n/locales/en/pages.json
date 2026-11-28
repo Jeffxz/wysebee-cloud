@@ -23,7 +23,25 @@
       "live": "The link always shows the page as it is now: when your AI app writes it again, people see the new version. Choose Only you and the link stops working.",
       "openLink": "Open link",
       "seePlans": "See plans",
-      "done": "Done"
+      "done": "Done",
+      "noTools": "This page’s tools run only for you, in Wysebee: they don’t run for people who open its link."
+    },
+    "tools": {
+      "ask": "Let this page use a tool?",
+      "wants": "“{{page}}” wants to run {{tool}} from @{{agent}}.",
+      "reads": "It only reads: it changes nothing.",
+      "changes": "It can change something — for example act in your browser or write to a database.",
+      "with": "With",
+      "once": "Allow once",
+      "always": "Always allow on this page",
+      "untilChanged": "Allow until this page changes",
+      "deny": "Don’t allow",
+      "button": "Tools ({{count}})",
+      "title": "Tools this page may use without asking",
+      "readsShort": "reads",
+      "changesShort": "changes",
+      "asksAgain": "asks again",
+      "revoke": "Stop allowing {{tool}}"
     }
   }
 }

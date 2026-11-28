@@ -880,6 +880,29 @@ refuses a `.html` file). Each save keeps its page (`workspace_pages.kind = "file
 file's `<title>`), with a new view address and its public address, if shared, kept. Deleting the
 file, or its folder, deletes the page; `DELETE /api/v1/pages/{id}` answers 409 for one.
 
+### Pages run the person's tools
+
+**Added 2026-11-28** (`apps/cloud/page_tools.py`, `ui/app/src/components/PageTools.tsx`,
+migration 0086). A page shown to its owner in Wysebee gets `wysebee.callTool(agent, tool, args)`,
+which resolves to `{text, images, isError}` — so a page can load live data from an agent's tool
+(a SQL query, a browser snapshot) and filter or chart it in its own script. The page itself still
+has no network and no origin: the call is a message to the web app framing it, which takes it only
+from that frame, runs the tool with the person's sign-in and posts the answer back.
+
+The person approves each tool the first time: **Allow once**, **Always allow on this page** (a
+tool that only reads), or **Allow until this page changes** (one that can change something: the
+grant keeps the page's view key, so a page written again asks again). The page's **Tools** button
+lists what it may run and takes a grant back. Calls run as `call_agent_read_tool` /
+`call_agent_tool` do (the agent on for AI apps, read-only tools run read-only, a credit each),
+at most 30 a page a minute. At its public address (`/s/<key>`) a page's calls are refused, and
+the share dialog says so.
+
+| Route | |
+|---|---|
+| `POST /api/v1/pages/{id}/tool-calls` | `{agent, tool, arguments, view_key, allow?}` → `{text, images, is_error}`; 403 `{code: "needs_approval", agent, tool, reads}`; 409 when `view_key` is not the page's now; 429 past the rate |
+| `GET /api/v1/pages/{id}/tool-grants` | `{grants: [{agent, tool, reads, current}]}` |
+| `DELETE /api/v1/pages/{id}/tool-grants/{agent}/{tool}` | 204 |
+
 ### Sharing a page with everyone
 
 **Added 2026-11-25** (`apps/cloud/workspace_pages.py`, `ui/app/src/components/PageShareDialog.tsx`,

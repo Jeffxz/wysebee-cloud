@@ -1231,6 +1231,8 @@ export interface WorkspacePage {
   /** Why its owner may not share it publicly — e.g. the hosted service's Free plan
    * (2026-11-27): the server's sentence; null or absent when they may. */
   share_refusal?: { detail: string; code: string; billing_url?: string } | null;
+  /** How many tools it may run without asking (apps/cloud/page_tools.py). */
+  tool_grants?: number;
 }
 
 /** Who a page is shared with: everyone, for now (friends and colleagues to come). */
@@ -1250,6 +1252,51 @@ export function fetchPage(id: string): Promise<WorkspacePage> {
 /** Share the page: anyone with its address sees it, no sign-in needed. */
 export function sharePage(id: string, audience: ShareAudience): Promise<PageShare> {
   return authedPut<PageShare>(`/api/v1/pages/${encodeURIComponent(id)}/share`, { audience });
+}
+
+/** A tool's answer to a page (apps/cloud/page_tools.py): its text and pictures. */
+export interface PageToolResult {
+  text: string;
+  images: { media_type: string; data: string }[];
+  is_error: boolean;
+}
+
+/** What a page asked to run that the person has not allowed yet: ask them, then call again with `allow`. */
+export interface PageToolAsk {
+  agent: string;
+  tool: string;
+  /** Only reads; else it can change something. */
+  reads: boolean;
+}
+
+/** Run one of the person's tools for a page (`wysebee.callTool`): its answer, or what to ask the person. */
+export async function runPageTool(
+  pageId: string,
+  call: { agent: string; tool: string; arguments: Record<string, unknown>; view_key: string; allow?: "once" | "always" },
+): Promise<{ result: PageToolResult } | { ask: PageToolAsk }> {
+  const res = await authedFetch(`/api/v1/pages/${encodeURIComponent(pageId)}/tool-calls`, { method: "POST", body: JSON.stringify(call) });
+  if (res.status === 403) {
+    const body = await res.clone().json().catch(() => null);
+    if (body?.code === "needs_approval") return { ask: { agent: body.agent, tool: body.tool, reads: !!body.reads } };
+  }
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await readErrorDetail(res)}`);
+  return { result: (await res.json()) as PageToolResult };
+}
+
+/** A tool a page may run without asking; `current` false: one that changes something, allowed before the page was written again. */
+export interface PageToolGrant {
+  agent: string;
+  tool: string;
+  reads: boolean;
+  current: boolean;
+}
+
+export function fetchPageToolGrants(pageId: string): Promise<{ grants: PageToolGrant[] }> {
+  return authedGet(`/api/v1/pages/${encodeURIComponent(pageId)}/tool-grants`);
+}
+
+export function revokePageToolGrant(pageId: string, agent: string, tool: string): Promise<void> {
+  return authedDelete(`/api/v1/pages/${encodeURIComponent(pageId)}/tool-grants/${encodeURIComponent(agent)}/${encodeURIComponent(tool)}`);
 }
 
 /** Only its owner sees it again: its public address stops working. */

@@ -68,6 +68,13 @@ def users(migrated_db_url: str) -> Iterator[list[str]]:
     engine.dispose()
 
 
+def bare(page: str) -> str:
+    """A page as written: without the script that gives it wysebee.callTool (or refuses it)."""
+    from apps.cloud.page_tools import BRIDGE_SCRIPT, STUB_SCRIPT
+
+    return page.replace(BRIDGE_SCRIPT, "").replace(STUB_SCRIPT, "")
+
+
 def h(sub: str) -> dict[str, str]:
     return {"X-Test-User": sub}
 
@@ -551,7 +558,7 @@ def test_the_ai_app_writes_a_page_for_the_open_document(client, users):
     assert (page["title"], page["source_path"], page["workspace_name"]) == ("The docs", "README.md", "Docs")
     # Shown from its own address, the address its permission, sandboxed with no network.
     shown = client.get(page["view_url"])
-    assert shown.status_code == 200 and shown.text == html and shown.headers["content-type"].startswith("text/html")
+    assert shown.status_code == 200 and bare(shown.text) == html and shown.headers["content-type"].startswith("text/html")
     policy = shown.headers["content-security-policy"]
     assert policy.startswith("sandbox allow-scripts;") and "connect-src 'none'" in policy and "script-src 'unsafe-inline'" in policy and "frame-ancestors 'self'" in policy
     assert shown.headers["referrer-policy"] == "no-referrer"
@@ -561,7 +568,7 @@ def test_the_ai_app_writes_a_page_for_the_open_document(client, users):
     assert dark.text.endswith("</script></head><body><h1>Docs</h1><script>1</script></body></html>")
     assert dark.headers["content-security-policy"] == policy
     assert 'var t="light"' in client.get(page["view_url"] + "?theme=light").text
-    assert client.get(page["view_url"] + "?theme=x</script>").text == html
+    assert bare(client.get(page["view_url"] + "?theme=x</script>").text) == html
     assert client.get(page["view_url"] + "x").status_code == 404
     assert client.get(f"/api/v1/page-view/nope/{page['view_url'].rsplit('/', 1)[-1]}").status_code == 404
     # Not among the workspace's files.
@@ -571,7 +578,7 @@ def test_the_ai_app_writes_a_page_for_the_open_document(client, users):
     again, _ = call(client, me, "write_page", {"html": "<p>v2</p>"})
     assert again.rsplit("/", 1)[-1] == page_id
     rewritten = client.get(f"/api/v1/pages/{page_id}", headers=h(me)).json()["view_url"]
-    assert client.get(rewritten).text == "<p>v2</p>"
+    assert bare(client.get(rewritten).text) == "<p>v2</p>"
     # No head: the theme script first.
     assert client.get(rewritten + "?theme=light").text.startswith("<script>") and client.get(rewritten + "?theme=light").text.endswith("</script><p>v2</p>")
     # The address shown before stops working.
@@ -619,14 +626,14 @@ def test_a_page_is_shared_with_everyone_and_no_longer(client, users):
     assert client.get(base, headers=h(me)).json()["share"] == share
     path = share["url"].removeprefix("https://app.wysebee.com")
     shown = client.get(path)
-    assert shown.status_code == 200 and shown.text == html
+    assert shown.status_code == 200 and bare(shown.text) == html
     csp = shown.headers["content-security-policy"]
     assert "sandbox allow-scripts" in csp and "connect-src 'none'" in csp and "frame-ancestors 'none'" in csp
     assert shown.headers["x-robots-tag"] == "noindex, nofollow" and shown.headers["referrer-policy"] == "no-referrer"
     # Shared again: the same address. Written again: the same address, the page as it is now.
     assert client.put(f"{base}/share", json={"audience": "public"}, headers=h(me)).json() == share
     call(client, me, "write_page", {"html": "<p>v2</p>"})
-    assert client.get(path).text == "<p>v2</p>"
+    assert bare(client.get(path).text) == "<p>v2</p>"
     # Only its owner shares it, and only with an audience Wysebee knows.
     assert client.put(f"{base}/share", json={"audience": "public"}, headers=h(other)).status_code == 404
     assert client.delete(f"{base}/share", headers=h(other)).status_code == 404
@@ -693,7 +700,7 @@ def test_shared_pages_live_on_a_domain_of_their_own(share_client, users):
     assert url.startswith("https://wysebee.io/s/")
     path = url.removeprefix("https://wysebee.io")
     shown = client.get(url)
-    assert shown.status_code == 200 and shown.text == "<p>hi</p>" and "sandbox allow-scripts" in shown.headers["content-security-policy"]
+    assert shown.status_code == 200 and bare(shown.text) == "<p>hi</p>" and "sandbox allow-scripts" in shown.headers["content-security-policy"]
     assert client.get(path).status_code == 404
     assert client.get("https://app.wysebee.com" + path).status_code == 404
     # Behind a proxy that names the host it was asked for.
@@ -742,13 +749,13 @@ def test_a_html_file_is_a_page_made_directly(client, users):
     page = client.get(f"/api/v1/pages/{found['id']}", headers=h(me)).json()
     assert (page["kind"], page["title"], page["source_path"]) == ("file", "Sales & costs", "reports/sales.html")
     shown = client.get(page["view_url"])
-    assert shown.status_code == 200 and shown.text == html and shown.headers["content-security-policy"].startswith("sandbox allow-scripts;")
+    assert shown.status_code == 200 and bare(shown.text) == html and shown.headers["content-security-policy"].startswith("sandbox allow-scripts;")
     assert 'var t="dark"' in client.get(page["view_url"] + "?theme=dark").text
     # Saved again: the same page, its new text at a new address; no <title>: its file name.
     assert client.put(f"/api/v1/workspaces/{pid}/files/reports/sales.html", json={"content": "<p>2</p>"}, headers=h(me)).status_code == 200
     again = client.get(f"/api/v1/pages/{found['id']}", headers=h(me)).json()
     assert again["title"] == "sales" and again["view_url"] != page["view_url"]
-    assert client.get(again["view_url"]).text == "<p>2</p>" and client.get(page["view_url"]).status_code == 404
+    assert bare(client.get(again["view_url"]).text) == "<p>2</p>" and client.get(page["view_url"]).status_code == 404
     # The AI app writes it as a document, not with write_page.
     turn_on(client, me, pid, path="reports/sales.html", content="<p>2</p>")
     said, err = call(client, me, "write_page", {"html": "<p>x</p>"})
@@ -771,10 +778,10 @@ def test_a_page_made_directly_is_shared_as_its_file_is_now(client, users):
     if shared.status_code != 200:
         pytest.skip(f"sharing refused by this policy: {shared.text}")
     address = "/s/" + shared.json()["url"].rsplit("/s/", 1)[1]
-    assert client.get(address).text == "<p>a</p>"
+    assert bare(client.get(address).text) == "<p>a</p>"
     # Saved again: its public address kept, showing it as it is now.
     client.put(f"/api/v1/workspaces/{pid}/files/home.html", json={"content": "<p>b</p>"}, headers=h(me))
-    assert client.get(address).text == "<p>b</p>"
+    assert bare(client.get(address).text) == "<p>b</p>"
 
 
 @needs_db
@@ -814,7 +821,7 @@ def test_a_page_the_ai_app_kept_for_a_html_file_becomes_the_file_itself(client, 
     assert client.put(f"/api/v1/workspaces/{pid}/files/old.html", json={"content": "<p>file</p>"}, headers=h(me)).status_code == 200
     page = client.get(f"/api/v1/pages/{page_id}", headers=h(me)).json()
     assert page["kind"] == "file" and page["title"] == "old"
-    assert client.get(page["view_url"]).text == "<p>file</p>"
+    assert bare(client.get(page["view_url"]).text) == "<p>file</p>"
     assert asyncio.run(store.read(user_folder(me), key(pid, page_id))) is None
 
 
@@ -830,3 +837,162 @@ def test_a_html_file_from_before_gets_its_page_when_asked_for(client, users, mig
     found = client.get(f"/api/v1/workspaces/{pid}/page?path=old.html", headers=h(me)).json()["page"]
     assert found["title"] == "Old"
     assert client.get(f"/api/v1/workspaces/{pid}/page?path=missing.html", headers=h(me)).json() == {"page": None}
+
+
+# --- pages run the person's tools (apps/cloud/page_tools.py) -----------------------------
+
+
+def _page(client, me, content="<title>T</title><p>x</p>") -> dict:
+    pid = workspace(client, me["X-Test-User"])
+    assert client.put(f"/api/v1/workspaces/{pid}/files/tools.html", json={"content": content}, headers=me).status_code == 200
+    page_id = client.get(f"/api/v1/workspaces/{pid}/page?path=tools.html", headers=me).json()["page"]["id"]
+    page = client.get(f"/api/v1/pages/{page_id}", headers=me).json()
+    return {**page, "pid": pid, "key": page["view_url"].rsplit("/", 1)[-1]}
+
+
+def _run(client, me, page, tool, allow=None, agent="scout", arguments=None, key=None):
+    body = {"agent": agent, "tool": tool, "arguments": arguments or {}, "view_key": key or page["key"]}
+    if allow:
+        body["allow"] = allow
+    return client.post(f"/api/v1/pages/{page['id']}/tool-calls", json=body, headers=me)
+
+
+@needs_db
+def test_a_page_has_the_bridge_in_wysebee_and_a_refusal_at_its_public_address(client, me):
+    page = _page(client, me)
+    shown = client.get(page["view_url"]).text
+    assert "window.wysebee={callTool" in shown and 'parent.postMessage({wysebee:"call"' in shown
+    assert shown.index("window.wysebee") < shown.index("</title>") + 100 and shown.endswith("<p>x</p>")
+    shared = client.put(f"/api/v1/pages/{page['id']}/share", json={"audience": "public"}, headers=me)
+    if shared.status_code == 200:
+        public = client.get("/s/" + shared.json()["url"].rsplit("/s/", 1)[1]).text
+        assert "run only in Wysebee, for its owner" in public and "postMessage" not in public
+
+
+@needs_db
+def test_a_page_runs_a_tool_once_the_person_allows_it(client, me, monkeypatch, migrated_db_url):
+    asked: list = []
+
+    async def link(state, user_id, link_id, op, args, *, agent=None, timeout_seconds=None):
+        asked.append(op)
+        return {"ok": True, "result": {"image": "shot", "mime": "image/jpeg"}}
+
+    monkeypatch.setattr(browser_links, "run_op", link)
+    _paired(client, me, "Scout")
+    page = _page(client, me)
+    # Not allowed yet: the web app is told to ask, and nothing runs.
+    first = _run(client, me, page, "browser_screenshot")
+    assert first.status_code == 403 and first.json() == {
+        "detail": "The person has not allowed this page to run this tool.", "code": "needs_approval", "agent": "scout", "tool": "browser_screenshot", "reads": True,
+    }
+    assert asked == []
+    # Once: it runs, and asks again next time.
+    once = _run(client, me, page, "browser_screenshot", allow="once")
+    assert once.status_code == 200 and once.json()["images"] == [{"media_type": "image/jpeg", "data": "shot"}] and not once.json()["is_error"]
+    assert _run(client, me, page, "browser_screenshot").status_code == 403
+    # Always, for one that only reads: kept, even when the page is written again.
+    assert _run(client, me, page, "@scout", allow="x").status_code == 422
+    assert _run(client, me, page, "browser_screenshot", allow="always").status_code == 200
+    assert _run(client, me, page, "browser_screenshot").status_code == 200
+    assert asked == ["browser_screenshot"] * 3
+    # One that changes something: asked as such, allowed only for the page as it is.
+    click = _run(client, me, page, "browser_click", arguments={"ref": "e1"})
+    assert click.status_code == 403 and click.json()["reads"] is False
+    assert _run(client, me, page, "browser_click", allow="always", arguments={"ref": "e1"}).status_code == 200
+    assert _run(client, me, page, "browser_click", arguments={"ref": "e1"}).status_code == 200
+    grants = client.get(f"/api/v1/pages/{page['id']}/tool-grants", headers=me).json()["grants"]
+    assert grants == [
+        {"agent": "scout", "tool": "browser_click", "reads": False, "current": True},
+        {"agent": "scout", "tool": "browser_screenshot", "reads": True, "current": True},
+    ]
+    assert client.get(f"/api/v1/pages/{page['id']}", headers=me).json()["tool_grants"] == 2
+    # Written again: the old copy may not call; the new one asks again for the click, not the screenshot.
+    client.put(f"/api/v1/workspaces/{page['pid']}/files/tools.html", json={"content": "<p>v2</p>"}, headers=me)
+    stale = _run(client, me, page, "browser_screenshot")
+    assert stale.status_code == 409
+    new = {**page, "key": client.get(f"/api/v1/pages/{page['id']}", headers=me).json()["view_url"].rsplit("/", 1)[-1]}
+    assert _run(client, me, new, "browser_screenshot").status_code == 200
+    assert _run(client, me, new, "browser_click", arguments={"ref": "e1"}).status_code == 403
+    assert {g["tool"]: g["current"] for g in client.get(f"/api/v1/pages/{page['id']}/tool-grants", headers=me).json()["grants"]} == {"browser_click": False, "browser_screenshot": True}
+    # Revoked: asks again.
+    assert client.delete(f"/api/v1/pages/{page['id']}/tool-grants/scout/browser_screenshot", headers=me).status_code == 204
+    assert _run(client, me, new, "browser_screenshot").status_code == 403
+    # Each answered call cost one credit.
+    with create_engine(migrated_db_url).connect() as conn:
+        spent = conn.execute(text("SELECT coalesce(sum(count), 0) FROM ai_turn_counts WHERE user_id = :u"), {"u": me["X-Test-User"]}).scalar()
+    assert spent >= 6
+
+
+@needs_db
+def test_a_page_tool_call_that_cannot_run_says_why(client, me, users):
+    other = {"X-Test-User": users[0]}
+    _paired(client, me, "Scout")
+    page = _page(client, me)
+    assert _run(client, me, page, "x", agent="nobody").json() == {"text": agent_mcp.NO_AGENT.format(name="nobody"), "images": [], "is_error": True}
+    assert "no tool named nope" in _run(client, me, page, "nope").json()["text"]
+    assert _run(client, me, page, " ").status_code == 422
+    # Another person's page: not there.
+    assert _run(client, other, page, "browser_screenshot").status_code == 404
+    assert client.get(f"/api/v1/pages/{page['id']}/tool-grants", headers=other).status_code == 404
+
+
+@needs_db
+def test_a_page_runs_at_most_so_many_tools_a_minute(client, me, monkeypatch):
+    from apps.cloud import page_tools
+
+    async def link(*_a, **_k):
+        return {"ok": True, "result": {"text": "ok"}}
+
+    monkeypatch.setattr(browser_links, "run_op", link)
+    monkeypatch.setattr(page_tools, "RATE_PER_MINUTE", 2)
+    _paired(client, me, "Scout")
+    page = _page(client, me)
+    assert _run(client, me, page, "browser_snapshot", allow="always").status_code == 200
+    assert _run(client, me, page, "browser_snapshot").status_code == 200
+    assert _run(client, me, page, "browser_snapshot").status_code == 429
+
+
+@needs_db
+def test_a_page_tool_that_fails_times_out_or_answers_too_much_says_so(client, me, monkeypatch):
+    from apps.cloud.agent_chat import tools as chat_tools
+    from apps.cloud.agent_chat.toolbox import Toolbox
+
+    _paired(client, me, "Scout")
+    page = _page(client, me)
+    settings = client.app.state.settings
+    _run(client, me, page, "browser_snapshot", allow="always")
+    answers: list = []
+
+    async def run(self, call):
+        what = answers.pop(0)
+        if isinstance(what, BaseException):
+            raise what
+        if what == "slow":
+            await asyncio.sleep(1)
+        return what
+
+    monkeypatch.setattr(Toolbox, "run", run)
+    monkeypatch.setattr(settings, "mcp_arguments_max_chars", 10)
+    assert _run(client, me, page, "browser_snapshot", arguments={"x": "y" * 20}).json()["text"] == "The arguments are too long: at most 10 characters."
+    monkeypatch.setattr(settings, "mcp_arguments_max_chars", 100_000)
+    answers.append(RuntimeError("down"))
+    said = _run(client, me, page, "browser_snapshot").json()
+    assert said["is_error"] and said["text"] == agent_mcp.FAILED.format(what="@scout's tool browser_snapshot", error="RuntimeError")
+    monkeypatch.setattr(settings, "mcp_call_wait_seconds", 0.05)
+    answers.append("slow")
+    assert _run(client, me, page, "browser_snapshot").json()["text"] == agent_mcp.TIMED_OUT.format(seconds=0.05)
+    monkeypatch.setattr(settings, "mcp_result_max_bytes", 5)
+    answers.append(chat_tools.Output("far too long"))
+    assert _run(client, me, page, "browser_snapshot").json() == {"text": agent_mcp.TOO_BIG, "images": [], "is_error": True}
+
+
+def test_a_page_may_run_tools_again_once_the_minute_has_passed(monkeypatch):
+    from apps.cloud import page_tools
+
+    now = [1000.0]
+    monkeypatch.setattr(page_tools.time, "monotonic", lambda: now[0])
+    monkeypatch.setattr(page_tools, "RATE_PER_MINUTE", 1)
+    assert not page_tools._too_many("minute-page")
+    assert page_tools._too_many("minute-page")
+    now[0] += 61
+    assert not page_tools._too_many("minute-page")

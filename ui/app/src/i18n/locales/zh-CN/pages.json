@@ -23,7 +23,25 @@
       "live": "链接始终显示页面的最新内容：AI 应用重写后，大家看到的是新版本。选择“仅自己”后链接即失效。",
       "openLink": "打开链接",
       "seePlans": "查看方案",
-      "done": "完成"
+      "done": "完成",
+      "noTools": "此页面的工具只在 Wysebee 中为你运行，不会为打开其链接的人运行。"
+    },
+    "tools": {
+      "ask": "允许此页面使用工具吗？",
+      "wants": "“{{page}}”想要运行 @{{agent}} 的 {{tool}}。",
+      "reads": "它只读取，不会更改任何内容。",
+      "changes": "它可能会更改内容——例如在你的浏览器中操作或写入数据库。",
+      "with": "参数",
+      "once": "允许一次",
+      "always": "在此页面始终允许",
+      "untilChanged": "在此页面更改前允许",
+      "deny": "不允许",
+      "button": "工具（{{count}}）",
+      "title": "此页面无需询问即可使用的工具",
+      "readsShort": "只读",
+      "changesShort": "可更改",
+      "asksAgain": "将再次询问",
+      "revoke": "不再允许 {{tool}}"
     }
   }
 }

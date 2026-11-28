@@ -23,7 +23,25 @@
       "live": "Le lien montre toujours la page telle qu'elle est : quand votre application IA la réécrit, on voit la nouvelle version. Choisissez Vous seul et le lien cesse de fonctionner.",
       "openLink": "Ouvrir le lien",
       "seePlans": "Voir les forfaits",
-      "done": "Terminé"
+      "done": "Terminé",
+      "noTools": "Les outils de cette page ne s’exécutent que pour vous, dans Wysebee : pas pour les personnes qui ouvrent son lien."
+    },
+    "tools": {
+      "ask": "Autoriser cette page à utiliser un outil ?",
+      "wants": "« {{page}} » veut exécuter {{tool}} de @{{agent}}.",
+      "reads": "Il ne fait que lire : il ne modifie rien.",
+      "changes": "Il peut modifier quelque chose — par exemple agir dans votre navigateur ou écrire dans une base de données.",
+      "with": "Avec",
+      "once": "Autoriser une fois",
+      "always": "Toujours autoriser sur cette page",
+      "untilChanged": "Autoriser tant que la page ne change pas",
+      "deny": "Ne pas autoriser",
+      "button": "Outils ({{count}})",
+      "title": "Outils que cette page peut utiliser sans demander",
+      "readsShort": "lecture",
+      "changesShort": "modifie",
+      "asksAgain": "redemandera",
+      "revoke": "Ne plus autoriser {{tool}}"
     }
   }
 }
