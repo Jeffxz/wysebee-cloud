@@ -14,6 +14,7 @@ import {
   pagePath,
   reasonOf,
   removeFolder,
+  renameFolder,
   renameWorkspace,
   starterPage,
   useWorkspaces,
@@ -71,6 +72,9 @@ export function WorkspacesNav({
   // The workspace being renamed, and the name typed.
   const [renaming, setRenaming] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
+  // The folder being renamed ("<workspace>/<folder path>", double-clicked), and the name typed.
+  const [renamingFolder, setRenamingFolder] = useState<string | null>(null);
+  const [folderName, setFolderName] = useState("");
   // Which workspaces and folders are open: "<workspace>" or "<workspace>/<folder path>".
   const [open, setOpen] = useState<Set<string>>(() => new Set(selectedWorkspace ? [selectedWorkspace] : []));
 
@@ -214,6 +218,34 @@ export function WorkspacesNav({
     }
   };
 
+  const startRenamingFolder = (workspace: string, node: TreeNode) => {
+    setMenuFor(null);
+    setFolderName(node.name);
+    setRenamingFolder(`${workspace}/${node.path}`);
+  };
+
+  // Renamed: what was open stays open under the new name, and the folder is shown there (a
+  // double-click's first click showed it).
+  const commitFolderName = async (workspace: string, path: string, before: string) => {
+    const value = folderName.trim();
+    if (!value || value === before) {
+      setRenamingFolder(null);
+      return;
+    }
+    setBusy(true);
+    try {
+      const to = await renameFolder(workspace, path, value);
+      setRenamingFolder(null);
+      const moved = (p: string) => (`${p}/`.startsWith(`${path}/`) ? to + p.slice(path.length) : p);
+      setOpen((prev) => new Set([...prev].map((k) => (k.startsWith(`${workspace}/`) ? `${workspace}/${moved(k.slice(workspace.length + 1))}` : k))));
+      onSelect(workspace, undefined, to);
+    } catch (e) {
+      toast.error(reasonOf(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const deleteFolder = async (workspace: string, path: string) => {
     if (!(await dialogs.confirm(t("workspaces.nav.deleteFolderConfirm", { name: path }), { action: "delete" }))) return;
     try {
@@ -255,22 +287,57 @@ export function WorkspacesNav({
       const menuOpen = menuFor === key;
       const naming = addingIn?.workspace === workspace && addingIn.folder === node.path ? addingIn : null;
       const shown = selectedWorkspace === workspace && !selectedFile && selectedFolder === node.path;
+      const renamingThis = renamingFolder === key;
       const childIndent = { paddingLeft: `${0.5 + (depth + 1) * 0.85}rem` };
       return (
         <li key={key} className="group/folder relative">
           <div className="relative">
-            <button
-              type="button"
-              className={cn(row, "pr-14", shown && activeRow)}
-              style={indent}
-              onClick={() => openFolder(workspace, node.path)}
-              aria-expanded={expanded}
-              aria-current={shown ? "page" : undefined}
-            >
-              <ChevronRight size={14} className={cn("shrink-0 transition-transform", expanded && "rotate-90")} aria-hidden />
-              {expanded ? <FolderOpen size={14} className="shrink-0 opacity-70" aria-hidden /> : <Folder size={14} className="shrink-0 opacity-70" aria-hidden />}
-              <span className="truncate">{node.name}</span>
-            </button>
+            {renamingThis ? (
+              <form
+                className="flex items-center gap-1.5 py-0.5 pr-2"
+                style={indent}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void commitFolderName(workspace, node.path, node.name);
+                }}
+              >
+                <FolderOpen size={14} className="shrink-0 text-white/70" aria-hidden />
+                <input
+                  className={nameInput}
+                  autoFocus
+                  onFocus={(e) => e.currentTarget.select()}
+                  value={folderName}
+                  maxLength={100}
+                  aria-label={t("workspaces.nav.rename", { name: node.path })}
+                  disabled={busy}
+                  onChange={(e) => setFolderName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") setRenamingFolder(null);
+                  }}
+                  onBlur={() => {
+                    if (!busy) void commitFolderName(workspace, node.path, node.name);
+                  }}
+                />
+              </form>
+            ) : (
+              <button
+                type="button"
+                className={cn(row, "pr-14", shown && activeRow)}
+                style={indent}
+                // The second click of a double-click renames instead (below).
+                onClick={(e) => {
+                  if (e.detail < 2) openFolder(workspace, node.path);
+                }}
+                onDoubleClick={() => startRenamingFolder(workspace, node)}
+                title={t("workspaces.nav.renameHint")}
+                aria-expanded={expanded}
+                aria-current={shown ? "page" : undefined}
+              >
+                <ChevronRight size={14} className={cn("shrink-0 transition-transform", expanded && "rotate-90")} aria-hidden />
+                {expanded ? <FolderOpen size={14} className="shrink-0 opacity-70" aria-hidden /> : <Folder size={14} className="shrink-0 opacity-70" aria-hidden />}
+                <span className="truncate">{node.name}</span>
+              </button>
+            )}
             <button
               type="button"
               className={cn(hoverBtn, "right-7 group-hover/folder:opacity-100", menuOpen && "bg-white/20 opacity-100")}

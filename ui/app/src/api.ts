@@ -171,9 +171,9 @@ async function authedPost<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-async function authedPut<T>(path: string, body: unknown): Promise<T> {
+async function authedPut<T>(path: string, body: unknown, method: "PUT" | "PATCH" = "PUT"): Promise<T> {
   const res = await authedFetch(path, {
-    method: "PUT",
+    method,
     body: JSON.stringify(body),
   });
   if (res.status === 404) {
@@ -1348,6 +1348,11 @@ export async function createWorkspaceFolder(id: string, path: string): Promise<{
 
 export async function deleteWorkspaceFolder(id: string, path: string): Promise<void> {
   return authedDelete(`${workspaceUrl(id)}/folders/${workspacePath(path)}`);
+}
+
+/** Rename a folder where it is (2026-11-28): what it holds moves with it; its new path. */
+export async function renameWorkspaceFolder(id: string, path: string, name: string): Promise<{ path: string }> {
+  return authedPut(`${workspaceUrl(id)}/folders/${workspacePath(path)}`, { name }, "PATCH");
 }
 
 // --- Wysebee Assistant (2026-11-14): the person's AI app writes the page open in the editor,

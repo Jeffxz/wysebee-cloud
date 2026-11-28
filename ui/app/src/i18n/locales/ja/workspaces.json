@@ -20,6 +20,7 @@
       "pageName": "ページ名",
       "folderName": "フォルダー名",
       "rename": "{{name}} の名前を変更",
+      "renameHint": "ダブルクリックで名前を変更",
       "all": "すべてのワークスペース"
     },
     "start": {

@@ -20,6 +20,7 @@
       "pageName": "頁面名稱",
       "folderName": "資料夾名稱",
       "rename": "重新命名 {{name}}",
+      "renameHint": "按兩下以重新命名",
       "all": "所有工作區"
     },
     "start": {
